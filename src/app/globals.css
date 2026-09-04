@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* Design tokens — source of truth is design/Components.dc.html */
+@theme {
+  --color-paper: #f2efe6;
+  --color-surface: #ffffff;
+  --color-ink: #111111;
+  --color-ink-2: #3d3b36;
+  --color-muted: #6b6860;
+  --color-muted-on-ink: #b9b5aa;
+  --color-hairline: #c9c4b6;
+  --color-electric: #2d5bff;
+  --color-lime: #c8ff3d;
+  --color-danger: #b3261e;
+
+  --font-display: var(--font-syne), "Arial Black", sans-serif;
+  --font-body: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+
+  --radius-none: 0px;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+a {
+  color: var(--color-ink);
+}
+a:hover {
+  color: var(--color-electric);
+}
+
+/* Type utilities that match the artboards exactly */
+@utility disp {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+@utility lbl {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+@utility btn-text {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}

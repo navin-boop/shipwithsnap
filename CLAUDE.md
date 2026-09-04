@@ -69,20 +69,35 @@ Direction: bold editorial. Paper & ink, square corners, 2px rules, one electric 
 - **Gutters**: 40px in the app, 64px on marketing pages. Nav: 56px header, 2px ink rule, 12px uppercase items, active item underlined 2px.
 - Hit targets ≥ 44px on mobile.
 
-## Stack (default — change if you prefer, then update this file)
+## Stack — deployed on Vercel
 
-Next.js (App Router) + TypeScript · Tailwind with the tokens above · Postgres via Drizzle · Redis + BullMQ for jobs · Stripe (`stripe` SDK, Elements for card capture) · EasyPost (`@easypost/api`) · Postmark-style transactional email behind an interface.
+Vercel has no long-running processes, so "workers" and "queue" from `Architecture.dc.html` map to serverless equivalents:
 
-Suggested layout:
+| Design says | On Vercel |
+|---|---|
+| Next.js app + API | Next.js App Router, route handlers under `src/app/api` |
+| Postgres | **Neon** (Vercel Postgres integration) via **Drizzle**; pooled URL in the app, unpooled for migrations |
+| Redis (rate cache, address cache, rate limits, idempotency) | **Upstash Redis** (REST) |
+| Job queue + workers, cron | **Inngest** — functions in `src/inngest/`, served at `/api/inngest`; retries, fan-out and cron (tracking poll, reconcile, adjustments) live there |
+| Object store (label PDF/ZPL) | **Vercel Blob**, private access, served through our signed route |
+| Webhook receiver | Route handlers: `/api/webhooks/easypost`, `/api/webhooks/stripe`, `/api/webhooks/shopify` — verify signature, insert `inbound_events`, send an Inngest event, return 200 |
+| Email | Transactional provider `[TBD]` behind `src/lib/email.ts` |
+
+Payments: `stripe` SDK + Stripe Elements. Shipping: `@easypost/api`. Auth: Auth.js (email + Google).
+
+Layout (single Next.js app, packages as folders — split into a monorepo only if it hurts):
 
 ```
-apps/web            Next.js app (UI + API routes)
-packages/shipping   ShippingProvider interface + EasyPostProvider (see CarrierAdapter.dc.html)
-packages/billing    Stripe customer/card/charge/refund logic (see Ledger.dc.html)
-packages/db         Drizzle schema (see DataModel.dc.html)
-packages/jobs       Workers: tracking ingest, batch buy, store sync, email, reconcile
-design/             The artboards (do not edit by hand; ask Claude to update the canvas)
+src/app/            routes: (marketing) landing, (auth), (app) ship/shipments/batch/reports/billing/settings, t/[token] tracking
+src/components/     design-system primitives from Components.dc.html
+src/lib/shipping/   ShippingProvider interface + EasyPostProvider (CarrierAdapter.dc.html)
+src/lib/billing/    Stripe customer / card / charge / refund logic (Ledger.dc.html)
+src/lib/db/         Drizzle schema + migrations (DataModel.dc.html)
+src/inngest/        jobs: buy-batch, tracking-ingest, tracking-poll, store-sync, email, reconcile
+design/             the artboards (do not edit by hand; ask Claude to update the canvas)
 ```
+
+Environment variables are listed in `.env.example`; local dev uses `.env.local`.
 
 ## Build order
 
