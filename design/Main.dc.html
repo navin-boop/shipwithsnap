@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .nav { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 0 2px; color: #6b6860; }
+    .nav-on { color: #111111; border-bottom: 2px solid #111111; }
+    .input { height: 44px; border: 0; border-bottom: 2px solid #111111; background: transparent; font-family: inherit; font-size: 15px; font-weight: 500; color: #111111; padding: 0; outline: none; width: 100%; box-sizing: border-box; }
+    .chip { height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; cursor: pointer; user-select: none; }
+    .chip-on { background: #111111; color: #f2efe6; }
+    .row { display: grid; grid-template-columns: 1.7fr 1fr 0.7fr 0.8fr; align-items: center; padding: 14px 32px; border-bottom: 1px solid #111111; cursor: pointer; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 40px; border-bottom: 2px solid #111111; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 36px;">
+      <div class="disp" style="font-size: 22px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+      <div style="display: flex; gap: 22px;">
+        <div class="nav nav-on">Ship</div>
+        <div class="nav">Shipments</div>
+        <div class="nav">Batch</div>
+        <div class="nav">Reports</div>
+        <div class="nav">Billing</div>
+        <div class="nav">Settings</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;"><span style="color: #6b6860;">Card </span>Visa ·· 4242</div>
+      <div style="width: 28px; height: 28px; background: #111111;"></div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 560px minmax(0, 1fr); flex-grow: 1; min-height: 0;">
+
+    <div style="display: flex; flex-direction: column; gap: 22px; padding: 28px 40px; border-right: 2px solid #111111; box-sizing: border-box; overflow: hidden;">
+      <div class="disp" style="font-size: 40px; line-height: 0.95;">Ship it cheaper.</div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="lbl">Ship to</div>
+        <input class="input" value="Maya Chen" onInput="{{noop}}">
+        <input class="input" value="418 Bergen St, Brooklyn, NY 11217" onInput="{{noop}}">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #2d5bff;">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3 3 7-7"></path></svg>
+          <div>Verified · Residential</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div class="lbl">Ship from</div>
+        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 14px;">
+          <div>Snap Goods · 77 Water St, Brooklyn NY 11201</div>
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Change</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="lbl">Package</div>
+        <div style="display: flex; gap: 8px;">
+          <div class="chip {{boxOn}}" onClick="{{pickBox}}">Box</div>
+          <div class="chip {{mailerOn}}" onClick="{{pickMailer}}">Poly mailer</div>
+          <div class="chip {{flatOn}}" onClick="{{pickFlat}}">Flat rate</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl" style="font-size: 10px;">Length in</div><input class="input" value="12" onInput="{{noop}}"></div>
+          <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl" style="font-size: 10px;">Width in</div><input class="input" value="9" onInput="{{noop}}"></div>
+          <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl" style="font-size: 10px;">Height in</div><input class="input" value="4" onInput="{{noop}}"></div>
+          <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl" style="font-size: 10px; color: #2d5bff;">Weight lb</div><input class="input" style="border-bottom-color: #2d5bff;" value="{{weight}}" onInput="{{setWeight}}"></div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="lbl">Extras</div>
+        <div style="display: flex; gap: 8px;">
+          <div class="chip {{insOn}}" onClick="{{toggleIns}}">Insurance · $1.25</div>
+          <div class="chip {{sigOn}}" onClick="{{toggleSig}}">Signature · $3.45</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; min-height: 0;">
+    <sc-if value="{{notBought}}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; flex-direction: column; min-height: 0; flex-grow: 1;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 22px 32px 10px;">
+        <div class="lbl">{{count}} rates · {{weightLabel}} · sorted by price</div>
+        <div class="lbl" style="color: #111111;">Retail → You pay</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; overflow: hidden;">
+        <sc-for list="{{rates}}" as="r" hint-placeholder-count="5">
+          <div class="row" style="background: {{r.bg}}; color: {{r.fg}};" onClick="{{r.pick}}">
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <div class="disp" style="font-size: {{r.nameSize}};">{{r.carrier}} {{r.name}}</div>
+              <div style="font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: {{r.sub}};">{{r.tag}}</div>
+            </div>
+            <div style="font-size: 13px; color: {{r.sub}}; letter-spacing: 0.4px; text-transform: uppercase;">{{r.eta}} · {{r.days}} days</div>
+            <div style="font-size: 14px; color: {{r.sub}}; text-decoration: line-through;">{{r.retailFmt}}</div>
+            <div class="disp" style="font-size: {{r.priceSize}}; text-align: right; color: {{r.priceColor}};">{{r.priceFmt}}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 22px 32px; margin-top: auto; border-top: 2px solid #111111;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <div class="lbl">{{selName}} · you save {{savings}} vs retail</div>
+          <div style="font-size: 13px; color: #6b6860;">Charged to Visa ·· 4242 · label ready in about 2 seconds</div>
+        </div>
+        <div onClick="{{buy}}" style="height: 56px; padding: 0 32px; background: #2d5bff; color: #ffffff; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 14px; cursor: pointer;">
+          <span>Buy label — {{selPrice}}</span>
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"></path></svg>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{bought}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; padding: 28px 32px; gap: 24px; background: #111111; color: #f2efe6; flex-grow: 1;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div class="lbl" style="color: #c8ff3d;">Label bought</div>
+        <div class="disp" style="font-size: 44px; line-height: 0.95;">Ready to print.</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px;">
+        <div style="background: #f2efe6; color: #111111; padding: 16px; display: flex; flex-direction: column; gap: 10px; height: 400px; box-sizing: border-box;">
+          <div style="display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;"><div>{{selCarrier}}</div><div>{{selService}}</div></div>
+          <div style="border-top: 2px solid #111111;"></div>
+          <div style="font-size: 10px; line-height: 1.4;">SNAP GOODS<br>77 WATER ST<br>BROOKLYN NY 11201</div>
+          <div style="border-top: 1px solid #111111;"></div>
+          <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 9px; letter-spacing: 1px;">SHIP TO</div><div style="font-size: 14px; font-weight: 600; line-height: 1.3;">MAYA CHEN<br>418 BERGEN ST<br>BROOKLYN NY 11217</div></div>
+          <div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px;">
+            <div style="height: 54px; background: repeating-linear-gradient(90deg, #111111 0 2px, transparent 2px 4px, #111111 4px 5px, transparent 5px 9px, #111111 9px 12px, transparent 12px 14px);"></div>
+            <div style="font-size: 10px; letter-spacing: 1.5px; text-align: center;">9400 1000 0000 0000 0000 00</div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #3d3b36; padding-bottom: 8px;"><div style="color: #b9b5aa;">Service</div><div>{{selName}}</div></div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #3d3b36; padding-bottom: 8px;"><div style="color: #b9b5aa;">Tracking</div><div>9400 1000 0000 0000 0000 00</div></div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #3d3b36; padding-bottom: 8px;"><div style="color: #b9b5aa;">Charged to Visa ·· 4242</div><div class="disp" style="color: #c8ff3d; font-size: 18px;">{{selPrice}}</div></div>
+            <div style="display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px solid #3d3b36; padding-bottom: 8px;"><div style="color: #b9b5aa;">Receipt</div><div style="border-bottom: 1px solid #f2efe6; padding-bottom: 1px;">Emailed · view</div></div>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <div style="height: 48px; padding: 0 22px; background: #c8ff3d; color: #111111; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center;">Print 4×6</div>
+            <div style="height: 48px; padding: 0 22px; border: 1.5px solid #f2efe6; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center;">Download PDF</div>
+            <div style="height: 48px; padding: 0 22px; border: 1.5px solid #3d3b36; color: #b9b5aa; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center;">Email to customer</div>
+          </div>
+          <div style="font-size: 13px; color: #b9b5aa; line-height: 1.5;">Changed your mind? Void this label within 28 days and the full amount is refunded to your card once the carrier approves it.</div>
+        </div>
+      </div>
+      <div onClick="{{reset}}" style="margin-top: auto; align-self: flex-start; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid #f2efe6; padding-bottom: 2px; cursor: pointer;">Ship another</div>
+    </div>
+    </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { pkg: 'box', weight: '1.8', sel: null, bought: false, ins: false, sig: false };
+  }
+  money(x) { return '$' + x.toFixed(2); }
+  eta(days) { return ({ 1: 'Fri Sep 4', 2: 'Sat Sep 5', 3: 'Mon Sep 7', 4: 'Tue Sep 8', 5: 'Wed Sep 9' })[days] || ''; }
+  rates() {
+    const w = Math.min(70, Math.max(0.1, parseFloat(this.state.weight) || 0.1));
+    const extra = (this.state.ins ? 1.25 : 0) + (this.state.sig ? 3.45 : 0);
+    let list;
+    if (this.state.pkg === 'flat') {
+      list = [
+        { id: 'fr-s', carrier: 'USPS', name: 'Priority Flat Rate Small', days: 2, retail: 10.40, price: 8.05 },
+        { id: 'fr-m', carrier: 'USPS', name: 'Priority Flat Rate Medium', days: 2, retail: 18.40, price: 14.75 },
+        { id: 'fr-l', carrier: 'USPS', name: 'Priority Flat Rate Large', days: 2, retail: 24.75, price: 20.10 },
+      ];
+    } else {
+      const m = this.state.pkg === 'mailer' ? 0.92 : 1;
+      list = [
+        { id: 'ga', carrier: 'USPS', name: 'Ground Advantage', days: 3, retail: (4.75 + w * 2.8) * m, price: (3.95 + w * 1.38) * m },
+        { id: 'ugs', carrier: 'UPS', name: 'Ground Saver', days: 4, retail: (6.10 + w * 2.9) * m, price: (4.60 + w * 1.42) * m },
+        { id: 'pm', carrier: 'USPS', name: 'Priority Mail', days: 2, retail: 8.20 + w * 2.3, price: 6.40 + w * 1.40 },
+        { id: 'ug', carrier: 'UPS', name: 'Ground', days: 3, retail: 9.40 + w * 2.6, price: 7.20 + w * 1.45 },
+        { id: '2d', carrier: 'UPS', name: '2nd Day Air', days: 2, retail: 18.90 + w * 4.1, price: 14.20 + w * 2.6 },
+      ];
+    }
+    list.forEach(r => { r.price += extra; r.retail += extra; r.tag = ''; });
+    list.sort((a, b) => a.price - b.price);
+    list[0].tag = 'Cheapest';
+    const minDays = Math.min(...list.map(r => r.days));
+    const fast = list.find(r => r.days === minDays);
+    if (fast && !fast.tag) fast.tag = 'Fastest';
+    return list;
+  }
+  renderVals() {
+    const list = this.rates();
+    const selId = list.some(r => r.id === this.state.sel) ? this.state.sel : list[0].id;
+    const sel = list.find(r => r.id === selId);
+    const on = (k, v) => (this.state[k] === v ? 'chip-on' : '');
+    return {
+      noop: () => {},
+      weight: this.state.weight,
+      weightLabel: (parseFloat(this.state.weight) || 0.1) + ' lb',
+      setWeight: (e) => this.setState({ weight: e.target.value }),
+      pickBox: () => this.setState({ pkg: 'box' }),
+      pickMailer: () => this.setState({ pkg: 'mailer' }),
+      pickFlat: () => this.setState({ pkg: 'flat' }),
+      boxOn: on('pkg', 'box'), mailerOn: on('pkg', 'mailer'), flatOn: on('pkg', 'flat'),
+      insOn: this.state.ins ? 'chip-on' : '', sigOn: this.state.sig ? 'chip-on' : '',
+      toggleIns: () => this.setState({ ins: !this.state.ins }),
+      toggleSig: () => this.setState({ sig: !this.state.sig }),
+      count: list.length,
+      rates: list.map(r => {
+        const s = r.id === selId;
+        return {
+          ...r,
+          eta: this.eta(r.days),
+          retailFmt: this.money(r.retail),
+          priceFmt: this.money(r.price),
+          bg: s ? '#111111' : 'transparent',
+          fg: s ? '#f2efe6' : '#111111',
+          sub: s ? '#b9b5aa' : '#6b6860',
+          priceColor: s ? '#c8ff3d' : '#111111',
+          nameSize: s ? '22px' : '16px',
+          priceSize: s ? '36px' : '22px',
+          pick: () => this.setState({ sel: r.id }),
+        };
+      }),
+      selName: sel.carrier + ' ' + sel.name,
+      selCarrier: sel.carrier, selService: sel.name,
+      selPrice: this.money(sel.price),
+      savings: this.money(sel.retail - sel.price),
+      notBought: !this.state.bought,
+      bought: this.state.bought,
+      buy: () => this.setState({ bought: true }),
+      reset: () => this.setState({ bought: false }),
+    };
+  }
+}
+</script>
+</body>
+</html>

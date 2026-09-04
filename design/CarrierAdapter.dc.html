@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; }
+    .code { background: #111111; color: #f2efe6; padding: 18px 20px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; line-height: 1.55; white-space: pre; overflow: hidden; }
+    .c { color: #b9b5aa; } .g { color: #c8ff3d; } .b { color: #8fa8ff; }
+    .tr { display: grid; grid-template-columns: 0.8fr 1.5fr 1.2fr; align-items: start; padding: 9px 0; border-bottom: 1px solid #c9c4b6; font-size: 12.5px; line-height: 1.45; gap: 16px; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 1100px; background: #f2efe6; display: flex; flex-direction: column; gap: 16px; padding: 36px 48px; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 36px; line-height: 0.95;">EasyPost integration</div><div style="font-size: 14px; color: #6b6860;">One provider does rates, labels, tracking, address verification and refunds. Product code talks to a thin <span class="mono">ShippingProvider</span> seam, never to EasyPost directly — so a second provider or a direct carrier account later is one new module.</div></div>
+    <div class="lbl">System design · 7 of 7</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.05fr; gap: 40px; border-top: 2px solid #111111; padding-top: 16px; flex-grow: 1; min-height: 0;">
+    <div class="code"><span class="c">// packages/shipping/provider.ts — one implementation today: EasyPostProvider</span>
+<span class="b">interface</span> ShippingProvider {
+  <span class="c">// Creates the provider shipment and returns every rate on it.</span>
+  <span class="c">// `reference` = our shipment id, stored on the EasyPost Shipment.</span>
+  rate(req: RateRequest): Promise&lt;{ providerShipmentId: <span class="b">string</span>; rates: RateQuote[] }&gt;;
+
+  <span class="c">// Buys one rate. Idempotent: if the provider shipment already has a</span>
+  <span class="c">// postage_label, returns it instead of buying twice.</span>
+  buy(req: { providerShipmentId: <span class="b">string</span>; providerRateId: <span class="b">string</span>;
+             insuranceCents?: <span class="b">number</span>; format: LabelFormat }): Promise&lt;LabelResult&gt;;
+
+  <span class="c">// Requests a refund; resolves with the provider's refund status.</span>
+  void(providerShipmentId: <span class="b">string</span>): Promise&lt;<span class="g">"submitted"</span> | <span class="g">"refunded"</span> | <span class="g">"rejected"</span>&gt;;
+
+  <span class="c">// Pull path for stale trackers.</span>
+  track(providerTrackerId: <span class="b">string</span>): Promise&lt;TrackingEvent[]&gt;;
+
+  <span class="c">// Push path. Verifies HMAC, returns [] when the event is not tracking.</span>
+  parseWebhook(raw: Buffer, headers: Headers): { eventId: <span class="b">string</span>; events: TrackingEvent[] };
+
+  verifyAddress(a: Address): Promise&lt;AddressValidation&gt;;
+}
+
+<span class="b">type</span> RateQuote = {
+  providerRateId: <span class="b">string</span>;         <span class="c">// rate_…</span>
+  carrier: <span class="g">"USPS"</span> | <span class="g">"UPS"</span>; service: <span class="b">string</span>;   <span class="c">// GroundAdvantage, Ground…</span>
+  priceCents: <span class="b">number</span>;             <span class="c">// EasyPost `rate` — what we are billed</span>
+  retailCents: <span class="b">number</span> | <span class="b">null</span>;     <span class="c">// EasyPost `retail_rate` — the strike-through</span>
+  estDays: <span class="b">number</span> | <span class="b">null</span>; estDelivery: <span class="b">string</span> | <span class="b">null</span>;
+};
+
+<span class="b">type</span> LabelResult = {
+  providerLabelId: <span class="b">string</span>; providerTrackerId: <span class="b">string</span>;
+  trackingCode: <span class="b">string</span>; labelUrl: <span class="b">string</span>;   <span class="c">// fetched once, stored in our bucket</span>
+  chargedCents: <span class="b">number</span>;
+};
+
+<span class="b">type</span> TrackingEvent = {
+  dedupeKey: <span class="b">string</span>;   <span class="c">// sha1(status + datetime + message + city) — details carry no id</span>
+  status: CanonicalStatus; rawStatus: <span class="b">string</span>; description: <span class="b">string</span>;
+  location?: { city?: <span class="b">string</span>; state?: <span class="b">string</span>; zip?: <span class="b">string</span> };
+  occurredAt: <span class="b">string</span>;
+};</div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; min-height: 0;">
+      <div class="tr" style="border-top: 2px solid #111111; border-bottom: 1px solid #111111; padding: 6px 0;"><div class="lbl">Concern</div><div class="lbl">How EasyPost covers it</div><div class="lbl">Our side</div></div>
+      <div style="display: flex; flex-direction: column; margin-top: -8px;">
+        <div class="tr"><div style="font-weight: 600;">Auth &amp; environments</div><div>Production and test API keys · test keys buy free labels with fake tracking</div><div>Our <span class="mono">sk_test_</span> keys route to the EasyPost test key; never mix per request</div></div>
+        <div class="tr"><div style="font-weight: 600;">Carrier accounts</div><div>EasyPost-provided USPS and UPS accounts carry the discounted rates; customers may add their own <span class="mono">ca_…</span> accounts</div><div><span class="mono">carrier_accounts</span> table holds optional customer <span class="mono">ca_</span> ids; passed as <span class="mono">carrier_accounts[]</span> on rating</div></div>
+        <div class="tr"><div style="font-weight: 600;">Rates</div><div><span class="mono">POST /v2/shipments</span> returns <span class="mono">rates[]</span> with <span class="mono">rate</span>, <span class="mono">retail_rate</span>, <span class="mono">list_rate</span>, <span class="mono">delivery_days</span>, <span class="mono">est_delivery_date</span></div><div>Rates live on the shipment, so a re-rate = new EasyPost shipment. Cache by (from, to, parcel) for 10 min</div></div>
+        <div class="tr"><div style="font-weight: 600;">Labels</div><div><span class="mono">POST /v2/shipments/{id}/buy</span> with <span class="mono">rate.id</span>, optional <span class="mono">insurance</span> · <span class="mono">postage_label.label_url</span> · PNG default, PDF / ZPL via <span class="mono">label_format</span> or <span class="mono">POST …/label</span></div><div>Download once, store in our bucket, serve signed URLs. Never link customers to EasyPost URLs</div></div>
+        <div class="tr"><div style="font-weight: 600;">Void / refund</div><div><span class="mono">POST /v2/shipments/{id}/refund</span> → <span class="mono">refund_status</span>: submitted → refunded | rejected (USPS async, UPS fast)</div><div>Stripe refund to the card on <span class="mono">refunded</span>; show "refund pending" while submitted; poll daily up to 30 d</div></div>
+        <div class="tr"><div style="font-weight: 600;">Tracking</div><div>A Tracker is created with every buy · <span class="mono">tracker.updated</span> webhooks, HMAC-signed · <span class="mono">GET /v2/trackers/{id}</span> to pull</div><div>Dedupe webhook by <span class="mono">event.id</span>; dedupe details by hash. Poll only trackers silent &gt; 24 h</div></div>
+        <div class="tr"><div style="font-weight: 600;">Addresses</div><div><span class="mono">POST /v2/addresses</span> with <span class="mono">verify[]=delivery</span> · returns corrected address, <span class="mono">residential</span>, and verification errors</div><div>Cache by hash; surface the corrected form for one-click accept</div></div>
+        <div class="tr"><div style="font-weight: 600;">Batch</div><div>EasyPost Batch can buy N shipments and produce one merged label file</div><div>We loop our own buys for per-row control and use <span class="mono">Batch.label</span> only for the merged PDF</div></div>
+        <div class="tr"><div style="font-weight: 600;">Billing</div><div>Postage is charged to Snap's EasyPost account (prefunded balance or invoice) · carrier adjustments post to the shipment as fees</div><div>Customers pay per purchase on Stripe (see 6). Nightly job pulls EasyPost fees → <span class="mono">adjustment</span> charges</div></div>
+        <div class="tr"><div style="font-weight: 600;">Retries &amp; idempotency</div><div>No idempotency-key header on buy. Shipment <span class="mono">reference</span> field is ours to set</div><div>On timeout, <span class="mono">GET /v2/shipments/{id}</span> and check <span class="mono">postage_label</span> before ever calling buy again</div></div>
+      </div>
+      <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px; border-top: 2px solid #111111; padding-top: 12px; font-size: 13px; line-height: 1.5; color: #3d3b36;">
+        <div><span style="font-weight: 600;">Contract tests</span> run the provider against recorded EasyPost fixtures in CI and against the test API nightly — rate, buy, void, track, parseWebhook, verifyAddress — so an EasyPost change fails a build, not a customer.</div>
+        <div><span style="font-weight: 600;">Circuit breaker:</span> 5 failures in 60 s trips it; the Ship page shows "rates are temporarily unavailable" with a retry, and no hold is ever placed while it's open.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

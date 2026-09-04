@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .nav { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 0 2px; color: #6b6860; }
+    .nav-on { color: #111111; border-bottom: 2px solid #111111; }
+    .tab { height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .tab-on { background: #111111; color: #f2efe6; }
+    .cell { font-size: 14px; }
+    .status { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 40px; border-bottom: 2px solid #111111; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 36px;">
+      <div class="disp" style="font-size: 22px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+      <div style="display: flex; gap: 22px;">
+        <div class="nav">Ship</div><div class="nav nav-on">Shipments</div><div class="nav">Batch</div><div class="nav">Reports</div><div class="nav">Billing</div><div class="nav">Settings</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;"><span style="color: #6b6860;">Card </span>Visa ·· 4242</div>
+      <div style="width: 28px; height: 28px; background: #111111;"></div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding: 28px 40px 18px;">
+    <div class="disp" style="font-size: 40px; line-height: 0.95;">Shipments</div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="height: 40px; width: 280px; border: 1.5px solid #111111; padding: 0 12px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #6b6860;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <span>Search name, tracking, order</span>
+      </div>
+      <div style="height: 40px; padding: 0 16px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Last 30 days</div>
+      <div style="height: 40px; padding: 0 16px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Export CSV</div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 8px; padding: 0 40px 18px;">
+    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+      <div class="tab {{t.on}}" onClick="{{t.pick}}"><span>{{t.label}}</span><span style="opacity: 0.6;">{{t.count}}</span></div>
+    </sc-for>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 40px 1.5fr 1.4fr 1fr 1fr 0.7fr 0.9fr; align-items: center; padding: 10px 40px; border-top: 2px solid #111111; border-bottom: 1px solid #111111;">
+    <div style="width: 16px; height: 16px; border: 1.5px solid #111111;"></div>
+    <div class="lbl">Recipient</div><div class="lbl">Service</div><div class="lbl">Tracking</div><div class="lbl">Status</div><div class="lbl" style="text-align: right;">Cost</div><div class="lbl" style="text-align: right;">Bought</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; overflow: hidden;">
+    <sc-for list="{{rows}}" as="s" hint-placeholder-count="8">
+      <div style="display: grid; grid-template-columns: 40px 1.5fr 1.4fr 1fr 1fr 0.7fr 0.9fr; align-items: center; padding: 14px 40px; border-bottom: 1px solid #c9c4b6;">
+        <div style="width: 16px; height: 16px; border: 1.5px solid #111111;"></div>
+        <div style="display: flex; flex-direction: column; gap: 2px;"><div class="cell" style="font-weight: 600;">{{s.name}}</div><div style="font-size: 12px; color: #6b6860;">{{s.city}}</div></div>
+        <div class="cell">{{s.service}}</div>
+        <div class="cell" style="letter-spacing: 0.4px; color: #3d3b36;">{{s.tracking}}</div>
+        <div class="status" style="color: {{s.color}};"><div style="width: 8px; height: 8px; background: {{s.color}};"></div><span>{{s.status}}</span></div>
+        <div class="disp" style="font-size: 16px; text-align: right;">{{s.cost}}</div>
+        <div class="cell" style="text-align: right; color: #6b6860;">{{s.date}}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; margin-top: auto; border-top: 2px solid #111111;">
+    <div style="font-size: 13px; color: #6b6860;">Showing {{shown}} of {{total}} shipments</div>
+    <div style="display: flex; gap: 8px;">
+      <div style="height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Reprint</div>
+      <div style="height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Void &amp; refund</div>
+      <div style="height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Email tracking</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { filter: 'all' }; }
+  renderVals() {
+    const C = { label: '#6b6860', transit: '#2d5bff', delivered: '#111111', exception: '#b3261e' };
+    const all = [
+      { name: 'Maya Chen', city: 'Brooklyn, NY', service: 'USPS Ground Advantage', tracking: '9400 1000 0000 0000 0001', key: 'label', status: 'Label bought', cost: '$6.42', date: 'Today' },
+      { name: 'Devon Okafor', city: 'Austin, TX', service: 'UPS Ground Saver', tracking: '1Z 999 AA1 01 2345 6784', key: 'transit', status: 'In transit', cost: '$7.15', date: 'Yesterday' },
+      { name: 'Priya Raman', city: 'Seattle, WA', service: 'USPS Priority Mail', tracking: '9400 1000 0000 0000 0002', key: 'transit', status: 'In transit', cost: '$9.31', date: 'Yesterday' },
+      { name: 'Tom Lindqvist', city: 'Chicago, IL', service: 'USPS Ground Advantage', tracking: '9400 1000 0000 0000 0003', key: 'exception', status: 'Exception', cost: '$5.88', date: 'Aug 31' },
+      { name: 'Ana Sousa', city: 'Miami, FL', service: 'UPS Ground', tracking: '1Z 999 AA1 01 2345 6785', key: 'delivered', status: 'Delivered', cost: '$10.12', date: 'Aug 30' },
+      { name: 'Jordan Blake', city: 'Denver, CO', service: 'USPS Ground Advantage', tracking: '9400 1000 0000 0000 0004', key: 'delivered', status: 'Delivered', cost: '$6.70', date: 'Aug 29' },
+      { name: 'Hana Sato', city: 'Portland, OR', service: 'USPS Priority Mail', tracking: '9400 1000 0000 0000 0005', key: 'delivered', status: 'Delivered', cost: '$9.05', date: 'Aug 29' },
+      { name: 'Luis Herrera', city: 'Phoenix, AZ', service: 'UPS Ground Saver', tracking: '1Z 999 AA1 01 2345 6786', key: 'delivered', status: 'Delivered', cost: '$7.40', date: 'Aug 28' },
+    ];
+    const defs = [['all', 'All'], ['label', 'Label bought'], ['transit', 'In transit'], ['delivered', 'Delivered'], ['exception', 'Exception']];
+    const f = this.state.filter;
+    const rows = all.filter(s => f === 'all' || s.key === f).map(s => ({ ...s, color: C[s.key] }));
+    return {
+      tabs: defs.map(([k, label]) => ({ label, count: k === 'all' ? all.length : all.filter(s => s.key === k).length, on: f === k ? 'tab-on' : '', pick: () => this.setState({ filter: k }) })),
+      rows, shown: rows.length, total: all.length,
+    };
+  }
+}
+</script>
+</body>
+</html>

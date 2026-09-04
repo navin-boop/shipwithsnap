@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .nav { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 0 2px; color: #6b6860; }
+    .nav-on { color: #111111; border-bottom: 2px solid #111111; }
+    .card { border: 1.5px solid #111111; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: #ffffff; }
+    .card-on { background: #111111; color: #f2efe6; border-color: #111111; }
+    .row { display: grid; grid-template-columns: 1.7fr 0.9fr 0.8fr 0.9fr 0.6fr; align-items: center; padding: 12px 0; border-bottom: 1px solid #c9c4b6; font-size: 14px; }
+    .st { font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 40px; border-bottom: 2px solid #111111; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 36px;">
+      <div class="disp" style="font-size: 22px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+      <div style="display: flex; gap: 22px;">
+        <div class="nav">Ship</div><div class="nav">Shipments</div><div class="nav">Batch</div><div class="nav">Reports</div><div class="nav nav-on">Billing</div><div class="nav">Settings</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;"><span style="color: #6b6860;">Card </span>{{defaultLabel}}</div>
+      <div style="width: 28px; height: 28px; background: #111111;"></div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 520px minmax(0, 1fr); flex-grow: 1; min-height: 0;">
+    <div style="display: flex; flex-direction: column; gap: 28px; padding: 28px 40px; border-right: 2px solid #111111; box-sizing: border-box;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div class="lbl">Billing</div>
+        <div class="disp" style="font-size: 40px; line-height: 0.95;">Pay as you go.</div>
+        <div style="font-size: 14px; color: #6b6860; line-height: 1.5;">Each label is one charge to your card. A batch is one charge for the whole batch. Nothing to prepay.</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="lbl">Payment method</div>
+        <sc-for list="{{cards}}" as="c" hint-placeholder-count="2">
+          <div class="card {{c.on}}" onClick="{{c.pick}}">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 36px; height: 24px; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; letter-spacing: 0.5px;">{{c.brand}}</div>
+              <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">{{c.name}}</div><div style="font-size: 12px; opacity: 0.7;">Expires {{c.exp}}</div></div>
+            </div>
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;">{{c.tag}}</div>
+          </div>
+        </sc-for>
+        <div style="display: flex; gap: 8px; padding-top: 4px;">
+          <div style="height: 44px; padding: 0 18px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Add card</div>
+          <div style="height: 44px; padding: 0 18px; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; color: #6b6860;">Remove</div>
+        </div>
+        <div style="font-size: 12px; color: #6b6860; line-height: 1.5;">Cards are stored by Stripe; Snap never sees the number. A declined card stops new labels until you update it — nothing already bought is affected.</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+        <div class="lbl">Receipts</div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-top: 1px solid #111111; border-bottom: 1px solid #111111; font-size: 14px;">
+          <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Email a receipt for every charge</div><div style="font-size: 12px; color: #6b6860;">to billing@snapgoods.co</div></div>
+          <div style="width: 52px; height: 28px; border: 2px solid #111111; background: #111111; display: flex; align-items: center; justify-content: flex-end; padding: 2px; box-sizing: border-box;"><div style="width: 20px; height: 20px; background: #c8ff3d;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; padding: 28px 40px; gap: 18px; min-height: 0;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+        <div style="display: flex; flex-direction: column; gap: 2px;"><div class="disp" style="font-size: 28px;">Charges</div><div style="font-size: 13px; color: #6b6860;">September so far: $54.28 across 7 charges · $10.12 refunded</div></div>
+        <div style="display: flex; gap: 8px;">
+          <div style="height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">September</div>
+          <div style="height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Download statement</div>
+        </div>
+      </div>
+      <div class="row" style="border-top: 2px solid #111111; border-bottom: 1px solid #111111; padding: 8px 0;">
+        <div class="lbl">Description</div><div class="lbl">Card</div><div class="lbl">Status</div><div class="lbl" style="text-align: right;">Amount</div><div class="lbl" style="text-align: right;">Receipt</div>
+      </div>
+      <div style="display: flex; flex-direction: column; margin-top: -18px;">
+        <div class="row"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Label · USPS Ground Advantage</div><div style="font-size: 12px; color: #6b6860;">Today 9:14 am · Maya Chen · 9400 1000 … 0001</div></div><div style="color: #3d3b36;">Visa ·· 4242</div><div class="st"><div style="width: 8px; height: 8px; background: #111111;"></div><span>Paid</span></div><div class="disp" style="text-align: right; font-size: 16px;">$6.42</div><div class="lbl" style="text-align: right; color: #2d5bff;">View</div></div>
+        <div class="row"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Refund · voided label</div><div style="font-size: 12px; color: #6b6860;">Yesterday 4:02 pm · UPS Ground · 1Z 999 … 6790</div></div><div style="color: #3d3b36;">Visa ·· 4242</div><div class="st" style="color: #2d5bff;"><div style="width: 8px; height: 8px; background: #2d5bff;"></div><span>Refunded</span></div><div class="disp" style="text-align: right; font-size: 16px; color: #2d5bff;">−$10.12</div><div class="lbl" style="text-align: right; color: #2d5bff;">View</div></div>
+        <div class="row"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Batch · 2 labels</div><div style="font-size: 12px; color: #6b6860;">Yesterday 11:31 am · Devon Okafor, Priya Raman</div></div><div style="color: #3d3b36;">Visa ·· 4242</div><div class="st"><div style="width: 8px; height: 8px; background: #111111;"></div><span>Paid</span></div><div class="disp" style="text-align: right; font-size: 16px;">$16.46</div><div class="lbl" style="text-align: right; color: #2d5bff;">View</div></div>
+        <div class="row"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Refund requested · voided label</div><div style="font-size: 12px; color: #6b6860;">Aug 31 · USPS Ground Advantage · 9400 1000 … 0003 · USPS approves within a few days</div></div><div style="color: #3d3b36;">Visa ·· 4242</div><div class="st" style="color: #6b6860;"><div style="width: 8px; height: 8px; border: 1.5px solid #6b6860; box-sizing: border-box;"></div><span>Pending</span></div><div class="disp" style="text-align: right; font-size: 16px; color: #6b6860;">−$5.88</div><div class="lbl" style="text-align: right; color: #c9c4b6;">—</div></div>
+        <div class="row"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Carrier adjustment · weight</div><div style="font-size: 12px; color: #6b6860;">Aug 30 · UPS re-weighed 5.1 → 6.0 lb · 1Z 999 … 6785</div></div><div style="color: #3d3b36;">Visa ·· 4242</div><div class="st"><div style="width: 8px; height: 8px; background: #111111;"></div><span>Paid</span></div><div class="disp" style="text-align: right; font-size: 16px;">$1.84</div><div class="lbl" style="text-align: right; color: #2d5bff;">View</div></div>
+        <div class="row"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Label · UPS Ground</div><div style="font-size: 12px; color: #6b6860;">Aug 30 · Ana Sousa · 1Z 999 … 6785</div></div><div style="color: #3d3b36;">Visa ·· 4242</div><div class="st"><div style="width: 8px; height: 8px; background: #111111;"></div><span>Paid</span></div><div class="disp" style="text-align: right; font-size: 16px;">$10.12</div><div class="lbl" style="text-align: right; color: #2d5bff;">View</div></div>
+        <div class="row"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Batch · 3 labels</div><div style="font-size: 12px; color: #6b6860;">Aug 29 · Jordan Blake, Hana Sato, Luis Herrera</div></div><div style="color: #3d3b36;">Mastercard ·· 8810</div><div class="st"><div style="width: 8px; height: 8px; background: #111111;"></div><span>Paid</span></div><div class="disp" style="text-align: right; font-size: 16px;">$23.15</div><div class="lbl" style="text-align: right; color: #2d5bff;">View</div></div>
+        <div class="row"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-weight: 600;">Label · USPS Ground Advantage</div><div style="font-size: 12px; color: #6b6860;">Aug 28 · Tom Lindqvist · 9400 1000 … 0003</div></div><div style="color: #3d3b36;">Visa ·· 4242</div><div class="st"><div style="width: 8px; height: 8px; background: #111111;"></div><span>Paid</span></div><div class="disp" style="text-align: right; font-size: 16px;">$5.88</div><div class="lbl" style="text-align: right; color: #2d5bff;">View</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { def: 'visa' }; }
+  renderVals() {
+    const cards = [
+      { id: 'visa', brand: 'VISA', name: 'Visa ·· 4242', short: 'Visa ·· 4242', exp: '08 / 2028' },
+      { id: 'mc', brand: 'MC', name: 'Mastercard ·· 8810', short: 'MC ·· 8810', exp: '01 / 2027' },
+    ];
+    const d = this.state.def;
+    return {
+      defaultLabel: cards.find(c => c.id === d).short,
+      cards: cards.map(c => ({ ...c, on: c.id === d ? 'card-on' : '', tag: c.id === d ? 'Default' : 'Set default', pick: () => this.setState({ def: c.id }) })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; line-height: 1.5; }
+    .ent { border: 1.5px solid #111111; background: #ffffff; display: flex; flex-direction: column; }
+    .ent-h { padding: 8px 12px; background: #111111; color: #f2efe6; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; }
+    .ent-b { padding: 8px 12px; display: flex; flex-direction: column; }
+    .fk { color: #2d5bff; }
+    .k { color: #6b6860; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 1260px; background: #f2efe6; display: flex; flex-direction: column; gap: 16px; padding: 36px 48px; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 36px; line-height: 0.95;">Data model</div><div style="font-size: 14px; color: #6b6860;">Postgres. Every table carries <span class="mono">account_id</span> and is row-level-secured by it. Money is integer cents. <span class="mono fk">Blue</span> = foreign key.</div></div>
+    <div class="lbl">System design · 2 of 7</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; border-top: 2px solid #111111; padding-top: 16px;">
+
+    <div class="ent"><div class="ent-h"><span>accounts</span><span class="k">org</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>name</div><div>pricing_tier <span class="k">enum</span></div><div>stripe_customer_id <span class="k">cus_…</span></div><div>default_payment_method_id <span class="fk">→ payment_methods</span></div><div>billing_locked_reason <span class="k">null | unpaid_adjustment | dispute | card_declined</span></div><div>default_ship_from_id <span class="fk">→ addresses</span></div><div>label_format <span class="k">4x6 | letter | zpl</span></div><div>created_at</div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>users</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>email <span class="k">unique</span></div><div>role <span class="k">owner | shipper | viewer</span></div><div>google_sub <span class="k">nullable</span></div><div>password_hash <span class="k">nullable</span></div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>api_keys</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>name</div><div>key_hash <span class="k">sha256, prefix shown</span></div><div>mode <span class="k">live | test</span></div><div>last_used_at</div><div>revoked_at</div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>carrier_accounts</span><span class="k">optional</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>carrier <span class="k">usps | ups</span></div><div>easypost_ca_id <span class="k">ca_… customer-owned</span></div><div>enabled</div><div><span class="k">absent → EasyPost-provided accounts</span></div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>addresses</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>name, company, phone, email</div><div>line1, line2, city, state, zip, country</div><div>residential <span class="k">bool</span></div><div>validated_at, validation_source</div><div>hash <span class="k">dedupe</span></div><div>kind <span class="k">ship_to | ship_from</span></div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>parcel_presets</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>name</div><div>type <span class="k">box | mailer | flat_rate</span></div><div>length_in, width_in, height_in</div><div>weight_oz</div></div></div>
+
+    <div class="ent" style="border-width: 2px; border-color: #2d5bff;"><div class="ent-h" style="background: #2d5bff;"><span>shipments</span><span>core</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>ship_to_id <span class="fk">→ addresses</span></div><div>ship_from_id <span class="fk">→ addresses</span></div><div>order_id <span class="fk">→ orders</span> <span class="k">nullable</span></div><div>parcel <span class="k">jsonb (dims, weight, type)</span></div><div>extras <span class="k">jsonb (insurance, signature)</span></div><div>easypost_shipment_id <span class="k">shp_… indexed</span></div><div>status <span class="k">draft | label_created | in_transit | out_for_delivery | delivered | exception | returned | voided</span></div><div>batch_id <span class="k">nullable</span></div><div>created_by <span class="fk">→ users</span></div><div>created_at, updated_at</div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>rate_quotes</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>shipment_id <span class="fk">→ shipments</span></div><div>easypost_rate_id <span class="k">rate_…</span></div><div>carrier, service_code, service_name</div><div>retail_cents, price_cents</div><div>est_days, est_delivery_date</div><div>expires_at <span class="k">now + 10 min</span></div></div></div>
+
+    <div class="ent" style="border-width: 2px; border-color: #2d5bff;"><div class="ent-h" style="background: #2d5bff;"><span>labels</span><span>core</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>shipment_id <span class="fk">→ shipments</span> <span class="k">unique active</span></div><div>rate_quote_id <span class="fk">→ rate_quotes</span></div><div>carrier, service_code</div><div>tracking_number <span class="k">indexed</span></div><div>price_cents, retail_cents</div><div>easypost_label_id, easypost_tracker_id <span class="k">trk_…</span></div><div>refund_status <span class="k">null | submitted | refunded | rejected</span></div><div>file_key <span class="k">object store</span>, format</div><div>charge_id <span class="fk">→ charges</span></div><div>idempotency_key <span class="k">unique</span></div><div>voided_at</div><div>purchased_at</div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>tracking_events</span></div><div class="ent-b mono"><div>id <span class="k">bigserial pk</span></div><div>label_id <span class="fk">→ labels</span></div><div>dedupe_key <span class="k">unique per label · hash of detail</span></div><div>status <span class="k">canonical enum</span></div><div>easypost_status_raw</div><div>description, city, state, zip</div><div>occurred_at, received_at</div><div>source <span class="k">webhook | poll</span></div></div></div>
+
+    <div class="ent" style="border-width: 2px; border-color: #2d5bff;"><div class="ent-h" style="background: #2d5bff;"><span>charges</span><span>core</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>payment_method_id <span class="fk">→ payment_methods</span></div><div>stripe_payment_intent_id <span class="k">pi_… unique</span></div><div>kind <span class="k">label | batch | adjustment</span></div><div>batch_id <span class="k">nullable</span></div><div>authorized_cents, captured_cents</div><div>status <span class="k">authorized | captured | canceled | failed</span></div><div>decline_code, receipt_url</div><div>created_at, captured_at</div><div>+ refunds <span class="k">charge_id, label_id, stripe_refund_id, amount_cents, status requested | refunded | failed</span></div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>payment_methods</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>stripe_pm_id <span class="k">pm_… unique</span></div><div>brand, last4, exp_month, exp_year</div><div>status <span class="k">active | expired | removed</span></div><div>created_at</div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>stores</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>platform <span class="k">shopify | etsy | csv</span></div><div>external_id, name</div><div>oauth_tokens <span class="k">encrypted</span></div><div>last_synced_at</div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>orders</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>store_id <span class="fk">→ stores</span></div><div>external_id <span class="k">unique per store</span></div><div>number, customer_name</div><div>ship_to <span class="k">jsonb raw</span></div><div>items <span class="k">jsonb</span></div><div>fulfillment_status</div><div>tracking_written_back_at</div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>batches</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>status <span class="k">rating | ready | buying | done | partial</span></div><div>merged_file_key</div><div>counts <span class="k">jsonb ok / failed</span></div></div></div>
+
+    <div class="ent"><div class="ent-h"><span>webhook_endpoints</span></div><div class="ent-b mono"><div>id <span class="k">uuid pk</span></div><div>account_id <span class="fk">→ accounts</span></div><div>url, secret <span class="k">encrypted</span></div><div>events <span class="k">text[]</span></div><div>+ webhook_deliveries <span class="k">attempts, status, next_retry_at</span></div><div>+ inbound_events <span class="k">easypost / stripe event id unique · processed_at</span></div></div></div>
+  </div>
+
+  <div style="display: flex; gap: 32px; margin-top: auto; padding-top: 14px; border-top: 2px solid #111111; font-size: 13px; color: #3d3b36;">
+    <div><span style="font-weight: 600;">Invariants:</span> a shipment has at most one un-voided label · every un-voided label has a captured charge · Σ refunds on a charge ≤ captured_cents · Σ Stripe captured − refunded = Σ charges − Σ refunds, reconciled nightly</div>
+    <div><span style="font-weight: 600;">Hot indexes:</span> labels(tracking_number) · shipments(account_id, status, created_at desc) · tracking_events(label_id, occurred_at) · charges(account_id, created_at desc)</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

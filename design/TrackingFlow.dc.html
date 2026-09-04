@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; }
+    .node { border: 1.5px solid #111111; background: #ffffff; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+    .node-t { font-size: 13px; font-weight: 600; }
+    .node-s { font-size: 11.5px; color: #6b6860; line-height: 1.4; }
+    .st { border: 1.5px solid #111111; padding: 10px 12px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; font-weight: 600; text-align: center; background: #ffffff; }
+    .ar { display: flex; align-items: center; justify-content: center; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 800px; background: #f2efe6; display: flex; flex-direction: column; gap: 16px; padding: 36px 48px; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 36px; line-height: 0.95;">Tracking</div><div style="font-size: 14px; color: #6b6860;">EasyPost creates a Tracker with every label and pushes <span class="mono">tracker.updated</span>; we poll only what goes quiet. Every event lands once, in a canonical vocabulary, then drives one state machine.</div></div>
+    <div class="lbl">System design · 5 of 7</div>
+  </div>
+
+  <div class="lbl" style="border-top: 2px solid #111111; padding-top: 14px;">Ingest pipeline</div>
+  <div style="display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr; gap: 0; align-items: stretch;">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div class="node" style="background: #111111; color: #f2efe6; border-color: #111111;"><div class="node-t">EasyPost webhook</div><div class="node-s" style="color: #b9b5aa;"><span class="mono">tracker.updated</span> · full tracker object with <span class="mono">tracking_details[]</span></div></div>
+      <div class="node"><div class="node-t">Poller (worker)</div><div class="node-s"><span class="mono">GET /v2/trackers/{id}</span> for active labels silent &gt; 24 h · stops on delivered / returned</div></div>
+    </div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="node"><div class="node-t">Verify &amp; enqueue</div><div class="node-s">Check HMAC signature · insert <span class="mono">inbound_events(event.id)</span>, drop on conflict · 200 immediately · payload to queue</div></div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="node"><div class="node-t">Normalize</div><div class="node-s">Map EasyPost status (pre_transit, in_transit, out_for_delivery, delivered, return_to_sender, failure, available_for_pickup, error, unknown) → canonical · times to UTC</div></div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="node"><div class="node-t">Upsert events</div><div class="node-s">Each <span class="mono">tracking_detail</span> → insert on conflict (label_id, dedupe_key) do nothing · idempotent under retries and webhook + poll overlap</div></div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="node" style="border-width: 2px; border-color: #2d5bff;"><div class="node-t">Advance shipment</div><div class="node-s">Apply state machine using the latest occurred_at, not arrival order · no-op if unchanged</div></div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div class="node"><div class="node-t">Customer email</div><div class="node-s">shipped · out for delivery · delivered · exception</div></div>
+      <div class="node"><div class="node-t">Store + API webhooks</div><div class="node-s">tracking.updated · fulfillment status to Shopify / Etsy</div></div>
+      <div class="node"><div class="node-t">Tracking page cache</div><div class="node-s">Purge edge cache for /t/{token}</div></div>
+    </div>
+  </div>
+
+  <div class="lbl" style="border-top: 2px solid #111111; padding-top: 14px;">Shipment state machine · canonical statuses</div>
+  <div style="display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr 28px 1fr 28px 1fr; align-items: center;">
+    <div class="st">label_created</div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="st">accepted</div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="st">in_transit</div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="st" style="border-color: #2d5bff; color: #2d5bff;">out_for_delivery</div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="st" style="background: #111111; color: #f2efe6;">delivered</div>
+  </div>
+  <div style="display: grid; grid-template-columns: 1fr 28px 1fr 28px 1fr 28px 1fr 28px 1fr; align-items: center;">
+    <div class="st" style="border-style: dashed; color: #6b6860;">voided <span style="font-weight: 400;">(from label_created only, before acceptance)</span></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="st" style="border-color: #b3261e; color: #b3261e;">exception</div>
+    <div class="ar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11M9 4l4 4-4 4"></path></svg></div>
+    <div class="st">returned_to_sender</div>
+    <div></div>
+    <div class="st" style="border-style: dashed; color: #6b6860;">delivered_unconfirmed <span style="font-weight: 400;">(no scan 15 d after est.)</span></div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: auto; border-top: 2px solid #111111; padding-top: 14px; font-size: 13px; line-height: 1.5; color: #3d3b36;">
+    <div><span style="font-weight: 600;">Exception is a flag, not a dead end.</span> Any state can enter exception (address issue, damaged, held at office) and return to in_transit on the next movement scan. Exceptions notify the seller, not the customer, until they resolve.</div>
+    <div><span style="font-weight: 600;">Out-of-order events.</span> Carriers deliver history late. State is derived from the max occurred_at among known events, so a late "accepted" never regresses a delivered shipment.</div>
+    <div><span style="font-weight: 600;">Cost control.</span> Trackers are billed per label by EasyPost, so we never create extra ones; webhooks carry nearly every update and polling is capped per account per hour.</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

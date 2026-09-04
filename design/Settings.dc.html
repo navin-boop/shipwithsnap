@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .nav { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 0 2px; color: #6b6860; }
+    .nav-on { color: #111111; border-bottom: 2px solid #111111; }
+    .side { font-size: 13px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; padding: 12px 0; border-bottom: 1px solid #c9c4b6; color: #6b6860; cursor: pointer; display: flex; justify-content: space-between; }
+    .side-on { color: #111111; }
+    .opt { border: 1.5px solid #111111; padding: 16px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; }
+    .opt-on { background: #111111; color: #f2efe6; }
+    .input { height: 44px; border: 0; border-bottom: 2px solid #111111; background: transparent; font-family: inherit; font-size: 15px; font-weight: 500; color: #111111; padding: 0; outline: none; width: 100%; box-sizing: border-box; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 40px; border-bottom: 2px solid #111111; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 36px;">
+      <div class="disp" style="font-size: 22px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+      <div style="display: flex; gap: 22px;">
+        <div class="nav">Ship</div><div class="nav">Shipments</div><div class="nav">Batch</div><div class="nav">Reports</div><div class="nav">Billing</div><div class="nav nav-on">Settings</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;"><span style="color: #6b6860;">Card </span>Visa ·· 4242</div>
+      <div style="width: 28px; height: 28px; background: #111111;"></div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 300px minmax(0, 1fr); flex-grow: 1; min-height: 0;">
+    <div style="display: flex; flex-direction: column; padding: 28px 40px; border-right: 2px solid #111111; box-sizing: border-box;">
+      <div class="disp" style="font-size: 40px; line-height: 0.95; padding-bottom: 24px;">Settings</div>
+      <sc-for list="{{sections}}" as="s" hint-placeholder-count="6">
+        <div class="side {{s.on}}" onClick="{{s.pick}}"><span>{{s.label}}</span><span>{{s.mark}}</span></div>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 28px; padding: 28px 48px; overflow: hidden;">
+
+      <sc-if value="{{isPrint}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 28px; max-width: 760px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 28px;">Printing</div><div style="font-size: 14px; color: #6b6860;">Set once. Every label opens in this format.</div></div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="lbl">Label format</div>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+            <div class="opt {{f46}}" onClick="{{pick46}}"><div class="disp" style="font-size: 18px;">4 × 6 in</div><div style="font-size: 13px; opacity: 0.75;">Thermal label printers. One label per page.</div></div>
+            <div class="opt {{fLetter}}" onClick="{{pickLetter}}"><div class="disp" style="font-size: 18px;">8.5 × 11 in</div><div style="font-size: 13px; opacity: 0.75;">Plain paper. Two labels per sheet, or one with a packing slip.</div></div>
+            <div class="opt {{fZpl}}" onClick="{{pickZpl}}"><div class="disp" style="font-size: 18px;">ZPL</div><div style="font-size: 13px; opacity: 0.75;">Raw Zebra output for print servers and the API.</div></div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="lbl">After buying a label</div>
+          <div style="display: flex; gap: 8px;">
+            <div style="height: 40px; padding: 0 16px; background: #111111; color: #f2efe6; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Open print dialog</div>
+            <div style="height: 40px; padding: 0 16px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Download PDF</div>
+            <div style="height: 40px; padding: 0 16px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Do nothing</div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="lbl">Include with label</div>
+          <div style="display: flex; flex-direction: column;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-top: 1px solid #111111; font-size: 14px;"><div>Packing slip with order items</div><div style="width: 16px; height: 16px; border: 1.5px solid #111111; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #111111;"></div></div></div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-top: 1px solid #111111; border-bottom: 1px solid #111111; font-size: 14px;"><div>Store logo on the label</div><div style="width: 16px; height: 16px; border: 1.5px solid #111111;"></div></div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{isApi}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 24px; max-width: 800px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 28px;">API keys</div><div style="font-size: 14px; color: #6b6860;">Buy labels and read tracking from your own systems. Keys are shown once, at creation.</div></div>
+        <div style="display: flex; flex-direction: column;">
+          <div style="display: grid; grid-template-columns: 1.2fr 1.4fr 0.8fr 0.6fr; padding: 8px 0; border-top: 2px solid #111111; border-bottom: 1px solid #111111;"><div class="lbl">Name</div><div class="lbl">Key</div><div class="lbl">Last used</div><div class="lbl"></div></div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1.4fr 0.8fr 0.6fr; align-items: center; padding: 12px 0; border-bottom: 1px solid #c9c4b6; font-size: 14px;"><div style="font-weight: 600;">Warehouse app</div><div class="mono">sk_live_7f3a…c91e</div><div style="color: #6b6860;">4 minutes ago</div><div class="lbl" style="text-align: right; color: #b3261e;">Revoke</div></div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1.4fr 0.8fr 0.6fr; align-items: center; padding: 12px 0; border-bottom: 1px solid #c9c4b6; font-size: 14px;"><div style="font-weight: 600;">Sandbox</div><div class="mono">sk_test_02bd…44aa</div><div style="color: #6b6860;">Aug 21</div><div class="lbl" style="text-align: right; color: #b3261e;">Revoke</div></div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <div style="height: 44px; padding: 0 18px; background: #111111; color: #f2efe6; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Create key</div>
+          <div style="height: 44px; padding: 0 18px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">API docs</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="lbl">Webhook endpoint</div>
+          <input class="input mono" value="https://api.yourstore.com/hooks/snap" onInput="{{noop}}">
+          <div style="font-size: 12px; color: #6b6860;">Receives label.created, label.voided, tracking.updated, payment.failed. Signed with your webhook secret.</div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{isOther}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 10px; max-width: 760px;">
+        <div class="disp" style="font-size: 28px;">{{current}}</div>
+        <div style="font-size: 14px; color: #6b6860;">{{blurb}}</div>
+        <div style="margin-top: 14px; border: 1.5px dashed #6b6860; padding: 24px; font-size: 13px; color: #6b6860;">Same form vocabulary as Printing — underlined inputs, uppercase labels, one primary action at the bottom. Detailed in a later pass if you want each tab drawn out.</div>
+      </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { section: 'print', fmt: '46' }; }
+  renderVals() {
+    const defs = [['print', 'Printing', ''], ['from', 'Ship-from addresses', '2'], ['stores', 'Stores', '2'], ['team', 'Team', '3'], ['notify', 'Customer emails', ''], ['api', 'API & webhooks', '']];
+    const blurbs = { from: 'Warehouses and pickup points you ship from. The default is used for rates until you change it.', stores: 'Connected Shopify and Etsy stores. Orders sync every few minutes; tracking posts back on purchase.', team: 'Invite packers and bookkeepers. Roles: owner, shipper (buy labels), viewer (reports only).', notify: 'What your customers receive: shipped, out for delivery, delivered. Your logo, your reply-to.' };
+    const s = this.state.section;
+    return {
+      noop: () => {},
+      sections: defs.map(([k, label, mark]) => ({ label, mark, on: s === k ? 'side-on' : '', pick: () => this.setState({ section: k }) })),
+      isPrint: s === 'print', isApi: s === 'api', isOther: s !== 'print' && s !== 'api',
+      current: (defs.find(d => d[0] === s) || [])[1], blurb: blurbs[s] || '',
+      f46: this.state.fmt === '46' ? 'opt-on' : '', fLetter: this.state.fmt === 'letter' ? 'opt-on' : '', fZpl: this.state.fmt === 'zpl' ? 'opt-on' : '',
+      pick46: () => this.setState({ fmt: '46' }), pickLetter: () => this.setState({ fmt: 'letter' }), pickZpl: () => this.setState({ fmt: 'zpl' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

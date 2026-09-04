@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .sec { display: flex; flex-direction: column; gap: 14px; padding: 24px 0; border-top: 2px solid #111111; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: #3d3b36; }
+    .sw { display: flex; flex-direction: column; gap: 6px; }
+    .btn { height: 48px; padding: 0 22px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+    .input { height: 44px; border: 0; border-bottom: 2px solid #111111; background: transparent; font-family: inherit; font-size: 15px; font-weight: 500; color: #111111; padding: 0; outline: none; width: 100%; box-sizing: border-box; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 1180px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box; padding: 40px 48px; overflow: hidden;">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding-bottom: 24px;">
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 44px; line-height: 0.95;">Snap design system</div><div style="font-size: 14px; color: #6b6860;">Tokens and components every screen is built from. Paper &amp; ink, two accents, square corners, 2px rules.</div></div>
+    <div class="disp" style="font-size: 28px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">Color</div>
+    <div style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 12px;">
+      <div class="sw"><div style="height: 64px; background: #f2efe6; border: 1.5px solid #111111; box-sizing: border-box;"></div><div style="font-size: 12px; font-weight: 600;">Paper</div><div class="mono">#f2efe6 · bg</div></div>
+      <div class="sw"><div style="height: 64px; background: #ffffff; border: 1.5px solid #111111; box-sizing: border-box;"></div><div style="font-size: 12px; font-weight: 600;">Surface</div><div class="mono">#ffffff · cards, print</div></div>
+      <div class="sw"><div style="height: 64px; background: #111111;"></div><div style="font-size: 12px; font-weight: 600;">Ink</div><div class="mono">#111111 · text, rules, selected</div></div>
+      <div class="sw"><div style="height: 64px; background: #3d3b36;"></div><div style="font-size: 12px; font-weight: 600;">Ink 2</div><div class="mono">#3d3b36 · body on paper</div></div>
+      <div class="sw"><div style="height: 64px; background: #6b6860;"></div><div style="font-size: 12px; font-weight: 600;">Muted</div><div class="mono">#6b6860 · labels, hints</div></div>
+      <div class="sw"><div style="height: 64px; background: #c9c4b6;"></div><div style="font-size: 12px; font-weight: 600;">Hairline</div><div class="mono">#c9c4b6 · row dividers, empty</div></div>
+      <div class="sw"><div style="height: 64px; background: #2d5bff;"></div><div style="font-size: 12px; font-weight: 600;">Electric</div><div class="mono">#2d5bff · primary action, live</div></div>
+      <div class="sw"><div style="height: 64px; background: #c8ff3d;"></div><div style="font-size: 12px; font-weight: 600;">Lime</div><div class="mono">#c8ff3d · price on ink only</div></div>
+    </div>
+    <div style="display: flex; gap: 24px; font-size: 13px; color: #3d3b36;">
+      <div><span style="font-weight: 600;">Rule:</span> Lime never sits on paper — only on ink, and only for the number you pay.</div>
+      <div><span style="font-weight: 600;">Status:</span> <span style="color: #2d5bff; font-weight: 600;">In transit</span> · <span style="color: #111111; font-weight: 600;">Delivered</span> · <span style="color: #b3261e; font-weight: 600;">Exception #b3261e</span> — always with a label, never color alone.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">Type</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="disp" style="font-size: 96px; line-height: 0.9;">Syne 800</div>
+        <div class="mono">Display · 96 / 72 / 56 / 44 / 40 / 28 / 22 / 16 · line-height 0.9–0.95 · tracking −2%</div>
+        <div style="font-size: 13px; color: #3d3b36;">Headlines, prices, wordmark. Never below 16px.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="font-size: 20px; line-height: 1.45; color: #3d3b36;">Archivo 400 for reading. Archivo 500 for inputs and names, <span style="font-weight: 600;">600 for emphasis and every button</span>.</div>
+        <div class="mono">Body · 20 / 16 / 15 / 14 / 13 / 12 · line-height 1.45–1.55</div>
+        <div class="lbl">Label · Archivo 600 · 11px · tracking 1.2px · uppercase · muted</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">Buttons · 40 / 48 / 56 tall · square · uppercase 600</div>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <div class="btn" style="height: 56px; background: #2d5bff; color: #ffffff;"><span>Primary — buy label</span><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"></path></svg></div>
+      <div class="btn" style="background: #111111; color: #f2efe6;">Secondary</div>
+      <div class="btn" style="border: 1.5px solid #111111;">Outline</div>
+      <div class="btn" style="border: 1.5px solid #111111; height: 40px; padding: 0 16px; font-size: 11px;">Small outline</div>
+      <div class="btn" style="background: #c8ff3d; color: #111111;">On ink — print</div>
+      <div class="btn" style="border-bottom: 2px solid #111111; padding: 0 0 2px; height: auto;">Text link</div>
+      <div class="btn" style="border: 1.5px solid #c9c4b6; color: #c9c4b6;">Disabled</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px;">
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="lbl">Inputs · underline only</div>
+        <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl">Default</div><input class="input" value="418 Bergen St" onInput="{{noop}}"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl" style="color: #2d5bff;">Focused</div><input class="input" style="border-bottom-color: #2d5bff;" value="1.8" onInput="{{noop}}"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl" style="color: #b3261e;">Error</div><input class="input" style="border-bottom-color: #b3261e;" value="1121" onInput="{{noop}}"><div style="font-size: 12px; color: #b3261e;">ZIP needs 5 digits.</div></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="lbl">Chips · toggles · 36–44 tall</div>
+        <div style="display: flex; gap: 8px;">
+          <div style="height: 36px; padding: 0 14px; background: #111111; color: #f2efe6; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Selected</div>
+          <div style="height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center;">Option</div>
+          <div style="height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;"><span>Filter</span><span style="opacity: 0.6;">12</span></div>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <div style="width: 52px; height: 28px; border: 2px solid #111111; background: #111111; display: flex; align-items: center; justify-content: flex-end; padding: 2px; box-sizing: border-box;"><div style="width: 20px; height: 20px; background: #c8ff3d;"></div></div>
+          <div style="width: 52px; height: 28px; border: 2px solid #111111; display: flex; align-items: center; padding: 2px; box-sizing: border-box;"><div style="width: 20px; height: 20px; background: #111111;"></div></div>
+          <div style="width: 16px; height: 16px; border: 1.5px solid #111111; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #111111;"></div></div>
+          <div style="width: 16px; height: 16px; border: 1.5px solid #111111;"></div>
+          <div class="mono">switch · checkbox</div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div class="lbl">Rate row · the core component</div>
+        <div style="display: flex; flex-direction: column; border-top: 2px solid #111111;">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #111111; color: #f2efe6;">
+            <div style="display: flex; flex-direction: column; gap: 2px;"><div class="disp" style="font-size: 18px;">USPS Ground Advantage</div><div style="font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: #b9b5aa;">Mon · 3 days · cheapest</div></div>
+            <div style="display: flex; align-items: baseline; gap: 10px;"><div style="font-size: 12px; color: #b9b5aa; text-decoration: line-through;">$9.79</div><div class="disp" style="font-size: 28px; color: #c8ff3d;">$6.43</div></div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #111111;">
+            <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">UPS Ground Saver</div><div style="font-size: 11px; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Tue · 4 days</div></div>
+            <div style="display: flex; align-items: baseline; gap: 10px;"><div style="font-size: 12px; color: #6b6860; text-decoration: line-through;">$11.32</div><div class="disp" style="font-size: 20px;">$7.16</div></div>
+          </div>
+        </div>
+        <div class="mono">Selected = inverted to ink, price in lime, name grows 16→22px. Unselected rows stay quiet.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">Spacing &amp; rules</div>
+    <div style="display: flex; gap: 40px; font-size: 13px; color: #3d3b36;">
+      <div><span style="font-weight: 600;">Page gutter</span> 40px app · 64px marketing</div>
+      <div><span style="font-weight: 600;">Section rule</span> 2px ink</div>
+      <div><span style="font-weight: 600;">Row rule</span> 1px ink (data) · 1px hairline (lists)</div>
+      <div><span style="font-weight: 600;">Radius</span> 0 everywhere · 4px only on chart bar tops</div>
+      <div><span style="font-weight: 600;">Shadow</span> none — depth comes from ink panels</div>
+      <div><span style="font-weight: 600;">Icons</span> 2px stroke, 14–18px, current color</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() { return { noop: () => {} }; }
+}
+</script>
+</body>
+</html>

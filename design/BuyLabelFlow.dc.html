@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; }
+    .lane { border: 1.5px solid #111111; background: #ffffff; padding: 8px 6px; font-size: 12px; font-weight: 600; text-align: center; }
+    .steps { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); grid-auto-rows: 44px; align-items: center; background-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / 14 - 1px), #c9c4b6 calc(100% / 14 - 1px), #c9c4b6 calc(100% / 14), transparent calc(100% / 14), transparent calc(100% / 7)); }
+    .arr { display: flex; flex-direction: column; gap: 3px; padding: 0 6px; }
+    .arr-t { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .line { display: flex; align-items: center; }
+    .ln { flex-grow: 1; border-top: 2px solid #111111; }
+    .ln-r { flex-grow: 1; border-top: 2px dashed #111111; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #f2efe6; display: flex; flex-direction: column; gap: 14px; padding: 36px 48px; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 36px; line-height: 0.95;">Buying a label</div><div style="font-size: 14px; color: #6b6860;">The one transaction that must never charge without a label or buy without a charge. Authorize the card first, buy second, capture last — every step compensable.</div></div>
+    <div class="lbl">System design · 4 of 7</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; border-top: 2px solid #111111; padding-top: 14px;">
+    <div style="padding: 0 6px;"><div class="lane">Browser</div></div>
+    <div style="padding: 0 6px;"><div class="lane">API · Label service</div></div>
+    <div style="padding: 0 6px;"><div class="lane" style="background: #111111; color: #f2efe6;">Stripe</div></div>
+    <div style="padding: 0 6px;"><div class="lane">Rate engine</div></div>
+    <div style="padding: 0 6px;"><div class="lane">EasyPost provider</div></div>
+    <div style="padding: 0 6px;"><div class="lane" style="background: #111111; color: #f2efe6;">EasyPost API</div></div>
+    <div style="padding: 0 6px;"><div class="lane">Object store</div></div>
+  </div>
+
+  <div class="steps">
+    <div class="arr" style="grid-column: 2 / 4;"><div class="arr-t"><b>1</b> POST /labels · Idempotency-Key</div><div class="line"><div class="ln"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+    <div class="arr" style="grid-column: 4 / 6;"><div class="arr-t"><b>2</b> key seen? → return stored 201</div><div class="line"><div class="ln"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+    <div class="arr" style="grid-column: 4 / 6;"><div class="arr-t"><b>3</b> PaymentIntent(price, manual capture, off_session, saved card)</div><div class="line"><div class="ln"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+    <div class="arr" style="grid-column: 4 / 6;"><div class="arr-t" style="text-align: right; color: #6b6860;">requires_capture ← (declined → 402 card_declined)</div><div class="line"><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M10 0L0 5l10 5z"></path></svg><div class="ln-r"></div></div></div>
+    <div class="arr" style="grid-column: 4 / 8;"><div class="arr-t"><b>4</b> quote valid? (not expired, parcel unchanged, easypost_shipment_id set)</div><div class="line"><div class="ln"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+    <div class="arr" style="grid-column: 4 / 10;"><div class="arr-t"><b>5</b> buy(providerShipmentId, providerRateId, insurance, format)</div><div class="line"><div class="ln"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+    <div class="arr" style="grid-column: 10 / 12;"><div class="arr-t"><b>6</b> POST /v2/shipments/{id}/buy · 10 s timeout</div><div class="line"><div class="ln"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+    <div class="arr" style="grid-column: 10 / 12;"><div class="arr-t" style="text-align: right; color: #6b6860;">postage_label · tracking_code · tracker ←</div><div class="line"><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M10 0L0 5l10 5z"></path></svg><div class="ln-r"></div></div></div>
+    <div class="arr" style="grid-column: 10 / 14;"><div class="arr-t"><b>7</b> fetch label_url once → put labels/{id}.pdf · .zpl</div><div class="line"><div class="ln"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+    <div class="arr" style="grid-column: 4 / 10;"><div class="arr-t" style="text-align: right; color: #6b6860;">LabelResult ←</div><div class="line"><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M10 0L0 5l10 5z"></path></svg><div class="ln-r"></div></div></div>
+    <div class="arr" style="grid-column: 4 / 6;"><div class="arr-t"><b>8</b> DB tx: insert label + charge(authorized) · shipment → label_created · then capture(pi)</div><div class="line"><div class="ln"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+    <div class="arr" style="grid-column: 4 / 6;"><div class="arr-t" style="text-align: right; color: #6b6860;">succeeded ← charge → captured · receipt_url stored</div><div class="line"><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M10 0L0 5l10 5z"></path></svg><div class="ln-r"></div></div></div>
+    <div class="arr" style="grid-column: 2 / 4;"><div class="arr-t" style="text-align: right; color: #6b6860;"><b>9</b> 201 label · store under Idempotency-Key 24 h ←</div><div class="line"><svg width="10" height="10" viewBox="0 0 10 10" fill="#111111"><path d="M10 0L0 5l10 5z"></path></svg><div class="ln-r"></div></div></div>
+    <div class="arr" style="grid-column: 4 / 6;"><div class="arr-t" style="color: #2d5bff;"><b>10</b> enqueue: label.created webhook · order write-back · receipt email</div><div class="line"><div class="ln" style="border-color: #2d5bff;"></div><svg width="10" height="10" viewBox="0 0 10 10" fill="#2d5bff"><path d="M0 0l10 5-10 5z"></path></svg></div></div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: auto; border-top: 2px solid #111111; padding-top: 14px;">
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="lbl" style="color: #b3261e;">If EasyPost errors (step 6)</div><div style="font-size: 13px; line-height: 1.5; color: #3d3b36;">Cancel the PaymentIntent (authorization drops off the card), map the error, nothing charged. A timeout is unknown: <span class="mono">GET /v2/shipments/{id}</span> — if <span class="mono">postage_label</span> exists, continue from step 7; else cancel.</div></div>
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="lbl" style="color: #b3261e;">If the DB tx or capture fails (step 8)</div><div style="font-size: 13px; line-height: 1.5; color: #3d3b36;">Label exists at EasyPost → enqueue <span class="mono">refund_orphan</span> (EasyPost refund, retried) and cancel the PaymentIntent; respond 500. Capture failing after a committed label is rare (auth expired) — a worker retries capture, then falls back to a fresh charge with an email.</div></div>
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="lbl">Batch = this ×N, one charge</div><div style="font-size: 13px; line-height: 1.5; color: #3d3b36;">Authorize the batch total once, then rows buy in parallel (concurrency 8). Capture only the sum of rows that succeeded (partial capture); the batch reports <span class="mono">partial</span> with per-row errors, and the merged PDF comes from EasyPost <span class="mono">Batch.label</span>.</div></div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

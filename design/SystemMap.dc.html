@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; color: #1f2937; }
+    a { color: #1f2937; } a:hover { color: #0e7c86; }
+    .b { border: 1.5px solid #1f2937; border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; background: #ffffff; }
+    .t { font-size: 14px; font-weight: 600; }
+    .s { font-size: 12px; color: #6b7280; }
+    .h { font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: #6b7280; }
+  </style>
+</helmet>
+<div style="width: 1200px; height: 860px; background: #fbfbf9; display: flex; flex-direction: column; gap: 20px; padding: 32px 36px; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; align-items: baseline; justify-content: space-between;">
+    <div style="display: flex; flex-direction: column; gap: 4px;">
+      <div style="font-family: 'Caveat', 'Comic Sans MS', cursive; font-size: 34px; font-weight: 600; line-height: 1;">Ship with Snap — system map (original scope sketch)</div>
+      <div style="font-size: 14px; color: #6b7280;">The plan the full canvas was built from. Kept for reference.</div>
+    </div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; flex-grow: 1;">
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <div style="font-family: 'Caveat', 'Comic Sans MS', cursive; font-size: 26px; font-weight: 600;">Frontend</div>
+      <div class="h">Public</div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+        <div class="b"><div class="t">Landing page</div><div class="s">offer, proof, pricing, CTA</div></div>
+        <div class="b"><div class="t">Sign up / Log in</div><div class="s">email + Google, free plan</div></div>
+        <div class="b"><div class="t">Rate calculator</div><div class="s">public, no account</div></div>
+      </div>
+      <div class="h">App (signed in)</div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+        <div class="b" style="border: 2px solid #0e7c86;"><div class="t">Ship (single)</div><div class="s">address → package → rates → label</div></div>
+        <div class="b"><div class="t">Import &amp; batch</div><div class="s">CSV, Shopify, Etsy → buy many</div></div>
+        <div class="b"><div class="t">Shipments</div><div class="s">list, status, reprint, refund</div></div>
+        <div class="b"><div class="t">Tracking page</div><div class="s">public, branded, per shipment</div></div>
+        <div class="b"><div class="t">Address book</div><div class="s">recipients, ship-from, presets</div></div>
+        <div class="b"><div class="t">Reports</div><div class="s">spend, savings, by carrier</div></div>
+        <div class="b"><div class="t">Wallet &amp; billing</div><div class="s">prepaid balance, auto top-up</div></div>
+        <div class="b"><div class="t">Settings</div><div class="s">printer, label size, team, API keys</div></div>
+        <div class="b" style="border-style: dashed; border-color: #9ca3af;"><div class="t" style="color: #6b7280;">Mobile ship flow</div><div class="s">phone-width version of Ship</div></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <div style="font-family: 'Caveat', 'Comic Sans MS', cursive; font-size: 26px; font-weight: 600;">Backend</div>
+      <div class="h">Services</div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;">
+        <div class="b"><div class="t">API gateway</div><div class="s">REST + webhooks, auth, rate limits</div></div>
+        <div class="b" style="border: 2px solid #0e7c86;"><div class="t">Rate engine</div><div class="s">fan-out to carriers, cache, markup</div></div>
+        <div class="b"><div class="t">Carrier adapters</div><div class="s">USPS, UPS · one interface</div></div>
+        <div class="b"><div class="t">Label service</div><div class="s">purchase, PDF/ZPL, void</div></div>
+        <div class="b"><div class="t">Address service</div><div class="s">validate, normalize, residential?</div></div>
+        <div class="b"><div class="t">Tracking ingest</div><div class="s">carrier webhooks + polling</div></div>
+        <div class="b"><div class="t">Wallet / ledger</div><div class="s">Stripe top-ups, double-entry</div></div>
+        <div class="b"><div class="t">Import connectors</div><div class="s">Shopify, Etsy, CSV</div></div>
+        <div class="b"><div class="t">Notifications</div><div class="s">email tracking updates</div></div>
+      </div>
+      <div class="h">Infrastructure</div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+        <div class="b" style="border-radius: 999px; text-align: center; font-size: 13px; font-weight: 500;">Postgres</div>
+        <div class="b" style="border-radius: 999px; text-align: center; font-size: 13px; font-weight: 500;">Redis cache</div>
+        <div class="b" style="border-radius: 999px; text-align: center; font-size: 13px; font-weight: 500;">Job queue</div>
+        <div class="b" style="border-radius: 999px; text-align: center; font-size: 13px; font-weight: 500;">Object store</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

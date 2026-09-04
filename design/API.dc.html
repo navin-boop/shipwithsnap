@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.55; }
+    .ep { display: grid; grid-template-columns: 64px 300px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 7px 0; border-bottom: 1px solid #c9c4b6; }
+    .m { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; font-weight: 600; }
+    .grp { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #111111; padding: 14px 0 4px; }
+    .code { background: #111111; color: #f2efe6; padding: 16px 18px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11.5px; line-height: 1.55; white-space: pre; overflow: hidden; }
+    .c { color: #b9b5aa; } .g { color: #c8ff3d; } .b { color: #8fa8ff; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 1120px; background: #f2efe6; display: flex; flex-direction: column; gap: 16px; padding: 36px 48px; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 36px; line-height: 0.95;">API surface</div><div style="font-size: 14px; color: #6b6860;">One REST API for the app and for customers. <span class="mono">https://api.shipwithsnap.com/v1</span> · JSON · Bearer API key or session · every POST accepts <span class="mono">Idempotency-Key</span>.</div></div>
+    <div class="lbl">System design · 3 of 7</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; border-top: 2px solid #111111; padding-top: 6px; flex-grow: 1; min-height: 0;">
+    <div style="display: flex; flex-direction: column; overflow: hidden;">
+      <div class="grp">Addresses</div>
+      <div class="ep"><div class="m">POST</div><div class="mono">/addresses/parse</div><div style="font-size: 12px; color: #3d3b36;">Free text → structured, validated, residential flag</div></div>
+      <div class="ep"><div class="m">GET</div><div class="mono">/addresses?q=</div><div style="font-size: 12px; color: #3d3b36;">Address book search</div></div>
+      <div class="grp">Rates &amp; shipments</div>
+      <div class="ep"><div class="m" style="color: #2d5bff;">POST</div><div class="mono">/shipments</div><div style="font-size: 12px; color: #3d3b36;">Create draft: to, from, parcel, extras → returns shipment + rates</div></div>
+      <div class="ep"><div class="m">POST</div><div class="mono">/shipments/{id}/rates</div><div style="font-size: 12px; color: #3d3b36;">Re-rate after edits · quotes expire in 10 min</div></div>
+      <div class="ep"><div class="m">GET</div><div class="mono">/shipments?status=&amp;since=</div><div style="font-size: 12px; color: #3d3b36;">List, cursor-paginated</div></div>
+      <div class="ep"><div class="m">GET</div><div class="mono">/shipments/{id}</div><div style="font-size: 12px; color: #3d3b36;">Shipment, label, latest tracking</div></div>
+      <div class="grp">Labels</div>
+      <div class="ep"><div class="m" style="color: #2d5bff;">POST</div><div class="mono">/labels</div><div style="font-size: 12px; color: #3d3b36;">Buy: { shipment_id, rate_quote_id, format } → 201 label</div></div>
+      <div class="ep"><div class="m">POST</div><div class="mono">/labels/{id}/void</div><div style="font-size: 12px; color: #3d3b36;">Void within carrier window → refund to card once approved</div></div>
+      <div class="ep"><div class="m">GET</div><div class="mono">/labels/{id}/file?format=</div><div style="font-size: 12px; color: #3d3b36;">302 to signed URL · pdf | zpl | png</div></div>
+      <div class="grp">Batches</div>
+      <div class="ep"><div class="m">POST</div><div class="mono">/batches</div><div style="font-size: 12px; color: #3d3b36;">{ shipment_ids | order_ids } → rates all, job id</div></div>
+      <div class="ep"><div class="m">POST</div><div class="mono">/batches/{id}/buy</div><div style="font-size: 12px; color: #3d3b36;">Buys every ready row · partial success reported per row</div></div>
+      <div class="ep"><div class="m">GET</div><div class="mono">/batches/{id}</div><div style="font-size: 12px; color: #3d3b36;">Progress, per-row status, merged PDF when done</div></div>
+      <div class="grp">Tracking</div>
+      <div class="ep"><div class="m">GET</div><div class="mono">/tracking/{tracking_number}</div><div style="font-size: 12px; color: #3d3b36;">Canonical status + events (public with token)</div></div>
+      <div class="grp">Billing</div>
+      <div class="ep"><div class="m">POST</div><div class="mono">/billing/setup_intent</div><div style="font-size: 12px; color: #3d3b36;">Client secret for Stripe Elements → card saved off-session</div></div>
+      <div class="ep"><div class="m">GET · PATCH</div><div class="mono">/billing/payment_methods</div><div style="font-size: 12px; color: #3d3b36;">List, set default, remove</div></div>
+      <div class="ep"><div class="m">GET</div><div class="mono">/billing/charges?month=</div><div style="font-size: 12px; color: #3d3b36;">Charges and refunds with receipt URLs · statement rows</div></div>
+      <div class="grp">Stores, orders, account</div>
+      <div class="ep"><div class="m">GET</div><div class="mono">/orders?store_id=&amp;open=true</div><div style="font-size: 12px; color: #3d3b36;">Synced orders awaiting labels</div></div>
+      <div class="ep"><div class="m">POST</div><div class="mono">/stores/{platform}/connect</div><div style="font-size: 12px; color: #3d3b36;">OAuth start · callback registers store</div></div>
+      <div class="ep"><div class="m">GET · PATCH</div><div class="mono">/account · /account/api_keys · /account/webhooks</div><div style="font-size: 12px; color: #3d3b36;">Settings surface</div></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; overflow: hidden;">
+      <div class="lbl" style="padding-top: 14px;">Example · buy a label</div>
+      <div class="code"><span class="c">POST /v1/labels
+Idempotency-Key: 6f1c…9a</span>
+{
+  <span class="b">"shipment_id"</span>: <span class="g">"shp_01J7…"</span>,
+  <span class="b">"rate_quote_id"</span>: <span class="g">"rq_01J7…ga"</span>,
+  <span class="b">"format"</span>: <span class="g">"pdf_4x6"</span>
+}
+
+<span class="c">201 Created</span>
+{
+  <span class="b">"id"</span>: <span class="g">"lbl_01J7…"</span>,
+  <span class="b">"carrier"</span>: <span class="g">"usps"</span>,
+  <span class="b">"service"</span>: <span class="g">"ground_advantage"</span>,
+  <span class="b">"tracking_number"</span>: <span class="g">"9400100000000000000001"</span>,
+  <span class="b">"price_cents"</span>: 642,
+  <span class="b">"retail_cents"</span>: 975,
+  <span class="b">"file_url"</span>: <span class="g">"https://files.shipwithsnap.com/…?sig=…"</span>,
+  <span class="b">"file_expires_at"</span>: <span class="g">"2026-09-03T15:00:00Z"</span>,
+  <span class="b">"charge"</span>: { <span class="b">"id"</span>: <span class="g">"chg_01J7…"</span>, <span class="b">"card"</span>: <span class="g">"visa ·· 4242"</span>, <span class="b">"receipt_url"</span>: <span class="g">"https://…"</span> },
+  <span class="b">"void_deadline"</span>: <span class="g">"2026-10-01T00:00:00Z"</span>
+}
+
+<span class="c">Errors (RFC 9457 problem+json)</span>
+402 <span class="g">card_declined</span>         <span class="c">decline_code, update_card_url</span>
+402 <span class="g">billing_locked</span>        <span class="c">unpaid adjustment or dispute</span>
+409 <span class="g">rate_expired</span>          <span class="c">re-rate the shipment</span>
+409 <span class="g">already_labeled</span>       <span class="c">label id returned</span>
+422 <span class="g">address_invalid</span>       <span class="c">field-level details</span>
+502 <span class="g">provider_unavailable</span>  <span class="c">EasyPost down · retry-after · nothing charged</span></div>
+
+      <div class="lbl" style="padding-top: 6px;">Webhooks · signed with HMAC-SHA256, retried 8× over 24 h</div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 24px; font-size: 12px; color: #3d3b36;">
+        <div><span class="mono" style="font-weight: 600;">label.created</span> · label.voided</div>
+        <div><span class="mono" style="font-weight: 600;">tracking.updated</span> · tracking.delivered · tracking.exception</div>
+        <div><span class="mono" style="font-weight: 600;">batch.completed</span> · batch.partial</div>
+        <div><span class="mono" style="font-weight: 600;">payment.succeeded</span> · payment.failed · refund.completed</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .input { height: 48px; border: 0; border-bottom: 2px solid #111111; background: transparent; font-family: inherit; font-size: 16px; font-weight: 500; color: #111111; padding: 0; outline: none; width: 100%; box-sizing: border-box; }
+    .tab { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 6px 0; cursor: pointer; color: #6b6860; border-bottom: 2px solid transparent; }
+    .tab-on { color: #111111; border-bottom-color: #111111; }
+  </style>
+</helmet>
+<div style="width: 1000px; height: 720px; background: #f2efe6; display: grid; grid-template-columns: 1fr 1fr; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; flex-direction: column; justify-content: space-between; padding: 40px; background: #111111; color: #f2efe6;">
+    <div class="disp" style="font-size: 24px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="disp" style="font-size: 52px; line-height: 0.92;">Your first label is about <span style="color: #c8ff3d;">90 seconds</span> away.</div>
+      <div style="font-size: 15px; line-height: 1.55; color: #b9b5aa; max-width: 380px;">No plan, nothing to prepay. Add a card only when you buy your first label.</div>
+    </div>
+    <div class="lbl" style="color: #6b6860;">USPS · UPS · Shopify · Etsy</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; justify-content: center; padding: 40px 64px; gap: 28px;">
+    <div style="display: flex; gap: 24px;">
+      <div class="tab {{signupOn}}" onClick="{{showSignup}}">Create account</div>
+      <div class="tab {{loginOn}}" onClick="{{showLogin}}">Log in</div>
+    </div>
+
+    <div style="height: 52px; border: 2px solid #111111; display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 13px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+      <span>Continue with Google</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;"><div style="flex-grow: 1; border-top: 1px solid #111111;"></div><div class="lbl">or</div><div style="flex-grow: 1; border-top: 1px solid #111111;"></div></div>
+
+    <sc-if value="{{signup}}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl">Work email</div><input class="input" value="" placeholder="you@yourstore.com" onInput="{{noop}}"></div>
+      <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl">Password</div><input class="input" type="password" value="" placeholder="12 characters or more" onInput="{{noop}}"></div>
+      <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl">Ship-from ZIP</div><input class="input" value="" placeholder="11201" onInput="{{noop}}"></div>
+      <div style="height: 56px; background: #2d5bff; color: #ffffff; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; justify-content: center;">Create free account</div>
+      <div style="font-size: 12px; color: #6b6860; line-height: 1.5;">By continuing you agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{login}}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;"><div class="lbl">Email</div><input class="input" value="" placeholder="you@yourstore.com" onInput="{{noop}}"></div>
+      <div style="display: flex; flex-direction: column; gap: 4px;"><div style="display: flex; justify-content: space-between;"><div class="lbl">Password</div><div class="lbl" style="color: #2d5bff;">Forgot?</div></div><input class="input" type="password" value="" placeholder="" onInput="{{noop}}"></div>
+      <div style="height: 56px; background: #111111; color: #f2efe6; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; justify-content: center;">Log in</div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1000,"height":720}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { mode: 'signup' }; }
+  renderVals() {
+    const s = this.state.mode === 'signup';
+    return {
+      noop: () => {},
+      signup: s, login: !s,
+      signupOn: s ? 'tab-on' : '', loginOn: s ? '' : 'tab-on',
+      showSignup: () => this.setState({ mode: 'signup' }),
+      showLogin: () => this.setState({ mode: 'login' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

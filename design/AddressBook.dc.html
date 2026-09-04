@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .nav { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 0 2px; color: #6b6860; }
+    .nav-on { color: #111111; border-bottom: 2px solid #111111; }
+    .grid { display: grid; grid-template-columns: 1.3fr 2fr 1fr 0.8fr 0.8fr; align-items: center; padding: 14px 40px; border-bottom: 1px solid #c9c4b6; font-size: 14px; }
+    .btn { height: 40px; padding: 0 16px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 760px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 40px; border-bottom: 2px solid #111111; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 36px;">
+      <div class="disp" style="font-size: 22px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+      <div style="display: flex; gap: 22px;">
+        <div class="nav">Ship</div><div class="nav">Shipments</div><div class="nav">Batch</div><div class="nav">Reports</div><div class="nav">Billing</div><div class="nav">Settings</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;"><span style="color: #6b6860;">Card </span>Visa ·· 4242</div>
+      <div style="width: 28px; height: 28px; background: #111111;"></div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding: 28px 40px 18px;">
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <div class="disp" style="font-size: 40px; line-height: 0.95;">Address book</div>
+      <div style="font-size: 14px; color: #6b6860;">Everyone you've shipped to, verified once. Start typing a name on the Ship page to reuse one.</div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <div class="btn" style="width: 240px; color: #6b6860; font-weight: 500; text-transform: none; letter-spacing: 0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span>Search</span></div>
+      <div class="btn">Import CSV</div>
+      <div class="btn" style="background: #111111; color: #f2efe6;">Add address</div>
+    </div>
+  </div>
+
+  <div class="grid" style="border-top: 2px solid #111111; border-bottom: 1px solid #111111; padding-top: 10px; padding-bottom: 10px;">
+    <div class="lbl">Name</div><div class="lbl">Address</div><div class="lbl">Type</div><div class="lbl" style="text-align: right;">Shipments</div><div class="lbl" style="text-align: right;">Last shipped</div>
+  </div>
+
+  <div class="grid"><div style="font-weight: 600;">Maya Chen</div><div>418 Bergen St, Brooklyn, NY 11217</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Residential</div><div style="text-align: right;">6</div><div style="text-align: right; color: #6b6860;">Today</div></div>
+  <div class="grid"><div style="font-weight: 600;">Devon Okafor</div><div>2200 S Lamar Blvd Ste 3, Austin, TX 78704</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Commercial</div><div style="text-align: right;">14</div><div style="text-align: right; color: #6b6860;">Yesterday</div></div>
+  <div class="grid"><div style="font-weight: 600;">Priya Raman</div><div>4412 Fremont Ave N, Seattle, WA 98103</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Residential</div><div style="text-align: right;">2</div><div style="text-align: right; color: #6b6860;">Yesterday</div></div>
+  <div class="grid"><div style="font-weight: 600;">Tom Lindqvist</div><div>1730 N Clark St Apt 4B, Chicago, IL 60614</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Residential</div><div style="text-align: right;">1</div><div style="text-align: right; color: #6b6860;">Aug 31</div></div>
+  <div class="grid"><div style="font-weight: 600;">Ana Sousa</div><div>900 Biscayne Blvd Unit 1204, Miami, FL 33130</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Residential</div><div style="text-align: right;">3</div><div style="text-align: right; color: #6b6860;">Aug 30</div></div>
+  <div class="grid"><div style="font-weight: 600;">Jordan Blake</div><div>3150 Larimer St, Denver, CO 80205</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Commercial</div><div style="text-align: right;">9</div><div style="text-align: right; color: #6b6860;">Aug 29</div></div>
+  <div class="grid"><div style="font-weight: 600;">Hana Sato</div><div>2210 SE Hawthorne Blvd, Portland, OR 97214</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Residential</div><div style="text-align: right;">4</div><div style="text-align: right; color: #6b6860;">Aug 29</div></div>
+  <div class="grid"><div style="font-weight: 600;">Luis Herrera</div><div>1 N Central Ave Fl 12, Phoenix, AZ 85004</div><div style="font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860;">Commercial</div><div style="text-align: right;">7</div><div style="text-align: right; color: #6b6860;">Aug 28</div></div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; margin-top: auto; border-top: 2px solid #111111; font-size: 13px; color: #6b6860;">
+    <div>8 of 212 addresses</div>
+    <div class="lbl">1 · 2 · 3 … 27</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

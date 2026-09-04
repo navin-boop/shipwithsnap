@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .cta { height: 56px; padding: 0 30px; background: #2d5bff; color: #ffffff; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 14px; }
+    .ph { background: #ffffff; border: 1.5px dashed #6b6860; color: #6b6860; padding: 2px 6px; font-size: 0.9em; }
+  </style>
+</helmet>
+<div style="width: 1440px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 64px; border-bottom: 2px solid #111111; box-sizing: border-box;">
+    <div class="disp" style="font-size: 24px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+    <div style="display: flex; gap: 28px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;">
+      <div>Rates</div><div>How it works</div><div>Integrations</div><div>Pricing</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 24px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;">
+      <div>Log in</div>
+      <div style="height: 40px; padding: 0 18px; background: #111111; color: #f2efe6; display: flex; align-items: center;">Start free</div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1.15fr 1fr; border-bottom: 2px solid #111111;">
+    <div style="display: flex; flex-direction: column; gap: 32px; padding: 96px 64px 80px; border-right: 2px solid #111111;">
+      <div class="disp" style="font-size: 96px; line-height: 0.9;">The cheapest USPS &amp; UPS rates.<br><span style="color: #2d5bff;">No monthly fee.</span></div>
+      <div style="font-size: 20px; line-height: 1.45; max-width: 560px; color: #3d3b36;">Snap gives every seller the deep commercial discounts big shippers negotiate — <span class="ph">[up to X% off retail]</span> — and charges nothing on top. Paste an address, pick a rate, print. That's the whole product.</div>
+      <div style="display: flex; align-items: center; gap: 24px;">
+        <div class="cta"><span>Start shipping free</span><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"></path></svg></div>
+        <div style="font-size: 13px; color: #6b6860;">No card to start. You only ever pay postage.</div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; background: #111111; color: #f2efe6; padding: 48px;">
+      <div class="lbl" style="color: #b9b5aa;">Brooklyn → Austin · 12×9×4 in · 1.8 lb</div>
+      <div style="display: flex; flex-direction: column; margin-top: 24px; border-top: 1px solid #3d3b36;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid #3d3b36;">
+          <div style="display: flex; flex-direction: column; gap: 2px;"><div class="disp" style="font-size: 20px;">USPS Ground Advantage</div><div style="font-size: 12px; letter-spacing: 0.8px; text-transform: uppercase; color: #b9b5aa;">3 days · cheapest</div></div>
+          <div style="display: flex; align-items: baseline; gap: 12px;"><div style="font-size: 14px; color: #b9b5aa; text-decoration: line-through;">$9.79</div><div class="disp" style="font-size: 40px; color: #c8ff3d;">$6.43</div></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid #3d3b36;">
+          <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 16px; font-weight: 600;">UPS Ground Saver</div><div style="font-size: 12px; letter-spacing: 0.8px; text-transform: uppercase; color: #b9b5aa;">4 days</div></div>
+          <div style="display: flex; align-items: baseline; gap: 12px;"><div style="font-size: 14px; color: #b9b5aa; text-decoration: line-through;">$11.32</div><div class="disp" style="font-size: 24px;">$7.16</div></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid #3d3b36;">
+          <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 16px; font-weight: 600;">USPS Priority Mail</div><div style="font-size: 12px; letter-spacing: 0.8px; text-transform: uppercase; color: #b9b5aa;">2 days · fastest</div></div>
+          <div style="display: flex; align-items: baseline; gap: 12px;"><div style="font-size: 14px; color: #b9b5aa; text-decoration: line-through;">$12.34</div><div class="disp" style="font-size: 24px;">$8.92</div></div>
+        </div>
+      </div>
+      <div style="margin-top: auto; padding-top: 32px; font-size: 13px; color: #b9b5aa; line-height: 1.5;">Live rates from the calculator on the Rates page. Try your own package — no account needed.</div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 2px solid #111111;">
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 36px 64px; border-right: 2px solid #111111;"><div class="disp" style="font-size: 44px;"><span class="ph">[X]</span></div><div class="lbl">labels shipped by sellers on Snap</div></div>
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 36px 64px; border-right: 2px solid #111111;"><div class="disp" style="font-size: 44px;"><span class="ph">[$X]</span></div><div class="lbl">saved vs. retail counter rates</div></div>
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 36px 64px;"><div class="disp" style="font-size: 44px;">$0<span style="color: #2d5bff;">/mo</span></div><div class="lbl">forever · no plans, no seats, no markup</div></div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 40px; padding: 88px 64px; border-bottom: 2px solid #111111;">
+    <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+      <div class="disp" style="font-size: 56px; line-height: 0.95; max-width: 640px;">Three steps.<br>Under a minute.</div>
+      <div class="lbl">How it works</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px;">
+      <div style="display: flex; flex-direction: column; gap: 14px; border-top: 2px solid #111111; padding-top: 18px;">
+        <div class="disp" style="font-size: 20px; color: #2d5bff;">01</div>
+        <div class="disp" style="font-size: 24px;">Paste an address</div>
+        <div style="font-size: 15px; line-height: 1.55; color: #3d3b36;">Drop in the whole thing from an email or order — Snap splits, verifies and corrects it, and tells you if it's residential before a carrier charges you for it.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px; border-top: 2px solid #111111; padding-top: 18px;">
+        <div class="disp" style="font-size: 20px; color: #2d5bff;">02</div>
+        <div class="disp" style="font-size: 24px;">Pick a rate</div>
+        <div style="font-size: 15px; line-height: 1.55; color: #3d3b36;">Every USPS and UPS service on one list, cheapest first, with the retail price crossed out next to yours. Sort by speed when it matters more than money.</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px; border-top: 2px solid #111111; padding-top: 18px;">
+        <div class="disp" style="font-size: 20px; color: #2d5bff;">03</div>
+        <div class="disp" style="font-size: 24px;">Print and drop off</div>
+        <div style="font-size: 15px; line-height: 1.55; color: #3d3b36;">4×6 thermal or plain paper — your choice, saved once. Tracking emails go to your customer automatically. Void any label within 28 days for a full refund to your card.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; border-bottom: 2px solid #111111;">
+    <div style="display: flex; flex-direction: column; gap: 28px; padding: 88px 64px; border-right: 2px solid #111111;">
+      <div class="lbl">The questions everyone asks</div>
+      <div style="display: flex; flex-direction: column;">
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 22px 0; border-top: 1.5px solid #111111;"><div class="disp" style="font-size: 22px;">Is it really free?</div><div style="font-size: 15px; line-height: 1.55; color: #3d3b36;">Yes. Carriers pay us a small share of postage for bringing them volume. You pay exactly the discounted rate you see — never a fee, never a plan.</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 22px 0; border-top: 1.5px solid #111111;"><div class="disp" style="font-size: 22px;">Do I need a label printer?</div><div style="font-size: 15px; line-height: 1.55; color: #3d3b36;">No. Print on plain paper and tape it on. If you ship every day, a thermal printer pays for itself — we support any 4×6 printer out of the box.</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 22px 0; border-top: 1.5px solid #111111;"><div class="disp" style="font-size: 22px;">What about my Shopify and Etsy orders?</div><div style="font-size: 15px; line-height: 1.55; color: #3d3b36;">Connect a store once and open orders appear in Batch. Select them all, buy every label in one click, and tracking numbers post back to the store automatically.</div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 22px 0; border-top: 1.5px solid #111111; border-bottom: 1.5px solid #111111;"><div class="disp" style="font-size: 22px;">Is the postage the same as at the counter?</div><div style="font-size: 15px; line-height: 1.55; color: #3d3b36;">Same carriers, same services, same delivery. The only thing that changes is the price.</div></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; justify-content: space-between; padding: 88px 64px; background: #ffffff;">
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="lbl">From a seller</div>
+        <div class="disp" style="font-size: 34px; line-height: 1.15;"><span class="ph">[Testimonial quote from a real Snap seller — 2 to 3 sentences on what changed for them]</span></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 48px; height: 48px; background: #111111;"></div>
+        <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;"><span class="ph">[Name]</span></div><div style="font-size: 13px; color: #6b6860;"><span class="ph">[Store, city]</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 40px; padding: 88px 64px; border-bottom: 2px solid #111111;">
+    <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+      <div class="disp" style="font-size: 56px; line-height: 0.95;">One price. Postage.</div>
+      <div class="lbl">Pricing</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 2px solid #111111;">
+      <div style="display: flex; flex-direction: column; gap: 12px; padding: 32px; border-right: 2px solid #111111;"><div class="lbl">Software</div><div class="disp" style="font-size: 48px;">$0</div><div style="font-size: 14px; line-height: 1.5; color: #3d3b36;">Unlimited labels, users, stores and API calls. Reports, batch, address book — all of it.</div></div>
+      <div style="display: flex; flex-direction: column; gap: 12px; padding: 32px; border-right: 2px solid #111111;"><div class="lbl">Postage</div><div class="disp" style="font-size: 48px;"><span class="ph">[Up to X% off]</span></div><div style="font-size: 14px; line-height: 1.5; color: #3d3b36;">USPS Commercial Pricing and UPS Digital Access Program rates on every label. See the exact price before you buy.</div></div>
+      <div style="display: flex; flex-direction: column; gap: 12px; padding: 32px; background: #111111; color: #f2efe6;"><div class="lbl" style="color: #b9b5aa;">Payment</div><div class="disp" style="font-size: 48px; color: #c8ff3d;">Pay as you go</div><div style="font-size: 14px; line-height: 1.5; color: #b9b5aa;">Save a card once. Each label — or each batch — is one charge, with a receipt. Nothing to prepay, nothing to top up. Voided labels refund to your card in full.</div></div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 96px 64px; background: #2d5bff; color: #ffffff;">
+    <div class="disp" style="font-size: 72px; line-height: 0.92;">Your next label<br>costs less.</div>
+    <div style="height: 64px; padding: 0 36px; background: #111111; color: #f2efe6; font-size: 14px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 14px;"><span>Start shipping free</span><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"></path></svg></div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 32px 64px; font-size: 12px; color: #6b6860; letter-spacing: 0.4px;">
+    <div class="disp" style="font-size: 18px; color: #111111; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+    <div style="display: flex; gap: 24px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.8px;"><div>Rates</div><div>Integrations</div><div>API docs</div><div>Help</div><div>Terms</div><div>Privacy</div></div>
+    <div>© 2026 Ship with Snap · <span class="ph">[company legal name, address]</span></div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

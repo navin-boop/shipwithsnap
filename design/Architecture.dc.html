@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; }
+    .box { border: 1.5px solid #111111; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; background: #ffffff; }
+    .box-t { font-size: 14px; font-weight: 600; }
+    .box-s { font-size: 12px; color: #6b6860; line-height: 1.4; }
+    .layer { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 24px; align-items: start; }
+    .link { display: flex; align-items: center; gap: 12px; padding: 6px 0 6px 174px; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #6b6860; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #f2efe6; display: flex; flex-direction: column; gap: 14px; padding: 36px 48px; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+    <div style="display: flex; flex-direction: column; gap: 6px;"><div class="disp" style="font-size: 36px; line-height: 0.95;">Architecture</div><div style="font-size: 14px; color: #6b6860;">A modular monolith behind one API, with workers for everything slow. Split services only when a boundary hurts.</div></div>
+    <div class="lbl">System design · 1 of 7</div>
+  </div>
+
+  <div class="layer" style="border-top: 2px solid #111111; padding-top: 14px;">
+    <div style="display: flex; flex-direction: column; gap: 2px;"><div class="lbl" style="color: #111111;">Clients</div><div style="font-size: 12px; color: #6b6860;">All talk to the same API</div></div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+      <div class="box"><div class="box-t">Web app</div><div class="box-s">React · Ship, Batch, Shipments, Reports, Billing, Settings</div></div>
+      <div class="box"><div class="box-t">Mobile web</div><div class="box-s">Same app, phone layout · print via AirPrint / share sheet</div></div>
+      <div class="box"><div class="box-t">Public tracking page</div><div class="box-s">Server-rendered, cached at the edge, no login</div></div>
+      <div class="box"><div class="box-t">Customer API &amp; webhooks</div><div class="box-s">Same endpoints the app uses, keyed by <span class="mono">sk_live_…</span></div></div>
+    </div>
+  </div>
+  <div class="link"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v11M4 9l4 4 4-4"></path></svg><span>HTTPS · JSON · session cookie or API key · idempotency-key header on every write</span></div>
+
+  <div class="layer">
+    <div style="display: flex; flex-direction: column; gap: 2px;"><div class="lbl" style="color: #111111;">Edge</div><div style="font-size: 12px; color: #6b6860;">Stateless</div></div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+      <div class="box" style="grid-column: 1 / 3;"><div class="box-t">API gateway</div><div class="box-s">Auth (session, API key), rate limiting per account, request logging, OpenAPI-validated bodies</div></div>
+      <div class="box"><div class="box-t">CDN</div><div class="box-s">Static app bundle, tracking pages (60 s TTL), label PDFs via signed URLs</div></div>
+      <div class="box"><div class="box-t">Webhook receiver</div><div class="box-s">EasyPost + Stripe + store callbacks, signature-verified, enqueued immediately</div></div>
+    </div>
+  </div>
+  <div class="link"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v11M4 9l4 4 4-4"></path></svg><span>In-process calls inside the monolith · jobs via the queue</span></div>
+
+  <div class="layer">
+    <div style="display: flex; flex-direction: column; gap: 2px;"><div class="lbl" style="color: #111111;">Core services</div><div style="font-size: 12px; color: #6b6860;">One deployable, clear module boundaries</div></div>
+    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px;">
+      <div class="box" style="border-width: 2px; border-color: #2d5bff;"><div class="box-t">Rate engine</div><div class="box-s">One EasyPost shipment returns every USPS/UPS rate; applies account pricing tier, caches 10 min by (from, to, parcel)</div></div>
+      <div class="box"><div class="box-t">Label service</div><div class="box-s">Buy, void, reprint · owns the buy transaction and compensations</div></div>
+      <div class="box"><div class="box-t">Address service</div><div class="box-s">Parse free text, verify via EasyPost (USPS-backed), residential flag, cache by hash</div></div>
+      <div class="box"><div class="box-t">Billing</div><div class="box-s">Stripe customer + saved card, authorize/capture per purchase, refunds, adjustments, receipts</div></div>
+      <div class="box"><div class="box-t">Tracking</div><div class="box-s">Ingest EasyPost tracker events, shipment state machine, notify</div></div>
+      <div class="box"><div class="box-t">Shipping provider</div><div class="box-s">EasyPost behind a thin interface · rates, buy, refund, trackers, address verify · test + production keys</div></div>
+      <div class="box"><div class="box-t">Import connectors</div><div class="box-s">Shopify, Etsy OAuth · order sync · tracking write-back · CSV mapper</div></div>
+      <div class="box"><div class="box-t">Batch</div><div class="box-s">Rate + buy N shipments as a job, partial-failure safe, merged PDF</div></div>
+      <div class="box"><div class="box-t">Notifications</div><div class="box-s">Customer emails, store webhooks, receipts, failed-payment alerts</div></div>
+      <div class="box"><div class="box-t">Accounts &amp; auth</div><div class="box-s">Orgs, users, roles, API keys, sessions, Google OAuth</div></div>
+    </div>
+  </div>
+  <div class="link"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v11M4 9l4 4 4-4"></path></svg><span>SQL · Redis · S3-compatible · queue</span></div>
+
+  <div class="layer">
+    <div style="display: flex; flex-direction: column; gap: 2px;"><div class="lbl" style="color: #111111;">Data &amp; infra</div></div>
+    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px;">
+      <div class="box"><div class="box-t">Postgres</div><div class="box-s">System of record · shipments, labels, charges, events</div></div>
+      <div class="box"><div class="box-t">Redis</div><div class="box-s">Rate cache, address cache, rate limits, idempotency keys</div></div>
+      <div class="box"><div class="box-t">Job queue + workers</div><div class="box-s">Batch buys, tracking polls, emails, store sync, PDF merge</div></div>
+      <div class="box"><div class="box-t">Object store</div><div class="box-s">Label PDF / ZPL / PNG, statements, CSV imports</div></div>
+      <div class="box"><div class="box-t">Observability</div><div class="box-s">Structured logs, traces per request id, EasyPost latency + error dashboards</div></div>
+    </div>
+  </div>
+
+  <div class="layer" style="border-top: 2px solid #111111; padding-top: 14px; margin-top: auto;">
+    <div style="display: flex; flex-direction: column; gap: 2px;"><div class="lbl" style="color: #111111;">External</div><div style="font-size: 12px; color: #6b6860;">Only via the provider seam</div></div>
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 12px;">
+      <div class="box" style="background: #111111; color: #f2efe6; border-color: #111111;"><div class="box-t">EasyPost</div><div class="box-s" style="color: #b9b5aa;">Rates, labels, refunds, trackers + webhooks, address verification, insurance · USPS and UPS carrier accounts behind it (EasyPost-provided or customer-owned)</div></div>
+      <div class="box" style="background: #111111; color: #f2efe6; border-color: #111111;"><div class="box-t">Stripe</div><div class="box-s" style="color: #b9b5aa;">Saved cards (SetupIntent), off-session PaymentIntents, refunds, webhooks</div></div>
+      <div class="box" style="background: #111111; color: #f2efe6; border-color: #111111;"><div class="box-t">Shopify · Etsy</div><div class="box-s" style="color: #b9b5aa;">Orders in, fulfillments out</div></div>
+      <div class="box" style="background: #111111; color: #f2efe6; border-color: #111111;"><div class="box-t">Email [provider TBD]</div><div class="box-s" style="color: #b9b5aa;">Transactional only</div></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

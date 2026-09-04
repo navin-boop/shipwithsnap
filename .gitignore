@@ -1,0 +1,11 @@
+node_modules/
+.next/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+
+# Generated design-canvas bundle (rebuilt from design/, published as an Artifact)
+ship-with-snap.html

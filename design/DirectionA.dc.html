@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; color: #0f172a; }
+    a { color: #0e7c86; } a:hover { color: #0a5f67; }
+  </style>
+</helmet>
+<div style="width: 1000px; height: 720px; background: #f3f5f7; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 20px; background: #ffffff; border-bottom: 1px solid #d9dee5; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#0e7c86" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 4 11h6l-1 7 7-9h-6z"></path></svg>
+        <div style="font-size: 15px; font-weight: 600; letter-spacing: -0.2px;">snap</div>
+      </div>
+      <div style="display: flex; gap: 18px; font-size: 13px; color: #64748b;">
+        <div style="color: #0f172a; font-weight: 500;">Ship</div>
+        <div>Shipments</div>
+        <div>Rates</div>
+        <div>Reports</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; font-size: 12px; color: #64748b;">
+      <div style="font-family: 'IBM Plex Mono', Menlo, monospace;">Balance $142.10</div>
+      <div style="width: 24px; height: 24px; border-radius: 4px; background: #d9dee5;"></div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 16px 20px; box-sizing: border-box; flex-grow: 1;">
+
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="font-size: 18px; font-weight: 600; letter-spacing: -0.3px;">New shipment</div>
+
+      <div style="background: #ffffff; border: 1px solid #d9dee5; border-radius: 4px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 11px; font-weight: 600; color: #64748b; letter-spacing: 0.4px; text-transform: uppercase;">Ship to</div>
+        <div style="height: 32px; border: 1px solid #d9dee5; border-radius: 4px; padding: 0 10px; display: flex; align-items: center; font-size: 13px;">Maya Chen</div>
+        <div style="height: 32px; border: 1px solid #d9dee5; border-radius: 4px; padding: 0 10px; display: flex; align-items: center; font-size: 13px;">418 Bergen St, Brooklyn NY 11217</div>
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #0e7c86;">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3 3 7-7"></path></svg>
+          <div>Address verified · Residential</div>
+        </div>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid #d9dee5; border-radius: 4px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-size: 11px; font-weight: 600; color: #64748b; letter-spacing: 0.4px; text-transform: uppercase;">Package</div>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;">
+          <div style="height: 32px; border: 1px solid #d9dee5; border-radius: 4px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-family: 'IBM Plex Mono', Menlo, monospace;"><span>12</span><span style="color: #94a3b8;">in</span></div>
+          <div style="height: 32px; border: 1px solid #d9dee5; border-radius: 4px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-family: 'IBM Plex Mono', Menlo, monospace;"><span>9</span><span style="color: #94a3b8;">in</span></div>
+          <div style="height: 32px; border: 1px solid #d9dee5; border-radius: 4px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-family: 'IBM Plex Mono', Menlo, monospace;"><span>4</span><span style="color: #94a3b8;">in</span></div>
+          <div style="height: 32px; border: 1px solid #d9dee5; border-radius: 4px; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-family: 'IBM Plex Mono', Menlo, monospace;"><span>1.8</span><span style="color: #94a3b8;">lb</span></div>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <div style="height: 24px; padding: 0 10px; border-radius: 4px; background: #0f172a; color: #ffffff; font-size: 12px; display: flex; align-items: center;">Box</div>
+          <div style="height: 24px; padding: 0 10px; border-radius: 4px; border: 1px solid #d9dee5; font-size: 12px; display: flex; align-items: center; color: #64748b;">Poly mailer</div>
+          <div style="height: 24px; padding: 0 10px; border-radius: 4px; border: 1px solid #d9dee5; font-size: 12px; display: flex; align-items: center; color: #64748b;">Flat rate</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between;">
+        <div style="font-size: 18px; font-weight: 600; letter-spacing: -0.3px;">Rates</div>
+        <div style="font-size: 12px; color: #64748b;">Sorted by price</div>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid #d9dee5; border-radius: 4px; display: flex; flex-direction: column;">
+        <div style="display: grid; grid-template-columns: 1.6fr 0.8fr 0.7fr 0.7fr; padding: 8px 12px; font-size: 11px; font-weight: 600; color: #64748b; letter-spacing: 0.4px; text-transform: uppercase; border-bottom: 1px solid #d9dee5;">
+          <div>Service</div><div>Delivery</div><div style="text-align: right;">Retail</div><div style="text-align: right;">You pay</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.6fr 0.8fr 0.7fr 0.7fr; padding: 10px 12px; font-size: 13px; align-items: center; border-bottom: 1px solid #eef1f4; background: #e6f4f5; border-left: 3px solid #0e7c86;">
+          <div style="display: flex; flex-direction: column;"><div style="font-weight: 500;">USPS Ground Advantage</div><div style="font-size: 11px; color: #64748b;">Cheapest</div></div>
+          <div style="color: #64748b;">Thu, 3 days</div>
+          <div style="text-align: right; color: #94a3b8; font-family: 'IBM Plex Mono', Menlo, monospace; text-decoration: line-through;">$9.75</div>
+          <div style="text-align: right; font-weight: 600; font-family: 'IBM Plex Mono', Menlo, monospace;">$6.42</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.6fr 0.8fr 0.7fr 0.7fr; padding: 10px 12px; font-size: 13px; align-items: center; border-bottom: 1px solid #eef1f4;">
+          <div style="font-weight: 500;">UPS Ground Saver</div>
+          <div style="color: #64748b;">Fri, 4 days</div>
+          <div style="text-align: right; color: #94a3b8; font-family: 'IBM Plex Mono', Menlo, monospace; text-decoration: line-through;">$11.20</div>
+          <div style="text-align: right; font-family: 'IBM Plex Mono', Menlo, monospace;">$7.15</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.6fr 0.8fr 0.7fr 0.7fr; padding: 10px 12px; font-size: 13px; align-items: center; border-bottom: 1px solid #eef1f4;">
+          <div style="display: flex; flex-direction: column;"><div style="font-weight: 500;">USPS Priority Mail</div><div style="font-size: 11px; color: #64748b;">Fastest</div></div>
+          <div style="color: #64748b;">Wed, 2 days</div>
+          <div style="text-align: right; color: #94a3b8; font-family: 'IBM Plex Mono', Menlo, monospace; text-decoration: line-through;">$12.40</div>
+          <div style="text-align: right; font-family: 'IBM Plex Mono', Menlo, monospace;">$8.91</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.6fr 0.8fr 0.7fr 0.7fr; padding: 10px 12px; font-size: 13px; align-items: center;">
+          <div style="font-weight: 500;">UPS Ground</div>
+          <div style="color: #64748b;">Thu, 3 days</div>
+          <div style="text-align: right; color: #94a3b8; font-family: 'IBM Plex Mono', Menlo, monospace; text-decoration: line-through;">$14.05</div>
+          <div style="text-align: right; font-family: 'IBM Plex Mono', Menlo, monospace;">$9.80</div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #d9dee5; border-radius: 4px; padding: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <div style="font-size: 12px; color: #64748b;">USPS Ground Advantage · saves $3.33</div>
+          <div style="font-size: 22px; font-weight: 600; font-family: 'IBM Plex Mono', Menlo, monospace; letter-spacing: -0.5px;">$6.42</div>
+        </div>
+        <div style="height: 36px; padding: 0 18px; background: #0e7c86; color: #ffffff; border-radius: 4px; font-size: 13px; font-weight: 600; display: flex; align-items: center;">Buy label</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 16px; padding: 12px 20px; border-top: 1px solid #d9dee5; background: #ffffff;">
+    <div style="font-size: 11px; font-weight: 600; color: #64748b; letter-spacing: 0.4px; text-transform: uppercase;">Direction A · Crisp utility</div>
+    <div style="display: flex; gap: 6px;">
+      <div style="width: 22px; height: 22px; border-radius: 4px; background: #0f172a;"></div>
+      <div style="width: 22px; height: 22px; border-radius: 4px; background: #0e7c86;"></div>
+      <div style="width: 22px; height: 22px; border-radius: 4px; background: #64748b;"></div>
+      <div style="width: 22px; height: 22px; border-radius: 4px; background: #d9dee5;"></div>
+      <div style="width: 22px; height: 22px; border-radius: 4px; background: #f3f5f7; border: 1px solid #d9dee5; box-sizing: border-box;"></div>
+    </div>
+    <div style="font-size: 12px; color: #64748b;">IBM Plex Sans + Plex Mono for numbers · 4px radii · 32px controls · cool slate, one teal accent</div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

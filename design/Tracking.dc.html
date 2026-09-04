@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .ph { background: #ffffff; border: 1.5px dashed #6b6860; color: #6b6860; padding: 2px 6px; font-size: 0.9em; }
+  </style>
+</helmet>
+<div style="width: 900px; height: 1000px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 48px; border-bottom: 2px solid #111111; box-sizing: border-box;">
+    <div class="disp" style="font-size: 20px;"><span class="ph">[Store name]</span></div>
+    <div class="lbl">Order #1039</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px; padding: 48px 48px 36px; background: #111111; color: #f2efe6;">
+    <div class="lbl" style="color: #c8ff3d;">Out for delivery</div>
+    <div class="disp" style="font-size: 56px; line-height: 0.92;">Arriving today<br>by 8 pm.</div>
+    <div style="display: flex; gap: 32px; margin-top: 16px; font-size: 13px; color: #b9b5aa;">
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div class="lbl" style="color: #6b6860;">Carrier</div><div style="color: #f2efe6;">USPS Ground Advantage</div></div>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div class="lbl" style="color: #6b6860;">Tracking</div><div style="color: #f2efe6; letter-spacing: 0.4px;">9400 1000 0000 0000 0006</div></div>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div class="lbl" style="color: #6b6860;">Going to</div><div style="color: #f2efe6;">Brooklyn, NY 11217</div></div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 24px 48px 0;">
+    <div style="height: 6px; background: #111111;"></div>
+    <div style="height: 6px; background: #111111;"></div>
+    <div style="height: 6px; background: #2d5bff;"></div>
+    <div style="height: 6px; background: #c9c4b6;"></div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 8px 48px 0;">
+    <div class="lbl" style="color: #111111;">Label created</div>
+    <div class="lbl" style="color: #111111;">In transit</div>
+    <div class="lbl" style="color: #2d5bff;">Out for delivery</div>
+    <div class="lbl">Delivered</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; padding: 32px 48px 0;">
+    <div class="lbl" style="padding-bottom: 12px;">History</div>
+    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0 24px; padding: 14px 0; border-top: 2px solid #111111; align-items: baseline;">
+      <div style="font-size: 13px; color: #3d3b36;">Thu Sep 3 · 7:12 am</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">Out for delivery</div><div style="font-size: 13px; color: #6b6860;">Brooklyn, NY 11217</div></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0 24px; padding: 14px 0; border-top: 1px solid #111111; align-items: baseline;">
+      <div style="font-size: 13px; color: #3d3b36;">Thu Sep 3 · 4:40 am</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">Arrived at post office</div><div style="font-size: 13px; color: #6b6860;">Brooklyn, NY 11217</div></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0 24px; padding: 14px 0; border-top: 1px solid #111111; align-items: baseline;">
+      <div style="font-size: 13px; color: #3d3b36;">Wed Sep 2 · 9:15 pm</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">Departed regional facility</div><div style="font-size: 13px; color: #6b6860;">Brooklyn, NY distribution center</div></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0 24px; padding: 14px 0; border-top: 1px solid #111111; align-items: baseline;">
+      <div style="font-size: 13px; color: #3d3b36;">Wed Sep 2 · 3:02 pm</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">Accepted by carrier</div><div style="font-size: 13px; color: #6b6860;">Brooklyn, NY 11201</div></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 0 24px; padding: 14px 0; border-top: 1px solid #111111; border-bottom: 1px solid #111111; align-items: baseline;">
+      <div style="font-size: 13px; color: #3d3b36;">Wed Sep 2 · 10:48 am</div>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">Label created</div><div style="font-size: 13px; color: #6b6860;">Shipping label printed by <span class="ph">[Store name]</span></div></div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 14px; padding: 32px 48px;">
+    <div class="lbl">In this shipment</div>
+    <div style="display: flex; gap: 14px; align-items: center;">
+      <div style="width: 56px; height: 56px; background: #c9c4b6;"></div>
+      <div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;"><span class="ph">[Line item from order]</span></div><div style="font-size: 13px; color: #6b6860;">Qty 1</div></div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; margin-top: auto; border-top: 2px solid #111111; font-size: 12px; color: #6b6860;">
+    <div>Questions about your order? <a href="#">Contact <span class="ph">[Store name]</span></a></div>
+    <div style="display: flex; align-items: center; gap: 8px;"><span style="letter-spacing: 0.8px; text-transform: uppercase; font-weight: 600;">Shipped with</span><span class="disp" style="font-size: 16px; color: #111111; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></span></div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

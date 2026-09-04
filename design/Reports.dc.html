@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Archivo:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "Archivo", "Helvetica Neue", Arial, sans-serif; color: #111111; background: #f2efe6; }
+    a { color: #111111; } a:hover { color: #2d5bff; }
+    .disp { font-family: "Syne", "Arial Black", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: #6b6860; }
+    .nav { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; padding: 4px 0 2px; color: #6b6860; }
+    .nav-on { color: #111111; border-bottom: 2px solid #111111; }
+    .range { height: 36px; padding: 0 14px; border: 1.5px solid #111111; font-size: 11px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; display: flex; align-items: center; cursor: pointer; }
+    .range-on { background: #111111; color: #f2efe6; }
+    .bar { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; height: 100%; cursor: pointer; }
+    .trow { display: grid; grid-template-columns: 1.6fr 0.6fr 0.8fr 0.8fr 0.8fr; align-items: center; padding: 10px 0; border-bottom: 1px solid #c9c4b6; font-size: 14px; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #f2efe6; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 40px; border-bottom: 2px solid #111111; box-sizing: border-box;">
+    <div style="display: flex; align-items: center; gap: 36px;">
+      <div class="disp" style="font-size: 22px; text-transform: uppercase;">Snap<span style="color: #2d5bff;">.</span></div>
+      <div style="display: flex; gap: 22px;">
+        <div class="nav">Ship</div><div class="nav">Shipments</div><div class="nav">Batch</div><div class="nav nav-on">Reports</div><div class="nav">Billing</div><div class="nav">Settings</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;"><span style="color: #6b6860;">Card </span>Visa ·· 4242</div>
+      <div style="width: 28px; height: 28px; background: #111111;"></div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: flex-end; justify-content: space-between; padding: 28px 40px 18px;">
+    <div class="disp" style="font-size: 40px; line-height: 0.95;">Reports</div>
+    <div style="display: flex; gap: 8px;">
+      <sc-for list="{{ranges}}" as="r" hint-placeholder-count="3"><div class="range {{r.on}}" onClick="{{r.pick}}">{{r.label}}</div></sc-for>
+      <div class="range">Export CSV</div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid #111111; border-bottom: 2px solid #111111;">
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 22px 40px; border-right: 1px solid #111111;"><div class="lbl">Postage spent</div><div class="disp" style="font-size: 40px;">{{spend}}</div></div>
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 22px 40px; border-right: 1px solid #111111;"><div class="lbl">Labels bought</div><div class="disp" style="font-size: 40px;">{{labels}}</div></div>
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 22px 40px; border-right: 1px solid #111111;"><div class="lbl">Saved vs retail</div><div class="disp" style="font-size: 40px; color: #2d5bff;">{{saved}}</div></div>
+    <div style="display: flex; flex-direction: column; gap: 6px; padding: 22px 40px;"><div class="lbl">Average per label</div><div class="disp" style="font-size: 40px;">{{avg}}</div></div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1.3fr 1fr; flex-grow: 1; min-height: 0;">
+    <div style="display: flex; flex-direction: column; gap: 14px; padding: 24px 40px; border-right: 2px solid #111111;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between;">
+        <div style="font-size: 15px; font-weight: 600;">Postage spent by {{bucket}}</div>
+        <div style="font-size: 13px; color: #6b6860;">{{hover}}</div>
+      </div>
+      <div style="display: flex; flex-direction: column; flex-grow: 1; min-height: 0;">
+        <div style="display: grid; grid-template-columns: repeat({{n}}, minmax(0, 1fr)); gap: 2px; align-items: end; flex-grow: 1; border-bottom: 1.5px solid #111111; padding: 0 8px;">
+          <sc-for list="{{bars}}" as="b" hint-placeholder-count="8">
+            <div class="bar" onMouseEnter="{{b.enter}}" onMouseLeave="{{leave}}">
+              <div style="font-size: 12px; font-weight: 600; color: {{b.labelColor}};">{{b.top}}</div>
+              <div style="width: 100%; max-width: 44px; height: {{b.h}}; background: {{b.fill}}; border-radius: 4px 4px 0 0;"></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat({{n}}, minmax(0, 1fr)); gap: 2px; padding: 8px 8px 0;">
+          <sc-for list="{{bars}}" as="b" hint-placeholder-count="8"><div style="font-size: 11px; color: #6b6860; text-align: center;">{{b.label}}</div></sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 24px 40px;">
+      <div style="font-size: 15px; font-weight: 600;">By service</div>
+      <div class="trow" style="border-top: 1.5px solid #111111; border-bottom: 1px solid #111111; padding: 8px 0;">
+        <div class="lbl">Service</div><div class="lbl" style="text-align: right;">Labels</div><div class="lbl" style="text-align: right;">Spent</div><div class="lbl" style="text-align: right;">Avg</div><div class="lbl" style="text-align: right;">Saved</div>
+      </div>
+      <div style="display: flex; flex-direction: column; margin-top: -10px;">
+        <sc-for list="{{services}}" as="s" hint-placeholder-count="5">
+          <div class="trow">
+            <div style="display: flex; align-items: center; gap: 10px;"><div style="width: 8px; height: 8px; background: #111111;"></div><div>{{s.name}}</div></div>
+            <div style="text-align: right;">{{s.labels}}</div>
+            <div class="disp" style="text-align: right; font-size: 15px;">{{s.spent}}</div>
+            <div style="text-align: right; color: #6b6860;">{{s.avg}}</div>
+            <div style="text-align: right; color: #2d5bff; font-weight: 600;">{{s.saved}}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top: auto; font-size: 12px; color: #6b6860; line-height: 1.5;">Savings compare what you paid with the carrier's published retail price for the same service on the day of purchase.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { range: '30d', hover: -1 }; }
+  data() {
+    const d = {
+      '7d': { bucket: 'day', bars: [['Thu', 41.2], ['Fri', 58.9], ['Sat', 12.4], ['Sun', 0], ['Mon', 72.3], ['Tue', 64.8], ['Wed', 49.5]] },
+      '30d': { bucket: 'week', bars: [['Aug 3', 210.4], ['Aug 10', 262.1], ['Aug 17', 238.7], ['Aug 24', 291.3], ['Aug 31', 184.6]] },
+      '90d': { bucket: 'week', bars: [['Jun 8', 151], ['Jun 15', 172], ['Jun 22', 190], ['Jun 29', 168], ['Jul 6', 204], ['Jul 13', 221], ['Jul 20', 199], ['Jul 27', 236], ['Aug 3', 210], ['Aug 10', 262], ['Aug 17', 239], ['Aug 24', 291], ['Aug 31', 185]] },
+    };
+    return d[this.state.range];
+  }
+  renderVals() {
+    const { bucket, bars } = this.data();
+    const total = bars.reduce((a, b) => a + b[1], 0);
+    const max = Math.max(...bars.map(b => b[1]));
+    const h = this.state.hover;
+    const money = (x) => '$' + x.toFixed(2);
+    const ratio = { '7d': 0.58, '30d': 0.58, '90d': 0.58 }[this.state.range];
+    const svc = [
+      ['USPS Ground Advantage', 0.52, 6.1], ['UPS Ground Saver', 0.18, 7.4], ['USPS Priority Mail', 0.16, 9.2], ['UPS Ground', 0.10, 10.3], ['UPS 2nd Day Air', 0.04, 17.8],
+    ];
+    const services = svc.map(([name, share, avg]) => { const spent = total * share; const n = Math.round(spent / avg); return { name, labels: n, spent: money(spent), avg: money(avg), saved: money(spent * ratio) }; });
+    const labels = services.reduce((a, s) => a + s.labels, 0);
+    return {
+      ranges: [['7d', 'Last 7 days'], ['30d', 'Last 30 days'], ['90d', 'Last 90 days']].map(([k, label]) => ({ label, on: this.state.range === k ? 'range-on' : '', pick: () => this.setState({ range: k, hover: -1 }) })),
+      spend: money(total), labels, saved: money(total * ratio), avg: money(total / labels),
+      bucket, n: bars.length,
+      hover: h >= 0 ? bars[h][0] + ' · ' + money(bars[h][1]) + ' · ' + Math.round(bars[h][1] / 7.3) + ' labels' : 'Hover a bar for detail',
+      leave: () => this.setState({ hover: -1 }),
+      bars: bars.map(([label, v], i) => ({
+        label, h: Math.max(2, Math.round((v / max) * 100)) + '%',
+        fill: h === i ? '#2d5bff' : '#111111',
+        labelColor: h === i ? '#2d5bff' : 'transparent',
+        top: '$' + Math.round(v),
+        enter: () => this.setState({ hover: i }),
+      })),
+      services,
+    };
+  }
+}
+</script>
+</body>
+</html>

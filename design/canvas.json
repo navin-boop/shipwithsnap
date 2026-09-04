@@ -1,0 +1,42 @@
+{
+  "pages": [
+    { "id": "page-product", "name": "Product" },
+    { "id": "page-system", "name": "System design" },
+    { "id": "page-directions", "name": "Directions (archive)" }
+  ],
+  "artboards": [
+    { "file": "Landing.dc.html", "title": "Landing page", "page": "page-product", "x": 0, "y": 0, "w": 1440, "h": 3250, "print": "flow" },
+    { "file": "Auth.dc.html", "title": "Sign up / Log in", "page": "page-product", "x": 1560, "y": 0, "w": 1000, "h": 720, "is_interactive": true },
+    { "file": "Main.dc.html", "title": "Ship — rate & buy", "page": "page-product", "x": 2640, "y": 0, "w": 1440, "h": 900, "is_interactive": true },
+    { "file": "Shipments.dc.html", "title": "Shipments", "page": "page-product", "x": 1560, "y": 1020, "w": 1440, "h": 900, "is_interactive": true },
+    { "file": "Batch.dc.html", "title": "Batch", "page": "page-product", "x": 3080, "y": 1020, "w": 1440, "h": 900, "is_interactive": true },
+    { "file": "Wallet.dc.html", "title": "Billing", "page": "page-product", "x": 1560, "y": 2040, "w": 1440, "h": 900, "is_interactive": true },
+    { "file": "Reports.dc.html", "title": "Reports", "page": "page-product", "x": 3080, "y": 2040, "w": 1440, "h": 900, "is_interactive": true },
+    { "file": "Settings.dc.html", "title": "Settings", "page": "page-product", "x": 1560, "y": 3060, "w": 1440, "h": 900, "is_interactive": true },
+    { "file": "AddressBook.dc.html", "title": "Address book", "page": "page-product", "x": 3080, "y": 3060, "w": 1440, "h": 760 },
+    { "file": "Tracking.dc.html", "title": "Customer tracking page", "page": "page-product", "x": 0, "y": 3370, "w": 900, "h": 1000 },
+    { "file": "MobileShip.dc.html", "title": "Ship — phone", "page": "page-product", "x": 980, "y": 3370, "w": 390, "h": 844, "is_interactive": true },
+    { "file": "Components.dc.html", "title": "Design system", "page": "page-product", "x": 1560, "y": 4080, "w": 1440, "h": 1180 },
+
+    { "file": "Architecture.dc.html", "title": "1 · Architecture", "page": "page-system", "x": 0, "y": 0, "w": 1440, "h": 900 },
+    { "file": "DataModel.dc.html", "title": "2 · Data model", "page": "page-system", "x": 1520, "y": 0, "w": 1440, "h": 1260 },
+    { "file": "API.dc.html", "title": "3 · API surface", "page": "page-system", "x": 0, "y": 1020, "w": 1440, "h": 1120 },
+    { "file": "BuyLabelFlow.dc.html", "title": "4 · Buying a label", "page": "page-system", "x": 1520, "y": 1380, "w": 1440, "h": 900 },
+    { "file": "TrackingFlow.dc.html", "title": "5 · Tracking", "page": "page-system", "x": 0, "y": 2260, "w": 1440, "h": 800 },
+    { "file": "Ledger.dc.html", "title": "6 · Billing & payments", "page": "page-system", "x": 1520, "y": 2400, "w": 1440, "h": 800 },
+    { "file": "CarrierAdapter.dc.html", "title": "7 · EasyPost integration", "page": "page-system", "x": 0, "y": 3180, "w": 1440, "h": 1100 },
+
+    { "file": "SystemMap.dc.html", "title": "System map (scope sketch)", "page": "page-directions", "x": 0, "y": 0, "w": 1200, "h": 860 },
+    { "file": "DirectionA.dc.html", "title": "Direction A · Crisp utility", "page": "page-directions", "x": 0, "y": 1060, "w": 1000, "h": 720 },
+    { "file": "DirectionB.dc.html", "title": "Direction B · Warm & friendly", "page": "page-directions", "x": 1100, "y": 1060, "w": 1000, "h": 720 },
+    { "file": "DirectionC.dc.html", "title": "Direction C · Bold editorial (chosen)", "page": "page-directions", "x": 2200, "y": 1060, "w": 1000, "h": 720 }
+  ],
+  "annotations": [
+    { "id": "note-product", "page": "page-product", "x": 1560, "y": -150, "w": 420, "text": "Product · Direction C\n\nScreens with a dot in the header are clickable: Ship (change weight, package, extras, pick a rate, Buy), Shipments (filters), Batch (select rows), Billing (default card), Reports (date range, hover bars), Settings (tabs, label format), phone Ship flow (steps).\n\nAll names, addresses, rates and totals are sample data. Bracketed [placeholders] on the landing and tracking pages are real facts I don't have." },
+    { "id": "note-system", "page": "page-system", "x": 0, "y": -130, "w": 420, "text": "System design · read 1 → 7\n\nArchitecture, then the data it stores, the API on top, and the three flows that carry money or state: buying a label, tracking, pay-as-you-go billing on Stripe. EasyPost is the single shipping provider — rates, labels, refunds, trackers, address verification — behind a thin interface (7), so nothing else in the system knows about it." },
+    { "id": "note-dir-a", "page": "page-directions", "x": 0, "y": 900, "w": 320, "text": "A · Crisp utility\n\nFor: sellers shipping 20–200 packages a day who live in this screen. Numbers align, rows are dense, nothing decorative.\n\nTradeoff: reads cold to a first-time seller; the landing page has to do the warmth." },
+    { "id": "note-dir-b", "page": "page-directions", "x": 1100, "y": 900, "w": 320, "text": "B · Warm & friendly\n\nFor: the kitchen-table seller shipping 3 a week who finds carrier sites scary. Copy talks, big targets, one card per rate.\n\nTradeoff: spends vertical space — batch shipping and dense lists need a tighter variant." },
+    { "id": "note-dir-c", "page": "page-directions", "x": 2200, "y": 900, "w": 320, "text": "C · Bold editorial — chosen\n\nFor: a brand that wants to be remembered — the savings number IS the hero. Strong on marketing pages and the tracking page customers see.\n\nTradeoff: the hardest to keep readable in dense tables and settings screens; needs discipline." }
+  ],
+  "launch": { "view": "canvas", "page": "page-product" }
+}
