@@ -7,7 +7,8 @@ import { retryPendingWebhooks } from "@/lib/webhooks/outbound";
 export const maxDuration = 60;
 
 /**
- * Scheduled by vercel.json. Vercel sends `Authorization: Bearer $CRON_SECRET`.
+ * Scheduled by vercel.json (daily on the Hobby plan — Vercel rejects deployments with more
+ * frequent schedules there; raise it to hourly on Pro). Vercel sends `Authorization: Bearer $CRON_SECRET`.
  * Polls quiet trackers, retries webhook deliveries, and sweeps abandoned draft shipments.
  */
 export async function GET(req: Request) {
