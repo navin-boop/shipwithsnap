@@ -87,6 +87,7 @@ export type QuoteInput = {
   parcel: Parcel;
   extras: ShipmentExtras;
   createdBy: string;
+  orderId?: string;
 };
 
 export type Quote = {
@@ -115,13 +116,17 @@ export async function quoteShipment(account: Account, input: QuoteInput): Promis
       parcel: input.parcel,
       extras: input.extras,
       createdBy: input.createdBy,
+      orderId: input.orderId ?? null,
     })
     .returning();
 
   const provider = getShippingProvider();
+  // Carriers (FedEx especially) reject labels without a phone; fall back to the sender's.
+  const toInput = toAddressInput(to);
+  if (!toInput.phone && from.phone) toInput.phone = from.phone;
   const { providerShipmentId, rates } = await provider.rate({
     reference: shipment.id,
-    to: toAddressInput(to),
+    to: toInput,
     from: toAddressInput(from),
     parcel: {
       lengthIn: input.parcel.lengthIn,

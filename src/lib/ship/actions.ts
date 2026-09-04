@@ -50,7 +50,10 @@ export async function verifyShipTo(name: string, line: string, email?: string): 
   }
 }
 
-const shipFromInput = addressInput.extend({ name: z.string().trim().min(1, "Name or store is required.") });
+const shipFromInput = addressInput.extend({
+  name: z.string().trim().min(1, "Name or store is required."),
+  phone: z.string().trim().regex(/^\+?[\d\s().-]{10,}$/, "Carriers require a phone number on the label."),
+});
 
 export type SaveShipFromResult = { ok: true; address: schema.Address } | { ok: false; errors: string[] };
 

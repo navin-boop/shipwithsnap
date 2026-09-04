@@ -22,7 +22,7 @@ export function ShipFromForm({ initial, onSaved, onCancel }: { initial: Address 
 
   function submit() {
     start(async () => {
-      const res = await saveShipFrom({ ...f, street2: f.street2 || null, phone: f.phone || null, country: "US" });
+      const res = await saveShipFrom({ ...f, street2: f.street2 || null, country: "US" });
       if (res.ok) onSaved(res.address);
       else setErrors(res.errors);
     });
@@ -38,7 +38,7 @@ export function ShipFromForm({ initial, onSaved, onCancel }: { initial: Address 
         <Input label="State" value={f.state} onChange={set("state")} placeholder="NY" maxLength={2} />
         <Input label="ZIP" value={f.zip} onChange={set("zip")} placeholder="11201" inputMode="numeric" />
       </div>
-      <Input label="Phone (carriers may call)" value={f.phone} onChange={set("phone")} inputMode="tel" />
+      <Input label="Phone (carriers require it)" value={f.phone} onChange={set("phone")} inputMode="tel" placeholder="(718) 555-0100" />
       {errors.map((e) => (
         <div key={e} className="text-xs text-danger">{e}</div>
       ))}
