@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RateCalculator } from "@/components/marketing/RateCalculator";
 import { ArrowIcon } from "@/components/ui";
 import { formatCents } from "@/lib/money";
 import { getSampleRates } from "@/lib/ship/sample-rates";
@@ -15,7 +16,7 @@ export default async function HomePage() {
       {/* Hero */}
       <section className="grid grid-cols-1 border-b-2 border-ink lg:grid-cols-[1.15fr_1fr]">
         <div className="flex flex-col gap-8 px-6 py-16 sm:px-16 lg:border-r-2 lg:border-ink lg:py-24">
-          <h1 className="disp text-[56px] leading-[0.9] sm:text-[72px] xl:text-[88px]">
+          <h1 className="disp break-words text-[44px] leading-[0.9] sm:text-[64px] lg:text-[72px] xl:text-[88px]">
             The cheapest USPS &amp; UPS rates.
             <br />
             <span className="text-electric">No monthly fee.</span>
@@ -30,6 +31,13 @@ export default async function HomePage() {
               <ArrowIcon />
             </Link>
             <div className="text-[13px] text-muted">No card to start. You only ever pay postage.</div>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-[11px] font-semibold uppercase tracking-[1.2px] text-muted">
+            <span>Labels for</span>
+            <span className="text-ink">USPS</span>
+            <span className="text-ink">UPS</span>
+            <span className="text-ink">FedEx</span>
+            <span>· verified addresses · tracking emails · batch from CSV</span>
           </div>
         </div>
 
@@ -63,9 +71,18 @@ export default async function HomePage() {
           </div>
           <p className="mt-auto pt-8 text-[13px] leading-[1.5] text-muted-on-ink">
             {live ? "Live rates, refreshed hourly." : "Representative rates."}{" "}
-            <Link href="/rates" className="text-paper underline hover:text-lime">Try your own package</Link> — no account needed.
+            <Link href="#calculator" className="text-paper underline hover:text-lime">Try your own package below</Link> — no account needed.
           </p>
         </div>
+      </section>
+
+      {/* Live calculator */}
+      <section id="calculator" className="flex flex-col border-b-2 border-ink">
+        <div className="flex flex-col gap-2 px-6 pt-12 sm:px-16">
+          <div className="lbl">Try it now — no account needed</div>
+          <h2 className="disp text-[36px] leading-[0.95] sm:text-[48px]">What would your next package cost?</h2>
+        </div>
+        <RateCalculator />
       </section>
 
       {/* How it works */}

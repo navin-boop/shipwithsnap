@@ -109,7 +109,14 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
                 <span>{s.label}{r.refundStatus === "submitted" ? " · refund pending" : ""}</span>
               </div>
               <div className="disp col-start-2 text-base md:col-start-auto md:text-right">{formatCents(r.priceCents)}</div>
-              <div className="col-start-2 text-sm text-muted md:col-start-auto md:text-right">{when(r.purchasedAt)}</div>
+              <div className="col-start-2 flex items-center gap-3 text-sm text-muted md:col-start-auto md:justify-end">
+                <span>{when(r.purchasedAt)}</span>
+                {r.status !== "voided" && (
+                  <button type="button" title="Print label" aria-label={`Print label for ${r.name}`} onClick={() => window.open(`/api/labels/${r.labelId}/file`, "_blank", "noopener")} className="flex h-8 w-8 items-center justify-center border-[1.5px] border-ink text-ink hover:bg-ink hover:text-paper">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z" /></svg>
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}

@@ -152,7 +152,9 @@ export function BatchTable({ orders, storeCounts }: { orders: Order[]; storeCoun
             <Button variant="onInkOutline" disabled={!selectedOrders.length || pending} onClick={rate}>{pending ? "Working…" : "Get rates"}</Button>
             <Button size="lg" icon={<ArrowIcon />} disabled={!readyRows.length || pending} onClick={buy}>Buy {readyRows.length} label{readyRows.length === 1 ? "" : "s"} — {formatCents(totalPay)}</Button>
           </div>
-          <div className="text-[13px] text-muted-on-ink">{notice ?? "One charge for the batch · labels merge into one PDF"}</div>
+          <div className="text-[13px] text-muted-on-ink">
+            {notice ?? (!orders.length ? "Step 1 · Upload a CSV of orders (use the template)" : !Object.keys(rated).length ? "Step 2 · Select orders and press Get rates" : readyRows.length ? "Step 3 · Check the rates, then buy — one charge, one PDF" : "Fix the rows that need attention, or deselect them")}
+          </div>
         </div>
       </div>
     </div>
