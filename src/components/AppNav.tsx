@@ -24,10 +24,10 @@ export interface AppNavProps {
 export function AppNav({ cardLabel }: AppNavProps) {
   const pathname = usePathname();
   return (
-    <header className="box-border flex h-14 items-center justify-between border-b-2 border-ink px-10">
-      <div className="flex items-center gap-9">
+    <header className="box-border flex h-14 items-center justify-between gap-4 border-b-2 border-ink px-4 sm:px-10">
+      <div className="flex min-w-0 items-center gap-5 sm:gap-9">
         <Wordmark />
-        <nav className="flex gap-[22px]">
+        <nav className="flex gap-4 overflow-x-auto whitespace-nowrap sm:gap-[22px]">
           {items.map((item) => {
             const active = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -48,7 +48,7 @@ export function AppNav({ cardLabel }: AppNavProps) {
       </div>
       <div className="flex items-center gap-4">
         {cardLabel && (
-          <div className="text-xs font-semibold uppercase tracking-[0.8px]">
+          <div className="hidden text-xs font-semibold uppercase tracking-[0.8px] md:block">
             <span className="text-muted">Card </span>
             {cardLabel}
           </div>

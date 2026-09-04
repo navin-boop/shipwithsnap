@@ -77,27 +77,38 @@ Vercel has no long-running processes, so "workers" and "queue" from `Architectur
 |---|---|
 | Next.js app + API | Next.js App Router, route handlers under `src/app/api` |
 | Postgres | **Neon** (Vercel Postgres integration) via **Drizzle**; pooled URL in the app, unpooled for migrations |
-| Redis (rate cache, address cache, rate limits, idempotency) | **Upstash Redis** (REST) |
-| Job queue + workers, cron | **Inngest** — functions in `src/inngest/`, served at `/api/inngest`; retries, fan-out and cron (tracking poll, reconcile, adjustments) live there |
-| Object store (label PDF/ZPL) | **Vercel Blob**, private access, served through our signed route |
-| Webhook receiver | Route handlers: `/api/webhooks/easypost`, `/api/webhooks/stripe`, `/api/webhooks/shopify` — verify signature, insert `inbound_events`, send an Inngest event, return 200 |
-| Email | Transactional provider `[TBD]` behind `src/lib/email.ts` |
+| Job queue + workers, cron | **Vercel Cron** → `/api/cron/hourly` (`vercel.json`): polls quiet EasyPost trackers, retries outbound webhook deliveries, sweeps stale draft shipments. Batch buys run in-request with bounded concurrency. (Inngest can replace this later if jobs outgrow request limits.) |
+| Object store (label PDF/ZPL) | Not yet — labels are streamed from the provider URL through `/api/labels/[id]/file` (session) and `/api/v1/labels/[id]/file` (API key). Move to Vercel Blob when we want our own copies. |
+| Webhook receiver | `/api/webhooks/easypost` — verifies HMAC, dedupes on `inbound_events(id)`, feeds `ingestTrackingEvents` (state machine + notifications). Stripe arrives with phase 4. |
+| Email | `src/lib/email.ts` — Resend when `RESEND_API_KEY` is set, console log otherwise |
 
-Payments: `stripe` SDK + Stripe Elements. Shipping: `@easypost/api`. Auth: Auth.js (email + Google).
+Payments: `stripe` SDK + Stripe Elements (phase 4). Shipping: `@easypost/api` behind `src/lib/shipping` (fake provider when no key; live key refused for buys outside Vercel Production). Auth: Auth.js v5 (email + Google), JWT sessions.
 
-Layout (single Next.js app, packages as folders — split into a monorepo only if it hurts):
+Layout (single Next.js app):
 
 ```
-src/app/            routes: (marketing) landing, (auth), (app) ship/shipments/batch/reports/billing/settings, t/[token] tracking
-src/components/     design-system primitives from Components.dc.html
-src/lib/shipping/   ShippingProvider interface + EasyPostProvider (CarrierAdapter.dc.html)
-src/lib/billing/    Stripe customer / card / charge / refund logic (Ledger.dc.html)
-src/lib/db/         Drizzle schema + migrations (DataModel.dc.html)
-src/inngest/        jobs: buy-batch, tracking-ingest, tracking-poll, store-sync, email, reconcile
-design/             the artboards (do not edit by hand; ask Claude to update the canvas)
+src/app/(marketing)  landing, /rates calculator, /docs
+src/app/(auth)       /signup, /login; /invite/[token] accepts team invites
+src/app/(app)        ship, shipments, batch, reports, billing (placeholder), settings/*, addresses
+src/app/t/[token]    public customer tracking page
+src/app/api          labels file, exports, batch template + merged PDF, cron, webhooks/easypost, v1/* public API
+src/components/      ui primitives (Components.dc.html), AppNav, feature components
+src/lib/shipping/    ShippingProvider seam: provider.ts, easypost.ts, fake.ts (CarrierAdapter.dc.html)
+src/lib/ship/        address parsing, quoteShipment / buyLabel (BuyLabelFlow.dc.html), server actions
+src/lib/tracking/    ingest + state machine + customer emails (TrackingFlow.dc.html)
+src/lib/batch/       CSV → orders, rate-all, buy-all
+src/lib/webhooks/    outbound deliveries with HMAC + retries
+src/lib/settings/    account, printing, team, API keys, webhook endpoints
+src/lib/api/         API-key auth + problem+json helpers for /api/v1
+src/lib/db/          Drizzle schema + drizzle/ migrations (DataModel.dc.html) — `npm run db:generate` then `db:migrate`
+design/              the artboards (do not edit by hand; ask Claude to update the canvas)
 ```
 
 Environment variables are listed in `.env.example`; local dev uses `.env.local`.
+
+## Status (Sept 2026)
+
+Built and verified against EasyPost test mode: design system, auth, Ship flow, shipments (void/reprint/email tracking/CSV export), tracking (webhook + poll + public page + emails), batch (CSV import, rate-all, buy-all, merged PDF), reports, settings (store, printing, ship-from, team invites, customer emails, API keys + webhooks), public API v1, landing page + public rate calculator. **Not built:** Stripe billing (phase 4 — `/billing` is a placeholder and labels are bought without a charge), Shopify/Etsy connectors (need partner-app credentials), our own label file storage.
 
 ## Build order
 

@@ -66,6 +66,27 @@ export async function logIn(_prev: AuthFormState, formData: FormData): Promise<A
   }
 }
 
+const acceptSchema = z.object({
+  token: z.string().min(10),
+  name: z.string().trim().min(1, "Enter your name."),
+  password: z.string().min(12, "12 characters or more."),
+});
+
+/** Turns an invite into a user on the inviting account, then signs them in. */
+export async function acceptInvite(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
+  const values = keep(formData, "name");
+  const parsed = acceptSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { fieldErrors: fieldErrors(parsed.error), values };
+  const { token, name, password } = parsed.data;
+  const invite = await db().query.invites.findFirst({ where: eq(schema.invites.token, token) });
+  if (!invite || invite.acceptedAt || invite.expiresAt < new Date()) return { error: "This invite has expired — ask for a new link.", values };
+  const existing = await db().query.users.findFirst({ where: eq(schema.users.email, invite.email) });
+  if (existing) return { error: "There's already an account for this email. Log in instead.", values };
+  await db().insert(schema.users).values({ accountId: invite.accountId, email: invite.email, name, role: invite.role, passwordHash: await hash(password, 12) });
+  await db().update(schema.invites).set({ acceptedAt: new Date() }).where(eq(schema.invites.id, invite.id));
+  await signIn("credentials", { email: invite.email, password, redirectTo: "/ship" });
+}
+
 export async function logInWithGoogle() {
   await signIn("google", { redirectTo: "/ship" });
 }

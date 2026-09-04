@@ -143,9 +143,9 @@ export function ShipFlow({ initialFrom }: { initialFrom: Address | null }) {
   const weightNum = parseFloat(weightLb);
 
   return (
-    <div className="grid flex-1 grid-cols-[560px_minmax(0,1fr)]">
+    <div className="grid flex-1 grid-cols-1 lg:grid-cols-[560px_minmax(0,1fr)]">
       {/* Left: the shipment */}
-      <div className="flex flex-col gap-[22px] border-r-2 border-ink px-10 py-7">
+      <div className="flex flex-col gap-[22px] border-b-2 border-ink px-6 py-7 sm:px-10 lg:border-b-0 lg:border-r-2">
         <h1 className="disp text-[40px]">Ship it cheaper.</h1>
 
         <section className="flex flex-col gap-2.5">
@@ -302,7 +302,7 @@ function LabelReady({ label, onReset }: { label: Label; onReset: () => void }) {
         <div className="lbl text-lime">Label bought</div>
         <div className="disp text-[44px]">Ready to print.</div>
       </div>
-      <div className="grid grid-cols-[300px_minmax(0,1fr)] gap-7">
+      <div className="grid grid-cols-1 gap-7 md:grid-cols-[300px_minmax(0,1fr)]">
         <div className="box-border h-[400px] bg-paper p-2">
           <iframe title="Label preview" src={label.fileUrl} className="h-full w-full border-0 bg-surface" />
         </div>

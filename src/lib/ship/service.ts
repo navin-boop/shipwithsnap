@@ -86,7 +86,8 @@ export type QuoteInput = {
   fromId: string;
   parcel: Parcel;
   extras: ShipmentExtras;
-  createdBy: string;
+  /** Null for purchases made through the public API. */
+  createdBy: string | null;
   orderId?: string;
 };
 
