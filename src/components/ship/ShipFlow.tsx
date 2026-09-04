@@ -31,6 +31,7 @@ export function ShipFlow({ initialFrom }: { initialFrom: Address | null }) {
   // Ship to
   const [toName, setToName] = useState("");
   const [toLine, setToLine] = useState("");
+  const [toEmail, setToEmail] = useState("");
   const [verified, setVerified] = useState<Extract<VerifyResult, { ok: true }> | null>(null);
   const [verifyErrors, setVerifyErrors] = useState<string[]>([]);
   const [verifying, startVerify] = useTransition();
@@ -71,7 +72,7 @@ export function ShipFlow({ initialFrom }: { initialFrom: Address | null }) {
   const verify = useCallback(() => {
     if (!toLine.trim()) return;
     startVerify(async () => {
-      const res = await verifyShipTo(toName, toLine);
+      const res = await verifyShipTo(toName, toLine, toEmail);
       if (res.ok) {
         setVerified(res);
         setVerifyErrors([]);
@@ -80,7 +81,7 @@ export function ShipFlow({ initialFrom }: { initialFrom: Address | null }) {
         setVerifyErrors(res.errors);
       }
     });
-  }, [toName, toLine]);
+  }, [toName, toLine, toEmail]);
 
   // Re-rate whenever the inputs that affect price settle (design: rates recalculate live).
   const quoteKey = JSON.stringify({ to: verified?.address, fromId: from?.id, parcel, insure, signature });
@@ -135,6 +136,7 @@ export function ShipFlow({ initialFrom }: { initialFrom: Address | null }) {
     setVerified(null);
     setToName("");
     setToLine("");
+    setToEmail("");
     setBuyError(null);
   }
 
@@ -161,6 +163,7 @@ export function ShipFlow({ initialFrom }: { initialFrom: Address | null }) {
             onKeyDown={(e) => e.key === "Enter" && verify()}
             disabled={!!label}
           />
+          <Input aria-label="Recipient email" placeholder="Email for tracking updates (optional)" type="email" value={toEmail} onChange={(e) => setToEmail(e.target.value)} onBlur={verify} disabled={!!label} />
           {verifying && <div className="lbl">Verifying…</div>}
           {!verifying && verified && (
             <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.8px] text-electric">

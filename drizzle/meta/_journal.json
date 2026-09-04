@@ -15,6 +15,13 @@
       "when": 1788534761100,
       "tag": "0001_salty_sally_floyd",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788536424728,
+      "tag": "0002_absent_kang",
+      "breakpoints": true
     }
   ]
 }

@@ -34,16 +34,16 @@ export type VerifyResult =
   | { ok: false; errors: string[] };
 
 /** Free text → verified address. Returns field problems rather than throwing. */
-export async function verifyShipTo(name: string, line: string): Promise<VerifyResult> {
+export async function verifyShipTo(name: string, line: string, email?: string): Promise<VerifyResult> {
   await requireAccount();
   const parsed = parseAddressLine(line);
   if (!parsed) return { ok: false, errors: ["Couldn't read that address — try \"418 Bergen St, Brooklyn, NY 11217\"."] };
-  const input = addressInput.safeParse({ ...parsed, name: name.trim() || null });
-  if (!input.success) return { ok: false, errors: ["Check the street, city, state and ZIP."] };
+  const input = addressInput.safeParse({ ...parsed, name: name.trim() || null, email: email?.trim() || null });
+  if (!input.success) return { ok: false, errors: [input.error.issues.some((i) => i.path[0] === "email") ? "That email doesn't look right." : "Check the street, city, state and ZIP."] };
   try {
     const v = await getShippingProvider().verifyAddress(input.data);
     if (!v.ok || !v.address) return { ok: false, errors: v.errors ?? ["Address could not be verified."] };
-    return { ok: true, address: { ...v.address, name: input.data.name ?? null }, residential: v.residential ?? null };
+    return { ok: true, address: { ...v.address, name: input.data.name ?? null, email: input.data.email || null }, residential: v.residential ?? null };
   } catch (err) {
     if (err instanceof ProviderError) return { ok: false, errors: ["Address verification is unavailable right now — try again."] };
     throw err;
