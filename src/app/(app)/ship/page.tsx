@@ -1,21 +1,19 @@
+import type { Metadata } from "next";
+import { eq } from "drizzle-orm";
+import { ShipFlow } from "@/components/ship/ShipFlow";
 import { auth } from "@/lib/auth";
-import { logOut } from "@/lib/auth/actions";
-import { Button } from "@/components/ui";
+import { db, schema } from "@/lib/db";
+import { getDefaultShipFrom } from "@/lib/ship/service";
 
-// Phase 3 replaces this with the Ship flow from design/Main.dc.html.
+export const metadata: Metadata = { title: "Ship · Ship with Snap" };
+
 export default async function ShipPage() {
   const session = await auth();
+  const account = await db().query.accounts.findFirst({ where: eq(schema.accounts.id, session!.user.accountId) });
+  const from = account ? await getDefaultShipFrom(account) : null;
   return (
-    <main className="flex flex-col gap-6 px-10 py-7">
-      <h1 className="disp text-[40px]">Ship it cheaper.</h1>
-      <p className="text-sm text-muted">
-        Signed in as {session?.user.email}. The rate-and-buy flow lands here next.
-      </p>
-      <form action={logOut}>
-        <Button variant="outline" size="sm" type="submit">
-          Log out
-        </Button>
-      </form>
+    <main className="flex flex-1 flex-col">
+      <ShipFlow initialFrom={from} />
     </main>
   );
 }
