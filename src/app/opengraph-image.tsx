@@ -31,7 +31,7 @@ export default async function OpenGraphImage() {
           <span style={{ color: "#2d5bff" }}>No monthly fee.</span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "4px solid #111111", paddingTop: 24, fontSize: 18, fontWeight: 800, textTransform: "uppercase", letterSpacing: 2 }}>
-          <span>Paste an address · pick a rate · print</span>
+          <span>Paste · pick a rate · print</span>
           <span style={{ background: "#111111", color: "#c8ff3d", padding: "12px 20px" }}>shipwithsnap.com</span>
         </div>
       </div>
