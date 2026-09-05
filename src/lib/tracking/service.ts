@@ -92,9 +92,11 @@ export function emailKind(next: CanonicalStatus, previous: string): TrackingEmai
   return null;
 }
 
-export async function sendTrackingEmail(input: { label: Label; account: Pick<Account, "name" | "replyTo">; recipientEmail: string; recipientName: string; kind: TrackingEmailKind }) {
+export async function sendTrackingEmail(input: { label: Label; account: Pick<Account, "id" | "name" | "replyTo" | "logoData">; recipientEmail: string; recipientName: string; kind: TrackingEmailKind }) {
   const { label, account, kind } = input;
-  const url = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://shipwithsnap.com"}/t/${label.trackingToken}`;
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://shipwithsnap.com";
+  const url = `${base}/t/${label.trackingToken}`;
+  const logoUrl = account.logoData ? `${base}/api/logo/${account.id}` : null;
   const first = input.recipientName.split(" ")[0] || "there";
   const copy: Record<TrackingEmailKind, { subject: string; heading: string; body: string }> = {
     shipped: { subject: `Your order from ${account.name} is on its way`, heading: "It's on the way.", body: `Hi ${first} — ${account.name} shipped your order with ${label.carrier} ${label.serviceName}. Tracking number ${label.trackingNumber}.` },
@@ -107,7 +109,7 @@ export async function sendTrackingEmail(input: { label: Label; account: Pick<Acc
     to: input.recipientEmail,
     subject: c.subject,
     replyTo: account.replyTo,
-    html: emailShell({ eyebrow: account.name, heading: c.heading, bodyHtml: `<p>${c.body}</p>`, ctaLabel: "Track package", ctaUrl: url }),
+    html: emailShell({ eyebrow: account.name, heading: c.heading, bodyHtml: `<p>${c.body}</p>`, ctaLabel: "Track package", ctaUrl: url, logoUrl, logoAlt: account.name }),
     text: `${c.body}\n\nTrack: ${url}`,
   });
 }

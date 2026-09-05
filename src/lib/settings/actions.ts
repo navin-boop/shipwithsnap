@@ -27,6 +27,21 @@ export async function updateStore(input: { name: string; replyTo: string }): Pro
   return { ok: true };
 }
 
+/** Accepts a data URL (PNG/JPEG/WebP, ≤ 300 KB) produced by the client-side resize, or null to remove. */
+export async function updateLogo(dataUrl: string | null): Promise<Result> {
+  const user = await requireUser();
+  if (dataUrl === null) {
+    await db().update(schema.accounts).set({ logoData: null, logoMime: null }).where(eq(schema.accounts.id, user.accountId));
+  } else {
+    const m = /^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl);
+    if (!m) return { ok: false, error: "Use a PNG, JPEG or WebP image." };
+    if (m[2].length > 400_000) return { ok: false, error: "That image is too large — try a smaller one." };
+    await db().update(schema.accounts).set({ logoData: m[2], logoMime: m[1] }).where(eq(schema.accounts.id, user.accountId));
+  }
+  revalidatePath("/settings", "layout");
+  return { ok: true };
+}
+
 export async function updatePrinting(input: { labelFormat: "pdf_4x6" | "pdf_letter" | "zpl"; afterBuy: "print" | "download" | "nothing"; packingSlip: boolean }): Promise<Result> {
   const user = await requireUser(["owner", "shipper"]);
   await db().update(schema.accounts).set({ labelFormat: input.labelFormat, afterBuy: input.afterBuy, packingSlip: input.packingSlip }).where(eq(schema.accounts.id, user.accountId));

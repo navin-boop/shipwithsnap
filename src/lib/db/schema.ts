@@ -57,6 +57,9 @@ export const accounts = pgTable("accounts", {
     .notNull()
     .default({ shipped: true, outForDelivery: true, delivered: true, exception: false }),
   replyTo: text("reply_to"),
+  /** Store logo, base64 (≤ 300 KB, resized client-side). Served at /api/logo/{accountId} for emails and tracking pages. */
+  logoData: text("logo_data"),
+  logoMime: text("logo_mime"),
   /** Collected at sign-up so the first rate quote works before a full ship-from address exists. */
   shipFromZip: text("ship_from_zip"),
   defaultShipFromId: uuid("default_ship_from_id"),

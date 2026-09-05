@@ -1,27 +1,33 @@
+import Image from "next/image";
 import Link from "next/link";
 import { RateCalculator } from "@/components/marketing/RateCalculator";
 import { ArrowIcon } from "@/components/ui";
 import { formatCents } from "@/lib/money";
 import { getSampleRates } from "@/lib/ship/sample-rates";
+import shipScreen from "@/images/ship-screen.png";
+import stepAddress from "@/images/step-address.png";
+import stepLabel from "@/images/step-label.png";
+import stepRates from "@/images/step-rates.png";
 
-// Spec: design/Landing.dc.html. The stats strip and testimonial from the design are held back
-// until there are real numbers and a real quote to put in them.
+// Spec: design/Landing.dc.html. Product screenshots come from scripts/screenshots.sh (the dev mock at
+// /dev/screens). The stats strip and testimonial from the design are held back until there are real
+// numbers and a real quote to put in them.
 export const revalidate = 3600;
 
 export default async function HomePage() {
   const { rates, live } = await getSampleRates();
-  const [hero, ...rest] = rates;
+  const hero = rates[0];
   return (
     <main className="flex flex-col">
       {/* Hero */}
-      <section className="grid grid-cols-1 border-b-2 border-ink lg:grid-cols-[1.15fr_1fr]">
-        <div className="flex flex-col gap-8 px-6 py-16 sm:px-16 lg:border-r-2 lg:border-ink lg:py-24">
-          <h1 className="disp break-words text-[44px] leading-[0.9] sm:text-[64px] lg:text-[72px] xl:text-[88px]">
+      <section className="grid grid-cols-1 border-b-2 border-ink lg:grid-cols-[1fr_1.1fr]">
+        <div className="flex flex-col gap-8 px-6 py-14 sm:px-16 lg:border-r-2 lg:border-ink lg:py-24">
+          <h1 className="disp break-words text-[44px] leading-[0.9] sm:text-[64px] lg:text-[60px] xl:text-[72px]">
             The cheapest USPS &amp; UPS rates.
             <br />
             <span className="text-electric">No monthly fee.</span>
           </h1>
-          <p className="max-w-[560px] text-lg leading-[1.45] text-ink-2 sm:text-xl">
+          <p className="max-w-[520px] text-lg leading-[1.45] text-ink-2 sm:text-xl">
             Snap gives every seller the commercial discounts big shippers negotiate, and charges nothing on top. Paste an
             address, pick a rate, print. That&apos;s the whole product.
           </p>
@@ -41,38 +47,20 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="flex flex-col bg-ink p-8 text-paper sm:p-12">
-          <div className="lbl text-muted-on-ink">Brooklyn → Austin · 12×9×4 in · 1.8 lb</div>
-          <div className="mt-6 flex flex-col border-t border-ink-2">
-            {hero && (
-              <div className="flex items-center justify-between gap-4 border-b border-ink-2 py-[18px]">
-                <div className="flex flex-col gap-0.5">
-                  <div className="disp text-xl">{hero.carrier} {hero.serviceName}</div>
-                  <div className="text-xs uppercase tracking-[0.8px] text-muted-on-ink">{hero.estDays !== null ? `${hero.estDays} days · ` : ""}cheapest</div>
-                </div>
-                <div className="flex items-baseline gap-3">
-                  {hero.retailCents !== null && <div className="text-sm text-muted-on-ink line-through">{formatCents(hero.retailCents)}</div>}
-                  <div className="disp text-[40px] text-lime">{formatCents(hero.priceCents)}</div>
-                </div>
+        <div className="flex flex-col gap-4 bg-ink p-5 text-paper sm:p-8 lg:p-10">
+          <Image src={shipScreen} alt="The Snap Ship screen: a verified address on the left, every carrier's rate on the right with USPS Ground Advantage selected at $5.68 against a $10.80 retail price" priority sizes="(min-width: 1024px) 55vw, 100vw" className="h-auto w-full border-2 border-ink-2" />
+          {hero && (
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink-2 pt-4">
+              <div className="flex flex-col gap-0.5">
+                <div className="lbl text-muted-on-ink">{live ? "Live right now" : "Typical"} · Brooklyn → Austin · 1.8 lb</div>
+                <div className="text-sm">{hero.carrier} {hero.serviceName}{hero.estDays !== null ? ` · ${hero.estDays} days` : ""}</div>
               </div>
-            )}
-            {rest.map((r) => (
-              <div key={r.carrier + r.serviceName} className="flex items-center justify-between gap-4 border-b border-ink-2 py-[18px]">
-                <div className="flex flex-col gap-0.5">
-                  <div className="text-base font-semibold">{r.carrier} {r.serviceName}</div>
-                  <div className="text-xs uppercase tracking-[0.8px] text-muted-on-ink">{r.estDays !== null ? `${r.estDays} days` : ""}</div>
-                </div>
-                <div className="flex items-baseline gap-3">
-                  {r.retailCents !== null && <div className="text-sm text-muted-on-ink line-through">{formatCents(r.retailCents)}</div>}
-                  <div className="disp text-2xl">{formatCents(r.priceCents)}</div>
-                </div>
+              <div className="flex items-baseline gap-3">
+                {hero.retailCents !== null && <div className="text-sm text-muted-on-ink line-through">{formatCents(hero.retailCents)}</div>}
+                <div className="disp text-[32px] text-lime">{formatCents(hero.priceCents)}</div>
               </div>
-            ))}
-          </div>
-          <p className="mt-auto pt-8 text-[13px] leading-[1.5] text-muted-on-ink">
-            {live ? "Live rates, refreshed hourly." : "Representative rates."}{" "}
-            <Link href="#calculator" className="text-paper underline hover:text-lime">Try your own package below</Link> — no account needed.
-          </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -92,15 +80,15 @@ export default async function HomePage() {
           <div className="lbl">How it works</div>
         </div>
         <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
-          <Step n="01" title="Paste an address">
+          <Step n="01" title="Paste an address" image={stepAddress} alt="An address pasted as one line, verified as residential">
             Drop in the whole thing from an email or order — Snap splits, verifies and corrects it, and tells you if it&apos;s
             residential before a carrier charges you for it.
           </Step>
-          <Step n="02" title="Pick a rate">
-            Every USPS and UPS service on one list, cheapest first, with the retail price crossed out next to yours. Sort by
-            speed when it matters more than money.
+          <Step n="02" title="Pick a rate" image={stepRates} alt="Five carrier rates sorted by price, cheapest highlighted">
+            Every USPS, UPS and FedEx service on one list, cheapest first, with the retail price crossed out next to yours.
+            Sort by speed when it matters more than money.
           </Step>
-          <Step n="03" title="Print and drop off">
+          <Step n="03" title="Print and drop off" image={stepLabel} alt="A bought label ready to print, with tracking number and price">
             4×6 thermal or plain paper — your choice, saved once. Tracking emails go to your customer automatically. Void any
             label within 28 days for a full refund to your card.
           </Step>
@@ -180,9 +168,12 @@ export default async function HomePage() {
   );
 }
 
-function Step({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
+function Step({ n, title, image, alt, children }: { n: string; title: string; image: typeof stepAddress; alt: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-3.5 border-t-2 border-ink pt-[18px]">
+      <div className="aspect-[16/9] overflow-hidden border-[1.5px] border-ink bg-surface">
+        <Image src={image} alt={alt} sizes="(min-width: 768px) 30vw, 100vw" className="h-full w-full object-cover object-left-top" />
+      </div>
       <div className="disp text-xl text-electric">{n}</div>
       <div className="disp text-2xl">{title}</div>
       <p className="text-[15px] leading-[1.55] text-ink-2">{children}</p>

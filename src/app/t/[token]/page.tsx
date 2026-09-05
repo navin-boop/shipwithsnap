@@ -55,7 +55,12 @@ export default async function TrackingPage({ params }: { params: Promise<{ token
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[900px] flex-col bg-paper">
       <header className="box-border flex h-16 items-center justify-between border-b-2 border-ink px-6 sm:px-12">
-        <div className="disp text-xl">{account.name}</div>
+        {account.logoData ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={`/api/logo/${account.id}`} alt={account.name} className="max-h-9 max-w-[200px] object-contain" />
+        ) : (
+          <div className="disp text-xl">{account.name}</div>
+        )}
         {order && <div className="lbl">Order {order.number}</div>}
       </header>
 

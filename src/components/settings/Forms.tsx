@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 import {
   addWebhookEndpoint,
   changeRole,
+  updateLogo,
   createApiKey,
   deleteWebhookEndpoint,
   inviteMember,
@@ -35,14 +36,63 @@ export function SectionHeader({ title, blurb }: { title: string; blurb: string }
   );
 }
 
-export function StoreForm({ account }: { account: Account }) {
+/** Shrinks an image file to fit 512×512 and returns a PNG data URL (keeps transparency). */
+async function resizeLogo(file: File): Promise<string> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, 512 / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/png");
+}
+
+export function StoreForm({ account, hasLogo }: { account: Account; hasLogo: boolean }) {
   const [name, setName] = useState(account.name);
   const [replyTo, setReplyTo] = useState(account.replyTo ?? "");
+  const [logo, setLogo] = useState<string | null>(hasLogo ? `/api/logo/${account.id}` : null);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState(false);
   const [pending, start] = useTransition();
+
+  function pickLogo(file: File) {
+    start(async () => {
+      try {
+        const dataUrl = await resizeLogo(file);
+        const r = await updateLogo(dataUrl);
+        setErr(!r.ok);
+        setMsg(r.ok ? "Logo saved." : r.error);
+        if (r.ok) setLogo(dataUrl);
+      } catch {
+        setErr(true);
+        setMsg("Couldn't read that image.");
+      }
+    });
+  }
+
   return (
-    <div className="flex max-w-[560px] flex-col gap-5">
+    <div className="flex max-w-[560px] flex-col gap-6">
+      <div className="flex flex-col gap-3">
+        <div className="lbl">Logo — on the tracking page and customer emails</div>
+        <div className="flex items-center gap-4">
+          <div className="flex h-20 w-40 items-center justify-center border-[1.5px] border-ink bg-surface p-2">
+            {logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logo} alt="Store logo" className="max-h-full max-w-full object-contain" />
+            ) : (
+              <span className="disp text-xl">{name || "Your logo"}</span>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="inline-flex h-10 cursor-pointer items-center border-[1.5px] border-ink px-4 text-[11px] font-semibold uppercase tracking-[0.8px]">
+              {logo ? "Replace" : "Upload logo"}
+              <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => e.target.files?.[0] && pickLogo(e.target.files[0])} />
+            </label>
+            {logo && <button type="button" className="lbl text-danger" onClick={() => start(async () => { await updateLogo(null); setLogo(null); setMsg("Logo removed."); })}>Remove</button>}
+          </div>
+        </div>
+        <div className="text-xs text-muted">PNG with a transparent background looks best. It&apos;s resized to 512px.</div>
+      </div>
       <Input label="Store name — shown on labels, emails and the tracking page" value={name} onChange={(e) => setName(e.target.value)} />
       <Input label="Reply-to email for customer emails" type="email" value={replyTo} onChange={(e) => setReplyTo(e.target.value)} placeholder="hello@yourstore.com" />
       <Notice text={msg} error={err} />

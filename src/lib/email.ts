@@ -22,13 +22,16 @@ export async function sendEmail(msg: Email): Promise<{ sent: boolean; id?: strin
 }
 
 /** Minimal ink-and-paper email shell that matches the brand without images. */
-export function emailShell(opts: { heading: string; eyebrow?: string; bodyHtml: string; ctaLabel?: string; ctaUrl?: string; footer?: string }): string {
+export function emailShell(opts: { heading: string; eyebrow?: string; bodyHtml: string; ctaLabel?: string; ctaUrl?: string; footer?: string; logoUrl?: string | null; logoAlt?: string }): string {
   const cta = opts.ctaLabel && opts.ctaUrl
     ? `<p style="margin:28px 0 0"><a href="${opts.ctaUrl}" style="display:inline-block;background:#2d5bff;color:#fff;text-decoration:none;font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:16px 26px">${opts.ctaLabel}</a></p>`
     : "";
+  const brand = opts.logoUrl
+    ? `<img src="${opts.logoUrl}" alt="${opts.logoAlt ?? ""}" style="max-height:40px;max-width:200px;display:block">`
+    : `<div style="font-weight:800;font-size:20px;letter-spacing:-0.5px;text-transform:uppercase">Snap<span style="color:#2d5bff">.</span></div>`;
   return `<!doctype html><html><body style="margin:0;background:#f2efe6;font-family:Archivo,Helvetica,Arial,sans-serif;color:#111">
 <div style="max-width:560px;margin:0 auto;padding:40px 24px">
-  <div style="font-weight:800;font-size:20px;letter-spacing:-0.5px;text-transform:uppercase">Snap<span style="color:#2d5bff">.</span></div>
+  ${brand}
   ${opts.eyebrow ? `<div style="margin-top:32px;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#6b6860">${opts.eyebrow}</div>` : ""}
   <h1 style="margin:8px 0 0;font-size:34px;line-height:1;font-weight:800;letter-spacing:-0.5px">${opts.heading}</h1>
   <div style="margin-top:20px;font-size:15px;line-height:1.55;color:#3d3b36">${opts.bodyHtml}</div>
