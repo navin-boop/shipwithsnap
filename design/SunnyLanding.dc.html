@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap">
+  <style>
+    body { margin: 0; font-family: "Nunito", "Helvetica Neue", Arial, sans-serif; color: #2b2320; background: #fff8ee; }
+    a { color: #ff5c39; } a:hover { color: #e04a2a; }
+    .disp { font-family: "Sora", "Helvetica Neue", Arial, sans-serif; font-weight: 800; letter-spacing: -0.025em; }
+    .card { background: #ffffff; border: 2px solid #2b2320; border-radius: 22px; box-shadow: 8px 8px 0 #2b2320; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #fff8ee; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+  <div style="position: absolute; left: 980px; top: 120px; width: 520px; height: 520px; border-radius: 999px; background: #ffd23f; opacity: 0.7;"></div>
+  <div style="position: absolute; left: 1220px; top: 520px; width: 300px; height: 300px; border-radius: 999px; background: #0fa3a3; opacity: 0.35;"></div>
+  <div style="position: absolute; left: -80px; top: 620px; width: 320px; height: 320px; border-radius: 999px; background: #ffb4a2; opacity: 0.6;"></div>
+
+  <header style="display: flex; align-items: center; justify-content: space-between; height: 76px; padding: 0 64px; position: relative;">
+    <div class="disp" style="font-size: 28px; display: flex; align-items: center; gap: 6px;">snap<span style="width: 12px; height: 12px; border-radius: 999px; background: #ff5c39; display: inline-block;"></span></div>
+    <div style="display: flex; gap: 28px; font-size: 15px; font-weight: 800; color: #7a6f68;"><div>Rates</div><div>How it works</div><div>Pricing</div><div>Help</div></div>
+    <div style="display: flex; align-items: center; gap: 18px; font-size: 15px; font-weight: 800;"><div style="color: #7a6f68;">Log in</div><div style="height: 44px; padding: 0 20px; border-radius: 999px; background: #2b2320; color: #ffd23f; display: flex; align-items: center;">Start free</div></div>
+  </header>
+
+  <section style="display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; padding: 60px 64px 0; position: relative; flex-grow: 1; align-items: center;">
+    <div style="display: flex; flex-direction: column; gap: 24px; padding-bottom: 60px;">
+      <div style="display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; border: 2px solid #2b2320; background: #fff; font-size: 13px; font-weight: 800;">USPS · UPS · FedEx — one list, cheapest first</div>
+      <h1 class="disp" style="margin: 0; font-size: 76px; line-height: 1;">Ship for less.<br><span style="color: #ff5c39;">Seriously</span> less.</h1>
+      <p style="margin: 0; max-width: 540px; font-size: 20px; line-height: 1.5; font-weight: 600; color: #5c524b;">The discounts the big shippers get, for the rest of us. No monthly fee — you pay postage and nothing else. Paste an address, pick a rate, print.</p>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="height: 58px; padding: 0 28px; border-radius: 999px; background: #ff5c39; color: #fff; border: 2px solid #2b2320; box-shadow: 5px 5px 0 #2b2320; font-family: 'Sora'; font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 10px;">Start shipping free<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"></path></svg></div>
+        <div style="font-size: 14px; font-weight: 800; color: #7a6f68;">No card to start ✓</div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; position: relative;">
+      <div class="card" style="width: 560px; padding: 24px; display: flex; flex-direction: column; gap: 12px; transform: rotate(-1.5deg);">
+        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; color: #7a6f68;"><span>Brooklyn → Austin · 1.8 lb</span><span>Counter price → yours</span></div>
+        <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; padding: 16px 18px; border-radius: 18px; background: #ffd23f; border: 2px solid #2b2320; position: relative;"><div style="position: absolute; top: -14px; left: 18px; background: #ff5c39; color: #fff; font-size: 12px; font-weight: 800; padding: 5px 12px; border-radius: 999px; border: 2px solid #2b2320; transform: rotate(-3deg);">Cheapest!</div><div style="display: flex; flex-direction: column; gap: 2px;"><div class="disp" style="font-size: 20px;">USPS Ground Advantage</div><div style="font-size: 13px; font-weight: 700;">Monday · 3 days · <span style="text-decoration: line-through; color: #7a6f68;">$16.45</span></div></div><div class="disp" style="font-size: 40px;">$8.17</div></div>
+        <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; padding: 12px 18px; border-radius: 18px; border: 2px solid #e9dfd4;"><div style="font-size: 16px; font-weight: 800;">UPS Ground Saver <span style="font-size: 13px; color: #7a6f68; margin-left: 6px;">Tuesday · <s>$18.40</s></span></div><div class="disp" style="font-size: 24px;">$10.78</div></div>
+        <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; padding: 12px 18px; border-radius: 18px; border: 2px solid #e9dfd4;"><div style="font-size: 16px; font-weight: 800;">FedEx Ground Economy <span style="font-size: 13px; color: #7a6f68; margin-left: 6px;">Wednesday</span></div><div class="disp" style="font-size: 24px;">$10.92</div></div>
+        <div style="font-size: 13px; font-weight: 700; color: #7a6f68; text-align: center; padding-top: 4px;">Live rates · try your own package below</div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+</body>
+</html>

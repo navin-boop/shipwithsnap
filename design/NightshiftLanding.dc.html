@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "DM Sans", "Helvetica Neue", Arial, sans-serif; color: #e6e8ee; background: #0b0d12; }
+    a { color: #a78bfa; } a:hover { color: #c4b5fd; }
+    .disp { font-family: "Space Grotesk", "Helvetica Neue", Arial, sans-serif; font-weight: 700; letter-spacing: -0.03em; }
+    .glass { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 18px; backdrop-filter: blur(12px); }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #0b0d12; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+  <div style="position: absolute; left: -200px; top: 300px; width: 900px; height: 900px; border-radius: 999px; background: radial-gradient(closest-side, rgba(124, 58, 237, 0.35), rgba(124, 58, 237, 0)); filter: blur(30px);"></div>
+  <div style="position: absolute; left: 900px; top: -300px; width: 900px; height: 900px; border-radius: 999px; background: radial-gradient(closest-side, rgba(34, 211, 238, 0.28), rgba(34, 211, 238, 0)); filter: blur(30px);"></div>
+  <div style="position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 48px 48px;"></div>
+
+  <header style="display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 64px; position: relative;">
+    <div class="disp" style="font-size: 22px; display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 999px; background: linear-gradient(135deg, #7c3aed, #22d3ee); box-shadow: 0 0 16px rgba(124, 58, 237, 0.8);"></span>snap</div>
+    <div style="display: flex; gap: 28px; font-size: 14px; font-weight: 500; color: #8b93a7;"><div>Rates</div><div>How it works</div><div>Pricing</div><div>Docs</div></div>
+    <div style="display: flex; align-items: center; gap: 18px; font-size: 14px; font-weight: 600;"><div style="color: #8b93a7;">Log in</div><div style="height: 40px; padding: 0 18px; border-radius: 999px; background: #e6e8ee; color: #0b0d12; display: flex; align-items: center;">Start free</div></div>
+  </header>
+
+  <section style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 26px; padding: 72px 64px 0; position: relative;">
+    <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); font-size: 12px; font-weight: 600; color: #c4b5fd;"><span style="width: 8px; height: 8px; border-radius: 999px; background: #22d3ee; box-shadow: 0 0 10px #22d3ee;"></span>Live USPS · UPS · FedEx rates</div>
+    <h1 class="disp" style="margin: 0; font-size: 80px; line-height: 1; max-width: 980px;">Postage, <span style="background: linear-gradient(90deg, #c4b5fd, #67e8f9); -webkit-background-clip: text; background-clip: text; color: transparent;">minus the markup.</span></h1>
+    <p style="margin: 0; max-width: 620px; font-size: 19px; line-height: 1.55; color: #8b93a7;">Commercial shipping rates for every seller. No monthly fee, no minimums — paste an address, pick a rate, print.</p>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div style="height: 54px; padding: 0 28px; border-radius: 999px; background: linear-gradient(90deg, #7c3aed, #22d3ee); color: #0b0d12; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; box-shadow: 0 12px 36px rgba(124, 58, 237, 0.45);">Start shipping free<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"></path></svg></div>
+      <div style="height: 54px; padding: 0 22px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.14); font-size: 15px; font-weight: 600; display: flex; align-items: center;">Check a rate</div>
+    </div>
+  </section>
+
+  <section style="display: flex; justify-content: center; padding: 56px 64px 0; position: relative;">
+    <div class="glass" style="width: 860px; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 40px 100px rgba(0,0,0,0.5);">
+      <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #8b93a7;"><span>Brooklyn → Austin · 12×9×4 in · 1.8 lb</span><span>Retail → you pay</span></div>
+      <div style="display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 20px; padding: 14px 16px; border-radius: 14px; background: linear-gradient(90deg, rgba(124, 58, 237, 0.25), rgba(34, 211, 238, 0.12)); border: 1px solid rgba(167, 139, 250, 0.35);"><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 16px; font-weight: 600;">USPS Ground Advantage</div><div style="font-size: 12px; color: #c4b5fd;">Cheapest · Mon, 3 days</div></div><div style="font-size: 13px; color: #8b93a7; text-decoration: line-through;">$16.45</div><div class="disp" style="font-size: 34px; background: linear-gradient(90deg, #fff, #67e8f9); -webkit-background-clip: text; background-clip: text; color: transparent;">$8.17</div></div>
+      <div style="display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 20px; padding: 12px 16px;"><div style="font-size: 15px; font-weight: 500;">UPS Ground Saver <span style="font-size: 12px; color: #8b93a7; margin-left: 8px;">Tue · 4 days</span></div><div style="font-size: 13px; color: #8b93a7; text-decoration: line-through;">$18.40</div><div class="disp" style="font-size: 22px;">$10.78</div></div>
+      <div style="display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 20px; padding: 12px 16px;"><div style="font-size: 15px; font-weight: 500;">FedEx Ground Economy <span style="font-size: 12px; color: #8b93a7; margin-left: 8px;">Wed · 4 days</span></div><div></div><div class="disp" style="font-size: 22px;">$10.92</div></div>
+    </div>
+  </section>
+</div>
+</x-dc>
+</body>
+</html>

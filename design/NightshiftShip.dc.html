@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: "DM Sans", "Helvetica Neue", Arial, sans-serif; color: #e6e8ee; background: #0b0d12; }
+    a { color: #a78bfa; } a:hover { color: #c4b5fd; }
+    .disp { font-family: "Space Grotesk", "Helvetica Neue", Arial, sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+    .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #8b93a7; }
+    .glass { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; backdrop-filter: blur(12px); }
+    .in { height: 46px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 0 14px; font-size: 14px; display: flex; align-items: center; box-sizing: border-box; color: #e6e8ee; }
+    .pill { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.12); font-size: 13px; font-weight: 600; display: flex; align-items: center; color: #c9cfdb; }
+    .pill-on { background: #e6e8ee; color: #0b0d12; border-color: #e6e8ee; }
+    .nav { font-size: 13px; font-weight: 600; color: #8b93a7; padding: 8px 14px; border-radius: 999px; }
+    .nav-on { background: rgba(255, 255, 255, 0.08); color: #fff; }
+  </style>
+</helmet>
+<div style="width: 1440px; height: 900px; background: #0b0d12; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+  <div style="position: absolute; left: 840px; top: -200px; width: 800px; height: 800px; border-radius: 999px; background: radial-gradient(closest-side, rgba(124, 58, 237, 0.35), rgba(124, 58, 237, 0)); filter: blur(20px);"></div>
+  <div style="position: absolute; left: 1100px; top: 420px; width: 600px; height: 600px; border-radius: 999px; background: radial-gradient(closest-side, rgba(34, 211, 238, 0.25), rgba(34, 211, 238, 0)); filter: blur(20px);"></div>
+
+  <header style="display: flex; align-items: center; justify-content: space-between; height: 68px; padding: 0 32px; position: relative;">
+    <div style="display: flex; align-items: center; gap: 28px;">
+      <div class="disp" style="font-size: 20px; display: flex; align-items: center; gap: 8px;"><span style="width: 10px; height: 10px; border-radius: 999px; background: linear-gradient(135deg, #7c3aed, #22d3ee); box-shadow: 0 0 16px rgba(124, 58, 237, 0.8);"></span>snap</div>
+      <div style="display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06);">
+        <div class="nav nav-on">Ship</div><div class="nav">Shipments</div><div class="nav">Batch</div><div class="nav">Reports</div><div class="nav">Billing</div><div class="nav">Settings</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #8b93a7;"><span>Visa ·· 4242</span><div style="width: 32px; height: 32px; border-radius: 999px; background: linear-gradient(135deg, #7c3aed, #22d3ee);"></div></div>
+  </header>
+
+  <main style="display: grid; grid-template-columns: 500px minmax(0, 1fr); gap: 24px; padding: 20px 32px 32px; position: relative; min-height: 0;">
+    <div class="glass" style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+      <div class="disp" style="font-size: 30px;">New label</div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="lbl">To</div>
+        <div class="in">Maya Chen</div>
+        <div class="in" style="justify-content: space-between;"><span>418 Bergen St, Brooklyn, NY 11217</span><span style="font-size: 11px; font-weight: 700; color: #22d3ee; display: flex; align-items: center; gap: 5px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 3 3 7-7"></path></svg>VERIFIED</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="lbl">From</div>
+        <div class="in" style="justify-content: space-between; color: #c9cfdb;"><span>Snap Goods · 20 Jay St, Brooklyn 11201</span><span style="font-size: 12px; color: #a78bfa; font-weight: 600;">Change</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="lbl">Package</div>
+        <div style="display: flex; gap: 8px;"><div class="pill pill-on">Box</div><div class="pill">Poly mailer</div><div class="pill">Flat rate</div></div>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+          <div class="in" style="justify-content: space-between;"><span>12</span><span style="color: #8b93a7; font-size: 12px;">in</span></div>
+          <div class="in" style="justify-content: space-between;"><span>9</span><span style="color: #8b93a7; font-size: 12px;">in</span></div>
+          <div class="in" style="justify-content: space-between;"><span>4</span><span style="color: #8b93a7; font-size: 12px;">in</span></div>
+          <div class="in" style="justify-content: space-between; border-color: #22d3ee; box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);"><span>1.8</span><span style="color: #22d3ee; font-size: 12px;">lb</span></div>
+        </div>
+        <div style="display: flex; gap: 8px;"><div class="pill">+ Insure $100</div><div class="pill">+ Signature</div></div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px; min-height: 0;">
+      <div class="glass" style="padding: 28px 28px 24px; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 20px; background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(34, 211, 238, 0.12)); border-color: rgba(167, 139, 250, 0.35);">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div class="lbl" style="color: #c4b5fd;">Best price · USPS Ground Advantage</div>
+          <div class="disp" style="font-size: 72px; line-height: 0.95; background: linear-gradient(90deg, #ffffff, #c4b5fd 60%, #67e8f9); -webkit-background-clip: text; background-clip: text; color: transparent;">$5.68</div>
+          <div style="font-size: 14px; color: #c9cfdb;">Arrives Mon, Sep 7 · <span style="text-decoration: line-through; color: #8b93a7;">$10.80 retail</span> · you save <b style="color: #67e8f9;">$5.12</b></div>
+        </div>
+        <div style="height: 52px; padding: 0 26px; border-radius: 999px; background: linear-gradient(90deg, #7c3aed, #22d3ee); color: #0b0d12; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(124, 58, 237, 0.45);">Buy label<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"></path></svg></div>
+      </div>
+
+      <div class="glass" style="display: flex; flex-direction: column; overflow: hidden;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);"><div class="lbl">All services · 11</div><div style="display: flex; gap: 6px;"><div class="pill pill-on" style="height: 30px;">Price</div><div class="pill" style="height: 30px;">Speed</div></div></div>
+        <div style="display: flex; flex-direction: column;">
+          <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr) 150px 110px 90px; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); background: rgba(255, 255, 255, 0.03);"><div style="width: 8px; height: 8px; border-radius: 999px; background: #22d3ee; box-shadow: 0 0 10px #22d3ee;"></div><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">USPS Ground Advantage</div><div style="font-size: 12px; color: #8b93a7;">Cheapest</div></div><div style="font-size: 13px; color: #8b93a7;">Mon, Sep 7 · 3 days</div><div style="font-size: 13px; color: #5f6678; text-decoration: line-through; text-align: right;">$10.80</div><div class="disp" style="font-size: 20px; text-align: right;">$5.68</div></div>
+          <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr) 150px 110px 90px; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);"><div style="width: 8px; height: 8px; border-radius: 999px; border: 1px solid #5f6678;"></div><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">UPS Ground Saver</div><div style="font-size: 12px; color: #8b93a7;">&nbsp;</div></div><div style="font-size: 13px; color: #8b93a7;">Tue, Sep 8 · 4 days</div><div style="font-size: 13px; color: #5f6678; text-decoration: line-through; text-align: right;">$11.32</div><div class="disp" style="font-size: 20px; text-align: right;">$7.16</div></div>
+          <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr) 150px 110px 90px; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);"><div style="width: 8px; height: 8px; border-radius: 999px; border: 1px solid #5f6678;"></div><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">FedEx Ground Economy</div><div style="font-size: 12px; color: #8b93a7;">&nbsp;</div></div><div style="font-size: 13px; color: #8b93a7;">Wed, Sep 9 · 4 days</div><div></div><div class="disp" style="font-size: 20px; text-align: right;">$7.49</div></div>
+          <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr) 150px 110px 90px; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06);"><div style="width: 8px; height: 8px; border-radius: 999px; border: 1px solid #5f6678;"></div><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">USPS Priority Mail</div><div style="font-size: 12px; color: #a78bfa;">Fastest</div></div><div style="font-size: 13px; color: #8b93a7;">Sat, Sep 5 · 2 days</div><div style="font-size: 13px; color: #5f6678; text-decoration: line-through; text-align: right;">$11.95</div><div class="disp" style="font-size: 20px; text-align: right;">$8.07</div></div>
+          <div style="display: grid; grid-template-columns: 8px minmax(0, 1fr) 150px 110px 90px; align-items: center; gap: 16px; padding: 14px 20px;"><div style="width: 8px; height: 8px; border-radius: 999px; border: 1px solid #5f6678;"></div><div style="display: flex; flex-direction: column; gap: 2px;"><div style="font-size: 15px; font-weight: 600;">FedEx Ground</div><div style="font-size: 12px; color: #8b93a7;">&nbsp;</div></div><div style="font-size: 13px; color: #8b93a7;">Tue, Sep 8 · 3 days</div><div></div><div class="disp" style="font-size: 20px; text-align: right;">$15.26</div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

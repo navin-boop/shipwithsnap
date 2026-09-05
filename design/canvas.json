@@ -1,10 +1,18 @@
 {
   "pages": [
-    { "id": "page-product", "name": "Product" },
+    { "id": "page-redesign", "name": "Redesign directions" },
+    { "id": "page-product", "name": "Product (v1, bold editorial)" },
     { "id": "page-system", "name": "System design" },
-    { "id": "page-directions", "name": "Directions (archive)" }
+    { "id": "page-directions", "name": "Early sketches (archive)" }
   ],
   "artboards": [
+    { "file": "StudioShip.dc.html", "title": "Studio · Ship", "page": "page-redesign", "x": 0, "y": 0, "w": 1440, "h": 900 },
+    { "file": "StudioLanding.dc.html", "title": "Studio · Landing hero", "page": "page-redesign", "x": 1560, "y": 0, "w": 1440, "h": 900 },
+    { "file": "NightshiftShip.dc.html", "title": "Nightshift · Ship", "page": "page-redesign", "x": 0, "y": 1180, "w": 1440, "h": 900 },
+    { "file": "NightshiftLanding.dc.html", "title": "Nightshift · Landing hero", "page": "page-redesign", "x": 1560, "y": 1180, "w": 1440, "h": 900 },
+    { "file": "SunnyShip.dc.html", "title": "Sunny · Ship", "page": "page-redesign", "x": 0, "y": 2360, "w": 1440, "h": 900 },
+    { "file": "SunnyLanding.dc.html", "title": "Sunny · Landing hero", "page": "page-redesign", "x": 1560, "y": 2360, "w": 1440, "h": 900 },
+
     { "file": "Landing.dc.html", "title": "Landing page", "page": "page-product", "x": 0, "y": 0, "w": 1440, "h": 3250, "print": "flow" },
     { "file": "Auth.dc.html", "title": "Sign up / Log in", "page": "page-product", "x": 1560, "y": 0, "w": 1000, "h": 720, "is_interactive": true },
     { "file": "Main.dc.html", "title": "Ship — rate & buy", "page": "page-product", "x": 2640, "y": 0, "w": 1440, "h": 900, "is_interactive": true },
@@ -29,14 +37,15 @@
     { "file": "SystemMap.dc.html", "title": "System map (scope sketch)", "page": "page-directions", "x": 0, "y": 0, "w": 1200, "h": 860 },
     { "file": "DirectionA.dc.html", "title": "Direction A · Crisp utility", "page": "page-directions", "x": 0, "y": 1060, "w": 1000, "h": 720 },
     { "file": "DirectionB.dc.html", "title": "Direction B · Warm & friendly", "page": "page-directions", "x": 1100, "y": 1060, "w": 1000, "h": 720 },
-    { "file": "DirectionC.dc.html", "title": "Direction C · Bold editorial (chosen)", "page": "page-directions", "x": 2200, "y": 1060, "w": 1000, "h": 720 }
+    { "file": "DirectionC.dc.html", "title": "Direction C · Bold editorial (v1)", "page": "page-directions", "x": 2200, "y": 1060, "w": 1000, "h": 720 }
   ],
   "annotations": [
-    { "id": "note-product", "page": "page-product", "x": 1560, "y": -150, "w": 420, "text": "Product · Direction C\n\nScreens with a dot in the header are clickable: Ship (change weight, package, extras, pick a rate, Buy), Shipments (filters), Batch (select rows), Billing (default card), Reports (date range, hover bars), Settings (tabs, label format), phone Ship flow (steps).\n\nAll names, addresses, rates and totals are sample data. Bracketed [placeholders] on the landing and tracking pages are real facts I don't have." },
-    { "id": "note-system", "page": "page-system", "x": 0, "y": -130, "w": 420, "text": "System design · read 1 → 7\n\nArchitecture, then the data it stores, the API on top, and the three flows that carry money or state: buying a label, tracking, pay-as-you-go billing on Stripe. EasyPost is the single shipping provider — rates, labels, refunds, trackers, address verification — behind a thin interface (7), so nothing else in the system knows about it." },
-    { "id": "note-dir-a", "page": "page-directions", "x": 0, "y": 900, "w": 320, "text": "A · Crisp utility\n\nFor: sellers shipping 20–200 packages a day who live in this screen. Numbers align, rows are dense, nothing decorative.\n\nTradeoff: reads cold to a first-time seller; the landing page has to do the warmth." },
-    { "id": "note-dir-b", "page": "page-directions", "x": 1100, "y": 900, "w": 320, "text": "B · Warm & friendly\n\nFor: the kitchen-table seller shipping 3 a week who finds carrier sites scary. Copy talks, big targets, one card per rate.\n\nTradeoff: spends vertical space — batch shipping and dense lists need a tighter variant." },
-    { "id": "note-dir-c", "page": "page-directions", "x": 2200, "y": 900, "w": 320, "text": "C · Bold editorial — chosen\n\nFor: a brand that wants to be remembered — the savings number IS the hero. Strong on marketing pages and the tracking page customers see.\n\nTradeoff: the hardest to keep readable in dense tables and settings screens; needs discipline." }
+    { "id": "note-redesign", "page": "page-redesign", "x": 0, "y": -220, "w": 560, "text": "Three modern directions for the team to choose from — each shown on the two screens that matter most (Ship, and the landing hero). Same product, same copy; only the visual system changes.\n\nPick one and the whole app gets re-skinned to it: tokens, fonts, buttons, inputs, nav, cards. Mix is fine too (\"Studio layout, Sunny colours\")." },
+    { "id": "note-studio", "page": "page-redesign", "x": 3080, "y": 0, "w": 340, "text": "STUDIO — clean SaaS\n\nPlus Jakarta Sans · light neutrals · indigo accent · 12–14px radii · soft shadows · sidebar navigation · rates as radio cards.\n\nFor: teams who want it to feel like a serious, familiar tool (Linear / Stripe territory).\nTradeoff: the safest choice — it will look like a lot of other software." },
+    { "id": "note-nightshift", "page": "page-redesign", "x": 3080, "y": 1180, "w": 340, "text": "NIGHTSHIFT — dark, glowing\n\nSpace Grotesk + DM Sans · near-black · violet→cyan gradient accent · glass cards · one huge price hero.\n\nFor: a brand that wants to feel premium and different; great on marketing pages.\nTradeoff: dark UIs are harder for long daily use and for printing/label previews; needs a light mode eventually." },
+    { "id": "note-sunny", "page": "page-redesign", "x": 3080, "y": 2360, "w": 340, "text": "SUNNY — warm, playful\n\nSora + Nunito · cream · coral + teal + yellow · big radii · 2px outlines with offset shadows · sticker badges (\"Cheapest!\") · stepper on Ship.\n\nFor: small sellers who find carrier sites intimidating — friendly, obvious, fun.\nTradeoff: dense screens (batch, reports) need a calmer variant of the same system." },
+    { "id": "note-product", "page": "page-product", "x": 1560, "y": -150, "w": 420, "text": "v1 · Bold editorial (Direction C) — what is built and live today. Kept for reference; superseded once a redesign direction is picked." },
+    { "id": "note-system", "page": "page-system", "x": 0, "y": -130, "w": 420, "text": "System design · read 1 → 7\n\nArchitecture, then the data it stores, the API on top, and the three flows that carry money or state: buying a label, tracking, pay-as-you-go billing on Stripe. EasyPost is the single shipping provider — rates, labels, refunds, trackers, address verification — behind a thin interface (7), so nothing else in the system knows about it. Unaffected by the visual redesign." }
   ],
-  "launch": { "view": "canvas", "page": "page-product" }
+  "launch": { "view": "canvas", "page": "page-redesign" }
 }
