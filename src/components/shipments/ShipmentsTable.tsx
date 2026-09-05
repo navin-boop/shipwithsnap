@@ -73,7 +73,7 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
               e.preventDefault();
               go({ q: search });
             }}
-            className="flex h-10 w-[280px] items-center gap-2 border-[1.5px] border-ink px-3"
+            className="flex h-10 w-full items-center gap-2 border-[1.5px] border-ink px-3 sm:w-[280px]"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, tracking, city" className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted" />

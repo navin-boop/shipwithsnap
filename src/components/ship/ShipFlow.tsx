@@ -251,7 +251,7 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount }: ShipFlowProps) {
               <Chip selected={pkg === "flat_rate"} onClick={() => setPkg("flat_rate")} disabled={!!label}>Flat rate</Chip>
             </div>
             {pkg === "flat_rate" ? (
-              <div className="grid grid-cols-[minmax(0,1fr)_120px] items-end gap-4">
+              <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-[minmax(0,1fr)_120px]">
                 <div className="flex flex-wrap gap-2">
                   {FLAT_RATE.map((x) => (
                     <Chip key={x.code} selected={flat === x.code} onClick={() => setFlat(x.code)} disabled={!!label}>{x.label}</Chip>
@@ -260,7 +260,7 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount }: ShipFlowProps) {
                 <Input label="Weight" unit="lb" inputMode="decimal" value={weightLb} onChange={(e) => setWeightLb(e.target.value)} className="[&_label]:text-electric [&_input]:border-electric" disabled={!!label} />
               </div>
             ) : (
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <Input label="Length" unit="in" inputMode="decimal" value={dims.l} onChange={(e) => setDims({ ...dims, l: e.target.value })} disabled={!!label} />
                 <Input label="Width" unit="in" inputMode="decimal" value={dims.w} onChange={(e) => setDims({ ...dims, w: e.target.value })} disabled={!!label} />
                 <Input label="Height" unit="in" inputMode="decimal" value={pkg === "mailer" ? "1" : dims.h} onChange={(e) => setDims({ ...dims, h: e.target.value })} disabled={!!label || pkg === "mailer"} />
@@ -307,8 +307,9 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount }: ShipFlowProps) {
                 />
               ))}
               {quoting && !rates.length && [0, 1, 2, 3].map((i) => (
-                <div key={i} className="grid animate-pulse grid-cols-[1.7fr_1fr_0.7fr_0.8fr] items-center border-b border-hairline px-6 py-5 sm:px-8">
-                  <div className="h-4 w-40 bg-hairline" /><div className="h-3 w-24 bg-hairline" /><div className="h-3 w-12 bg-hairline" /><div className="ml-auto h-5 w-16 bg-hairline" />
+                <div key={i} className="flex animate-pulse items-center justify-between border-b border-hairline px-5 py-5 sm:px-8">
+                  <div className="flex flex-col gap-2"><div className="h-4 w-40 bg-hairline" /><div className="h-3 w-24 bg-hairline" /></div>
+                  <div className="h-6 w-16 bg-hairline" />
                 </div>
               ))}
             </div>

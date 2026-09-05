@@ -33,7 +33,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           className={cn(
             "w-full bg-transparent border-0 border-b-2 border-ink font-medium text-ink outline-none",
             "placeholder:text-muted focus:border-electric",
-            size === "lg" ? "h-14 text-[28px]" : "h-11 text-[15px]",
+            // 16px on phones so iOS doesn't zoom the page on focus; 15px per the design above sm.
+            size === "lg" ? "h-14 text-[28px]" : "h-11 text-base sm:text-[15px]",
             unit && "pr-8",
             error && "border-danger focus:border-danger",
           )}

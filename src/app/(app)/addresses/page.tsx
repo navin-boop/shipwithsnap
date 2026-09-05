@@ -31,7 +31,7 @@ export default async function AddressesPage({ searchParams }: { searchParams: Pr
           <h1 className="disp text-[40px]">Address book</h1>
           <p className="text-sm text-muted">Everyone you&apos;ve shipped to, verified once. Start typing a name on the Ship page to reuse one.</p>
         </div>
-        <form className="flex h-10 w-[280px] items-center gap-2 border-[1.5px] border-ink px-3">
+        <form className="flex h-10 w-full items-center gap-2 border-[1.5px] border-ink px-3 sm:w-[280px]">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
           <input name="q" defaultValue={q} placeholder="Search name, street, city" className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted" />
         </form>

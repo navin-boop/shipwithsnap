@@ -24,7 +24,7 @@ export function RateCalculator() {
           <Input label="From ZIP" inputMode="numeric" value={f.fromZip} onChange={set("fromZip")} />
           <Input label="To ZIP" inputMode="numeric" value={f.toZip} onChange={set("toZip")} />
         </div>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <Input label="Length" unit="in" inputMode="decimal" value={f.lengthIn} onChange={set("lengthIn")} />
           <Input label="Width" unit="in" inputMode="decimal" value={f.widthIn} onChange={set("widthIn")} />
           <Input label="Height" unit="in" inputMode="decimal" value={f.heightIn} onChange={set("heightIn")} />
@@ -48,15 +48,15 @@ export function RateCalculator() {
             <div className="flex flex-col border-t-2 border-ink">
               {res.rates.map((r, i) => (
                 <div key={r.carrier + r.serviceName} className={`flex items-center justify-between gap-4 px-6 py-3.5 sm:px-8 ${i === 0 ? "bg-ink text-paper" : "border-b border-ink"}`}>
-                  <div className="flex flex-col gap-0.5">
-                    <div className={`disp ${i === 0 ? "text-[22px]" : "text-base"}`}>{r.carrier} {r.serviceName}</div>
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <div className={`disp ${i === 0 ? "text-[20px] sm:text-[22px]" : "text-base"}`}>{r.carrier} {r.serviceName}</div>
                     <div className={`text-[11px] uppercase tracking-[0.8px] ${i === 0 ? "text-muted-on-ink" : "text-muted"}`}>
                       {r.estDays !== null ? `${r.estDays} days` : ""}{i === 0 ? " · cheapest" : ""}
                     </div>
                   </div>
-                  <div className="flex items-baseline gap-3">
-                    {r.retailCents !== null && <div className={`text-sm line-through ${i === 0 ? "text-muted-on-ink" : "text-muted"}`}>{formatCents(r.retailCents)}</div>}
-                    <div className={`disp ${i === 0 ? "text-4xl text-lime" : "text-[22px]"}`}>{formatCents(r.priceCents)}</div>
+                  <div className="flex shrink-0 flex-col items-end sm:flex-row sm:items-baseline sm:gap-3">
+                    <div className={`disp ${i === 0 ? "text-[28px] text-lime sm:text-4xl" : "text-[22px]"} sm:order-2`}>{formatCents(r.priceCents)}</div>
+                    {r.retailCents !== null && <div className={`text-xs line-through sm:order-1 sm:text-sm ${i === 0 ? "text-muted-on-ink" : "text-muted"}`}>{formatCents(r.retailCents)}</div>}
                   </div>
                 </div>
               ))}

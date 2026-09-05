@@ -58,15 +58,15 @@ export function ReportsView({ report }: { report: Report }) {
 
         <div className="flex flex-col gap-2.5 px-6 py-6 sm:px-10">
           <div className="text-[15px] font-semibold">By service</div>
-          <div className="grid grid-cols-[1.6fr_0.6fr_0.8fr_0.8fr_0.8fr] border-b border-ink border-t-[1.5px] py-2">
-            <div className="lbl">Service</div><div className="lbl text-right">Labels</div><div className="lbl text-right">Spent</div><div className="lbl text-right">Avg</div><div className="lbl text-right">Saved</div>
+          <div className="grid grid-cols-[1.6fr_0.6fr_0.9fr_0.9fr] border-b border-ink border-t-[1.5px] py-2 sm:grid-cols-[1.6fr_0.6fr_0.8fr_0.8fr_0.8fr]">
+            <div className="lbl">Service</div><div className="lbl text-right">Labels</div><div className="lbl text-right">Spent</div><div className="lbl hidden text-right sm:block">Avg</div><div className="lbl text-right">Saved</div>
           </div>
           {report.services.map((s) => (
-            <div key={s.name} className="grid grid-cols-[1.6fr_0.6fr_0.8fr_0.8fr_0.8fr] items-center border-b border-hairline py-2.5 text-sm">
-              <div className="flex items-center gap-2.5"><span className="h-2 w-2 bg-ink" /><span className="truncate">{s.name}</span></div>
+            <div key={s.name} className="grid grid-cols-[1.6fr_0.6fr_0.9fr_0.9fr] items-center border-b border-hairline py-2.5 text-sm sm:grid-cols-[1.6fr_0.6fr_0.8fr_0.8fr_0.8fr]">
+              <div className="flex min-w-0 items-center gap-2.5"><span className="h-2 w-2 shrink-0 bg-ink" /><span className="truncate">{s.name}</span></div>
               <div className="text-right">{s.labels}</div>
               <div className="disp text-right text-[15px]">{formatCents(s.spendCents)}</div>
-              <div className="text-right text-muted">{formatCents(s.avgCents)}</div>
+              <div className="hidden text-right text-muted sm:block">{formatCents(s.avgCents)}</div>
               <div className="text-right font-semibold text-electric">{formatCents(s.savedCents)}</div>
             </div>
           ))}

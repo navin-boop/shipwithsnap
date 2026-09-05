@@ -127,10 +127,10 @@ export function TeamPanel({ members, invites, me }: { members: User[]; invites: 
   return (
     <div className="flex max-w-[760px] flex-col gap-7">
       <div className="flex flex-col">
-        <div className="grid grid-cols-[1.4fr_1fr_0.8fr] border-b border-ink py-2"><div className="lbl">Member</div><div className="lbl">Role</div><div className="lbl" /></div>
+        <div className="grid grid-cols-[1.4fr_1fr_auto] border-b border-ink py-2"><div className="lbl">Member</div><div className="lbl">Role</div><div className="lbl" /></div>
         {members.map((m) => (
-          <div key={m.id} className="grid grid-cols-[1.4fr_1fr_0.8fr] items-center border-b border-hairline py-3 text-sm">
-            <div className="flex flex-col"><div className="font-semibold">{m.name ?? m.email}</div><div className="text-xs text-muted">{m.email}{m.id === me ? " · you" : ""}</div></div>
+          <div key={m.id} className="grid grid-cols-[1.4fr_1fr_auto] items-center gap-2 border-b border-hairline py-3 text-sm">
+            <div className="flex min-w-0 flex-col"><div className="truncate font-semibold">{m.name ?? m.email}</div><div className="truncate text-xs text-muted">{m.email}{m.id === me ? " · you" : ""}</div></div>
             <div>
               {m.id === me ? <span className="lbl text-ink">{m.role}</span> : (
                 <select defaultValue={m.role} onChange={(e) => start(async () => { const r = await changeRole(m.id, e.target.value as "owner"); if (!r.ok) setMsg(r.error); })} className="h-9 border-[1.5px] border-ink bg-transparent px-2 text-[11px] font-semibold uppercase tracking-[0.8px]">
@@ -142,7 +142,7 @@ export function TeamPanel({ members, invites, me }: { members: User[]; invites: 
           </div>
         ))}
         {invites.map((i) => (
-          <div key={i.id} className="grid grid-cols-[1.4fr_1fr_0.8fr] items-center border-b border-hairline py-3 text-sm">
+          <div key={i.id} className="grid grid-cols-[1.4fr_1fr_auto] items-center gap-2 border-b border-hairline py-3 text-sm">
             <div className="flex flex-col"><div className="font-semibold">{i.email}</div><div className="text-xs text-muted">Invited · expires {i.expiresAt.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div></div>
             <div className="lbl text-ink">{i.role}</div>
             <div className="text-right"><button type="button" className="lbl text-danger" onClick={() => start(async () => { await revokeInvite(i.id); })}>Revoke</button></div>
@@ -209,12 +209,12 @@ export function ApiPanel({ keys, endpoints }: { keys: ApiKey[]; endpoints: Webho
     <div className="flex max-w-[800px] flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col">
-          <div className="grid grid-cols-[1.2fr_1.4fr_0.8fr_0.6fr] border-b border-ink border-t-2 py-2"><div className="lbl">Name</div><div className="lbl">Key</div><div className="lbl">Last used</div><div className="lbl" /></div>
+          <div className="grid grid-cols-[1fr_1fr_auto] border-b border-ink border-t-2 py-2 sm:grid-cols-[1.2fr_1.4fr_0.8fr_0.6fr]"><div className="lbl">Name</div><div className="lbl">Key</div><div className="lbl hidden sm:block">Last used</div><div className="lbl" /></div>
           {keys.map((k) => (
-            <div key={k.id} className={cn("grid grid-cols-[1.2fr_1.4fr_0.8fr_0.6fr] items-center border-b border-hairline py-3 text-sm", k.revokedAt && "opacity-50")}>
-              <div className="font-semibold">{k.name}</div>
-              <div className="font-mono text-[13px]">{k.prefix}…{k.revokedAt ? " (revoked)" : ""}</div>
-              <div className="text-muted">{k.lastUsedAt ? k.lastUsedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Never"}</div>
+            <div key={k.id} className={cn("grid grid-cols-[1fr_1fr_auto] items-center gap-2 border-b border-hairline py-3 text-sm sm:grid-cols-[1.2fr_1.4fr_0.8fr_0.6fr]", k.revokedAt && "opacity-50")}>
+              <div className="truncate font-semibold">{k.name}</div>
+              <div className="truncate font-mono text-[13px]">{k.prefix}…{k.revokedAt ? " (revoked)" : ""}</div>
+              <div className="hidden text-muted sm:block">{k.lastUsedAt ? k.lastUsedAt.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Never"}</div>
               <div className="text-right">{!k.revokedAt && <button type="button" className="lbl text-danger" onClick={() => confirm("Revoke this key? Anything using it stops working immediately.") && start(async () => { await revokeApiKey(k.id); })}>Revoke</button>}</div>
             </div>
           ))}
