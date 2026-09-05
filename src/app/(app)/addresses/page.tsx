@@ -31,12 +31,12 @@ export default async function AddressesPage({ searchParams }: { searchParams: Pr
           <h1 className="disp text-[40px]">Address book</h1>
           <p className="text-sm text-muted">Everyone you&apos;ve shipped to, verified once. Start typing a name on the Ship page to reuse one.</p>
         </div>
-        <form className="flex h-10 w-full items-center gap-2 border-[1.5px] border-ink px-3 sm:w-[280px]">
+        <form className="flex h-10 w-full items-center gap-2 rounded-pill border-2 border-ink bg-surface px-3 sm:w-[280px]">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
           <input name="q" defaultValue={q} placeholder="Search name, street, city" className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted" />
         </form>
       </div>
-      <div className="hidden grid-cols-[1.3fr_2fr_1fr_0.8fr_0.8fr] items-center border-b border-ink border-t-2 px-10 py-2.5 md:grid">
+      <div className="hidden grid-cols-[1.3fr_2fr_1fr_0.8fr_0.8fr] items-center border-b border-line border-t-2 px-10 py-2.5 md:grid">
         <div className="lbl">Name</div><div className="lbl">Address</div><div className="lbl">Type</div><div className="lbl text-right">Shipments</div><div className="lbl text-right">Last shipped</div>
       </div>
       <div className="flex flex-col">
@@ -51,7 +51,7 @@ export default async function AddressesPage({ searchParams }: { searchParams: Pr
         ))}
         {!rows.length && <div className="px-6 py-12 text-sm text-muted sm:px-10">{q ? "No addresses match." : "No recipients yet — they're saved automatically when you ship."}</div>}
       </div>
-      <div className="mt-auto flex items-center justify-between border-t-2 border-ink px-6 py-4 text-[13px] text-muted sm:px-10">
+      <div className="mt-auto flex items-center justify-between border-t-2 border-line px-6 py-4 text-[13px] text-muted sm:px-10">
         <div>{rows.length} address{rows.length === 1 ? "" : "es"}</div>
       </div>
     </main>

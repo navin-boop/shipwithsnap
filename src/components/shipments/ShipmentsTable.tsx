@@ -73,13 +73,13 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
               e.preventDefault();
               go({ q: search });
             }}
-            className="flex h-10 w-full items-center gap-2 border-[1.5px] border-ink px-3 sm:w-[280px]"
+            className="flex h-10 w-full items-center gap-2 rounded-pill border-2 border-ink bg-surface px-3 sm:w-[280px]"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, tracking, city" className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted" />
           </form>
-          <Link href="/addresses" className="inline-flex h-10 items-center border-[1.5px] border-ink px-4 text-[11px] font-semibold uppercase tracking-[0.8px]">Address book</Link>
-          <a href={`/api/exports/shipments.csv?filter=${filter}${q ? `&q=${encodeURIComponent(q)}` : ""}`} className="inline-flex h-10 items-center border-[1.5px] border-ink px-4 text-[11px] font-semibold uppercase tracking-[0.8px]">Export CSV</a>
+          <Link href="/addresses" className="inline-flex h-10 items-center rounded-pill border-2 border-ink bg-surface px-4 text-[14px] font-extrabold">Address book</Link>
+          <a href={`/api/exports/shipments.csv?filter=${filter}${q ? `&q=${encodeURIComponent(q)}` : ""}`} className="inline-flex h-10 items-center rounded-pill border-2 border-ink bg-surface px-4 text-[14px] font-extrabold">Export CSV</a>
         </div>
       </div>
 
@@ -89,7 +89,7 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
         ))}
       </div>
 
-      <div className="hidden grid-cols-[40px_1.5fr_1.4fr_1fr_1fr_0.7fr_0.9fr] items-center border-b border-ink border-t-2 px-10 py-2.5 md:grid">
+      <div className="hidden grid-cols-[40px_1.5fr_1.4fr_1fr_1fr_0.7fr_0.9fr] items-center border-b border-line border-t-2 px-10 py-2.5 md:grid">
         <Checkbox checked={allSelected} onChange={(v) => setSelected(v ? new Set(rows.map((r) => r.labelId)) : new Set())} label="Select all" />
         <div className="lbl">Recipient</div><div className="lbl">Service</div><div className="lbl">Tracking</div><div className="lbl">Status</div><div className="lbl text-right">Cost</div><div className="lbl text-right">Bought</div>
       </div>
@@ -104,7 +104,7 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
               <div className="flex flex-col gap-0.5"><div className="text-sm font-semibold">{r.name}</div><div className="text-xs text-muted">{r.city}</div></div>
               <div className="col-start-2 text-sm md:col-start-auto">{r.service}</div>
               <Link href={`/t/${r.trackingToken}`} target="_blank" className="col-start-2 text-sm tracking-[0.4px] text-ink-2 md:col-start-auto">{r.trackingNumber}</Link>
-              <div className={cn("col-start-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.8px] md:col-start-auto", s.color)}>
+              <div className={cn("col-start-2 inline-flex items-center gap-1.5 text-[14px] font-extrabold md:col-start-auto", s.color)}>
                 <span className="h-2 w-2 bg-current" />
                 <span>{s.label}{r.refundStatus === "submitted" ? " · refund pending" : ""}</span>
               </div>
@@ -112,7 +112,7 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
               <div className="col-start-2 flex items-center gap-3 text-sm text-muted md:col-start-auto md:justify-end">
                 <span>{when(r.purchasedAt)}</span>
                 {r.status !== "voided" && (
-                  <button type="button" title="Print label" aria-label={`Print label for ${r.name}`} onClick={() => window.open(`/api/labels/${r.labelId}/file`, "_blank", "noopener")} className="flex h-8 w-8 items-center justify-center border-[1.5px] border-ink text-ink hover:bg-ink hover:text-paper">
+                  <button type="button" title="Print label" aria-label={`Print label for ${r.name}`} onClick={() => window.open(`/api/labels/${r.labelId}/file`, "_blank", "noopener")} className="flex h-8 w-8 items-center justify-center rounded-pill border-2 border-ink bg-surface text-ink hover:bg-ink hover:text-paper">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z" /></svg>
                   </button>
                 )}
@@ -123,7 +123,7 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
         {!rows.length && <div className="px-6 py-12 text-sm text-muted sm:px-10">{q ? "Nothing matches that search." : "No shipments here yet."}</div>}
       </div>
 
-      <div className="sticky bottom-0 mt-auto flex flex-col gap-3 border-t-2 border-ink bg-paper px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+      <div className="sticky bottom-0 mt-auto flex flex-col gap-3 border-t-2 border-line bg-paper px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-10">
         <div className="text-[13px] text-muted">
           {selectedRows.length ? `${selectedRows.length} selected` : `Showing ${rows.length} of ${counts[filter]} shipments`}
           {notice && <span className="ml-3 text-ink">{notice}</span>}

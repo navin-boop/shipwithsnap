@@ -20,13 +20,13 @@ export function ReportsView({ report }: { report: Report }) {
         <h1 className="disp text-[40px]">Reports</h1>
         <div className="flex flex-wrap gap-2">
           {RANGES.map(([k, label]) => (
-            <Link key={k} href={`/reports?range=${k}`} className={cn("inline-flex h-9 items-center border-[1.5px] border-ink px-3.5 text-[11px] font-semibold uppercase tracking-[0.8px]", report.range === k ? "bg-ink text-paper hover:text-paper" : "")}>{label}</Link>
+            <Link key={k} href={`/reports?range=${k}`} className={cn("inline-flex h-10 items-center rounded-pill border-2 border-ink px-4 text-[14px] font-extrabold", report.range === k ? "bg-ink text-yellow hover:text-yellow" : "bg-surface")}>{label}</Link>
           ))}
-          <a href={`/api/exports/shipments.csv`} className="inline-flex h-9 items-center border-[1.5px] border-ink px-3.5 text-[11px] font-semibold uppercase tracking-[0.8px]">Export CSV</a>
+          <a href={`/api/exports/shipments.csv`} className="inline-flex h-9 items-center rounded-pill border-2 border-ink bg-surface px-3.5 text-[14px] font-extrabold">Export CSV</a>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 border-b-2 border-t-2 border-ink md:grid-cols-4">
+      <div className="grid grid-cols-2 border-b-2 border-t-2 border-line md:grid-cols-4">
         <Tile label="Postage spent" value={formatCents(report.totals.spendCents)} />
         <Tile label="Labels bought" value={String(report.totals.labels)} />
         <Tile label="Saved vs retail" value={formatCents(report.totals.savedCents)} accent />
@@ -34,13 +34,13 @@ export function ReportsView({ report }: { report: Report }) {
       </div>
 
       <div className="grid flex-1 grid-cols-1 lg:grid-cols-[1.3fr_1fr]">
-        <div className="flex flex-col gap-3.5 px-6 py-6 sm:px-10 lg:border-r-2 lg:border-ink">
+        <div className="flex flex-col gap-3.5 px-6 py-6 sm:px-10 lg:border-r-2 lg:border-line">
           <div className="flex items-baseline justify-between">
             <div className="text-[15px] font-semibold">Postage spent by {report.bucket}</div>
             <div className="text-[13px] text-muted">{h ? `${h.label} · ${formatCents(h.spendCents)} · ${h.labels} label${h.labels === 1 ? "" : "s"}` : "Hover a bar for detail"}</div>
           </div>
           <div className="flex min-h-[260px] flex-1 flex-col">
-            <div className="grid flex-1 items-end gap-0.5 border-b-[1.5px] border-ink px-2" style={{ gridTemplateColumns: `repeat(${report.series.length}, minmax(0, 1fr))` }}>
+            <div className="grid flex-1 items-end gap-0.5 border-b-2 border-line px-2" style={{ gridTemplateColumns: `repeat(${report.series.length}, minmax(0, 1fr))` }}>
               {report.series.map((s, i) => (
                 <div key={i} className="flex h-full cursor-pointer flex-col items-center justify-end gap-1.5" onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(-1)}>
                   <div className={cn("text-xs font-semibold", hover === i ? "text-electric" : "text-transparent")}>{formatCents(s.spendCents)}</div>
@@ -58,7 +58,7 @@ export function ReportsView({ report }: { report: Report }) {
 
         <div className="flex flex-col gap-2.5 px-6 py-6 sm:px-10">
           <div className="text-[15px] font-semibold">By service</div>
-          <div className="grid grid-cols-[1.6fr_0.6fr_0.9fr_0.9fr] border-b border-ink border-t-[1.5px] py-2 sm:grid-cols-[1.6fr_0.6fr_0.8fr_0.8fr_0.8fr]">
+          <div className="grid grid-cols-[1.6fr_0.6fr_0.9fr_0.9fr] border-b border-line border-t-[1.5px] py-2 sm:grid-cols-[1.6fr_0.6fr_0.8fr_0.8fr_0.8fr]">
             <div className="lbl">Service</div><div className="lbl text-right">Labels</div><div className="lbl text-right">Spent</div><div className="lbl hidden text-right sm:block">Avg</div><div className="lbl text-right">Saved</div>
           </div>
           {report.services.map((s) => (
@@ -80,7 +80,7 @@ export function ReportsView({ report }: { report: Report }) {
 
 function Tile({ label, value, accent, last }: { label: string; value: string; accent?: boolean; last?: boolean }) {
   return (
-    <div className={cn("flex flex-col gap-1.5 px-6 py-[22px] sm:px-10", !last && "border-r border-ink", "max-md:[&:nth-child(2)]:border-r-0 max-md:[&:nth-child(-n+2)]:border-b")}>
+    <div className={cn("flex flex-col gap-1.5 px-6 py-[22px] sm:px-10", !last && "border-r border-line", "max-md:[&:nth-child(2)]:border-r-0 max-md:[&:nth-child(-n+2)]:border-b")}>
       <div className="lbl">{label}</div>
       <div className={cn("disp text-[32px] sm:text-[40px]", accent && "text-electric")}>{value}</div>
     </div>

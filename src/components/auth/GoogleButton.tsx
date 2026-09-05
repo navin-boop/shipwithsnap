@@ -1,13 +1,13 @@
 import { logInWithGoogle } from "@/lib/auth/actions";
 import { GoogleIcon } from "./AuthPanel";
 
-/** 52px outline button; rendered only when Google keys are configured. */
+/** Outline pill; rendered only when Google keys are configured. */
 export function GoogleButton() {
   return (
     <form action={logInWithGoogle}>
       <button
         type="submit"
-        className="flex h-[52px] w-full items-center justify-center gap-3 border-2 border-ink text-[13px] font-semibold uppercase tracking-[0.8px] hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric"
+        className="flex h-[52px] w-full items-center justify-center gap-3 rounded-pill border-2 border-ink bg-surface font-display text-[15px] font-extrabold hover:bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
       >
         <GoogleIcon />
         <span>Continue with Google</span>

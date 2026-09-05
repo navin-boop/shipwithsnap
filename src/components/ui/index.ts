@@ -9,3 +9,4 @@ export { Checkbox } from "./Checkbox";
 export { RateRow } from "./RateRow";
 export type { RateRowProps } from "./RateRow";
 export { Wordmark } from "./Wordmark";
+export { CarrierLogo } from "./CarrierLogo";

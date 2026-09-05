@@ -18,9 +18,9 @@ export default function DocsPage() {
         <h1 className="disp text-[44px] leading-[0.95] sm:text-[64px]">API</h1>
         <p className="max-w-[640px] text-lg leading-[1.45] text-ink-2">The same endpoints the app uses. JSON in, JSON out, errors as <code>application/problem+json</code>. Create a key under Settings → API &amp; webhooks and send it as <code>Authorization: Bearer sk_…</code>.</p>
       </div>
-      <div className="flex flex-col border-t-2 border-ink">
+      <div className="flex flex-col border-t-2 border-line">
         {ENDPOINTS.map(([m, p, d]) => (
-          <div key={p} className="grid grid-cols-1 gap-2 border-b border-ink py-4 md:grid-cols-[80px_320px_1fr] md:gap-4">
+          <div key={p} className="grid grid-cols-1 gap-2 border-b border-line py-4 md:grid-cols-[80px_320px_1fr] md:gap-4">
             <div className="font-mono text-xs font-semibold">{m}</div>
             <div className="font-mono text-[13px]">{p}</div>
             <div className="text-sm text-ink-2">{d}</div>

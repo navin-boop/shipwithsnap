@@ -5,8 +5,7 @@ import { usePathname } from "next/navigation";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { cn } from "@/lib/cn";
 
-// Spec: the header on every app artboard (design/Main.dc.html etc.):
-// 56px tall, 2px ink rule, 40px gutters, 12px uppercase items, active item underlined 2px.
+// Spec: design/SunnyShip.dc.html header — 72px, pill nav, active = ink pill with yellow text.
 const items = [
   { href: "/ship", label: "Ship" },
   { href: "/shipments", label: "Shipments" },
@@ -24,10 +23,10 @@ export interface AppNavProps {
 export function AppNav({ cardLabel }: AppNavProps) {
   const pathname = usePathname();
   return (
-    <header className="box-border flex h-14 items-center justify-between gap-4 border-b-2 border-ink px-4 sm:px-10">
+    <header className="box-border flex h-[72px] items-center justify-between gap-4 px-4 sm:px-10">
       <div className="flex min-w-0 items-center gap-5 sm:gap-9">
         <Wordmark />
-        <nav className="flex gap-4 overflow-x-auto whitespace-nowrap sm:gap-[22px]">
+        <nav className="flex gap-0.5 overflow-x-auto whitespace-nowrap">
           {items.map((item) => {
             const active = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -36,8 +35,8 @@ export function AppNav({ cardLabel }: AppNavProps) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "pt-1 pb-0.5 text-xs font-semibold uppercase tracking-[0.8px] border-b-2",
-                  active ? "text-ink border-ink" : "text-muted border-transparent hover:text-ink",
+                  "rounded-pill px-3.5 py-2 text-[15px] font-extrabold",
+                  active ? "bg-ink text-yellow hover:text-yellow" : "text-muted hover:text-ink",
                 )}
               >
                 {item.label}
@@ -46,14 +45,9 @@ export function AppNav({ cardLabel }: AppNavProps) {
           })}
         </nav>
       </div>
-      <div className="flex items-center gap-4">
-        {cardLabel && (
-          <div className="hidden text-xs font-semibold uppercase tracking-[0.8px] md:block">
-            <span className="text-muted">Card </span>
-            {cardLabel}
-          </div>
-        )}
-        <div className="h-7 w-7 bg-ink" aria-hidden="true" />
+      <div className="flex items-center gap-3">
+        {cardLabel && <div className="hidden text-[14px] font-extrabold text-muted md:block">{cardLabel}</div>}
+        <div className="h-9 w-9 rounded-pill border-2 border-ink bg-teal" aria-hidden="true" />
       </div>
     </header>
   );

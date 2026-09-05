@@ -19,7 +19,7 @@ shoot ship "$TMP/ship.png"
 shoot label "$TMP/label.png"
 
 cp "$TMP/ship.png" "$OUT/ship-screen.png"                                  # hero: the whole Ship screen
-sips -c 440 1040 --cropOffset 280 40 "$TMP/ship.png" --out "$OUT/step-address.png" >/dev/null   # how it works 1
-sips -c 900 1760 --cropOffset 112 1120 "$TMP/ship.png" --out "$OUT/step-rates.png" >/dev/null   # how it works 2
-sips -c 1150 1760 --cropOffset 112 1120 "$TMP/label.png" --out "$OUT/step-label.png" >/dev/null # how it works 3
+sips -c 612 1088 --cropOffset 340 80 "$TMP/ship.png" --out "$OUT/step-address.png" >/dev/null   # how it works 1
+sips -c 900 1600 --cropOffset 320 1200 "$TMP/ship.png" --out "$OUT/step-rates.png" >/dev/null   # how it works 2
+sips -c 1000 1600 --cropOffset 300 1200 "$TMP/label.png" --out "$OUT/step-label.png" >/dev/null # how it works 3
 ls -la "$OUT"

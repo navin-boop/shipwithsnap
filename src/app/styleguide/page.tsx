@@ -2,18 +2,19 @@
 
 import { useState } from "react";
 import { AppNav } from "@/components/AppNav";
-import { ArrowIcon, Button, Checkbox, Chip, Input, RateRow, Switch, Wordmark } from "@/components/ui";
+import { ArrowIcon, Button, CarrierLogo, Checkbox, Chip, Input, RateRow, Switch, Wordmark } from "@/components/ui";
 
-// Mirrors design/Components.dc.html so the implementation can be checked against the sheet.
+// Sunny design system, live. Compare against design/SunnyShip.dc.html before shipping a screen.
 const swatches = [
-  ["Paper", "bg-paper border-[1.5px] border-ink", "#f2efe6 · bg"],
-  ["Surface", "bg-surface border-[1.5px] border-ink", "#ffffff · cards, print"],
-  ["Ink", "bg-ink", "#111111 · text, rules, selected"],
-  ["Ink 2", "bg-ink-2", "#3d3b36 · body on paper"],
-  ["Muted", "bg-muted", "#6b6860 · labels, hints"],
-  ["Hairline", "bg-hairline", "#c9c4b6 · row dividers, empty"],
-  ["Electric", "bg-electric", "#2d5bff · primary action, live"],
-  ["Lime", "bg-lime", "#c8ff3d · price on ink only"],
+  ["Cream", "bg-paper border-2 border-ink", "#fff8ee · page"],
+  ["White", "bg-surface border-2 border-ink", "#ffffff · cards"],
+  ["Ink", "bg-ink", "#2b2320 · text, outlines"],
+  ["Ink 2", "bg-ink-2", "#5c524b · body"],
+  ["Muted", "bg-muted", "#7a6f68 · labels"],
+  ["Hairline", "bg-hairline", "#e9dfd4 · quiet borders"],
+  ["Coral", "bg-coral", "#ff5c39 · primary"],
+  ["Teal", "bg-teal", "#0fa3a3 · verified, selected"],
+  ["Yellow", "bg-yellow", "#ffd23f · the price you pay"],
 ] as const;
 
 export default function Styleguide() {
@@ -25,104 +26,81 @@ export default function Styleguide() {
   return (
     <div className="min-h-screen bg-paper">
       <AppNav cardLabel="Visa ·· 4242" />
-      <main className="flex flex-col gap-0 px-12 py-10">
-        <div className="flex items-end justify-between pb-6">
+      <main className="flex flex-col gap-8 px-6 py-8 sm:px-12">
+        <div className="flex items-end justify-between">
           <div className="flex flex-col gap-1.5">
             <h1 className="disp text-[44px]">Snap design system</h1>
-            <p className="text-sm text-muted">
-              Implementation of design/Components.dc.html. Compare side by side before shipping a screen.
-            </p>
+            <p className="text-[15px] font-bold text-muted">Sunny — Sora + Nunito, cream, coral, teal, yellow, 2px outlines with offset shadows.</p>
           </div>
-          <Wordmark className="text-[28px]" />
+          <Wordmark className="text-[32px]" />
         </div>
 
-        <Section title="Color">
-          <div className="grid grid-cols-8 gap-3">
+        <section className="card flex flex-col gap-4 p-6">
+          <div className="lbl">Colour</div>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-9">
             {swatches.map(([name, cls, note]) => (
               <div key={name} className="flex flex-col gap-1.5">
-                <div className={`h-16 ${cls}`} />
-                <div className="text-xs font-semibold">{name}</div>
-                <div className="font-mono text-xs text-ink-2">{note}</div>
+                <div className={`h-16 rounded-[14px] ${cls}`} />
+                <div className="text-[13px] font-extrabold">{name}</div>
+                <div className="text-[12px] font-bold text-muted">{note}</div>
               </div>
             ))}
           </div>
-        </Section>
+        </section>
 
-        <Section title="Type">
-          <div className="grid grid-cols-2 gap-12">
-            <div className="flex flex-col gap-3">
-              <div className="disp text-[96px] leading-[0.9]">Syne 800</div>
-              <div className="font-mono text-xs text-ink-2">Display · 96 / 72 / 56 / 44 / 40 / 28 / 22 / 16 · line-height 0.9–0.95 · tracking −2%</div>
-            </div>
-            <div className="flex flex-col gap-3">
-              <p className="text-xl leading-[1.45] text-ink-2">
-                Archivo 400 for reading. Archivo 500 for inputs and names,{" "}
-                <span className="font-semibold">600 for emphasis and every button</span>.
-              </p>
-              <div className="font-mono text-xs text-ink-2">Body · 20 / 16 / 15 / 14 / 13 / 12 · line-height 1.45–1.55</div>
-              <div className="lbl">Label · Archivo 600 · 11px · tracking 1.2px · uppercase · muted</div>
-            </div>
+        <section className="card flex flex-col gap-4 p-6">
+          <div className="lbl">Type</div>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div className="flex flex-col gap-2"><div className="disp text-[72px]">Sora 800</div><div className="text-[13px] font-bold text-muted">Display · headlines, prices, buttons · 76 / 56 / 44 / 40 / 24 / 22 / 20</div></div>
+            <div className="flex flex-col gap-2"><p className="text-[20px] font-semibold leading-[1.5] text-ink-2">Nunito 600 for reading, <b className="font-extrabold text-ink">800 for labels and anything clickable</b>.</p><div className="text-[13px] font-bold text-muted">Body · 20 / 18 / 16 / 15 / 14 / 13</div></div>
           </div>
-        </Section>
+        </section>
 
-        <Section title="Buttons · 40 / 48 / 56 tall · square · uppercase 600">
+        <section className="card flex flex-col gap-4 p-6">
+          <div className="lbl">Buttons · 40 / 48 / 58 · pills</div>
           <div className="flex flex-wrap items-center gap-3">
             <Button size="lg" icon={<ArrowIcon />}>Primary — buy label</Button>
             <Button variant="secondary">Secondary</Button>
             <Button variant="outline">Outline</Button>
             <Button variant="outline" size="sm">Small outline</Button>
-            <div className="bg-ink p-3">
-              <Button variant="onInk">On ink — print</Button>
-            </div>
+            <div className="rounded-[14px] bg-ink p-3"><Button variant="onInk">On ink</Button></div>
             <Button variant="text">Text link</Button>
             <Button disabled>Disabled</Button>
           </div>
-        </Section>
+        </section>
 
-        <Section>
-          <div className="grid grid-cols-[1fr_1fr_1.6fr] gap-12">
-            <div className="flex flex-col gap-3.5">
-              <div className="lbl">Inputs · underline only</div>
-              <Input label="Default" defaultValue="418 Bergen St" />
-              <Input label="With unit" defaultValue="1.8" unit="lb" />
-              <Input label="Error" defaultValue="1121" error="ZIP needs 5 digits." />
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_1fr_1.4fr]">
+          <section className="card flex flex-col gap-4 p-6">
+            <div className="lbl">Inputs</div>
+            <Input label="Default" defaultValue="418 Bergen St" />
+            <Input label="With unit" defaultValue="1.8" unit="lb" />
+            <Input label="Error" defaultValue="1121" error="ZIP needs 5 digits." />
+          </section>
+          <section className="card flex flex-col gap-4 p-6">
+            <div className="lbl">Chips · toggles · carrier marks</div>
+            <div className="flex flex-wrap gap-2">
+              {["box", "mailer", "flat"].map((k) => (
+                <Chip key={k} selected={pkg === k} onClick={() => setPkg(k)}>{k === "box" ? "Box" : k === "mailer" ? "Poly mailer" : "Flat rate"}</Chip>
+              ))}
+              <Chip count={12}>Filter</Chip>
             </div>
-            <div className="flex flex-col gap-3.5">
-              <div className="lbl">Chips · toggles · 36–44 tall</div>
-              <div className="flex gap-2">
-                {["box", "mailer", "flat"].map((k) => (
-                  <Chip key={k} selected={pkg === k} onClick={() => setPkg(k)}>
-                    {k === "box" ? "Box" : k === "mailer" ? "Poly mailer" : "Flat rate"}
-                  </Chip>
-                ))}
-                <Chip count={12}>Filter</Chip>
-              </div>
-              <div className="flex items-center gap-4">
-                <Switch checked={on} onChange={setOn} label="Example switch" />
-                <Checkbox checked={checked} onChange={setChecked} label="Example checkbox" />
-                <div className="font-mono text-xs text-ink-2">switch · checkbox</div>
-              </div>
+            <div className="flex items-center gap-4">
+              <Switch checked={on} onChange={setOn} label="Example switch" />
+              <Checkbox checked={checked} onChange={setChecked} label="Example checkbox" />
+              <CarrierLogo carrier="USPS" size={40} /><CarrierLogo carrier="UPS" size={40} /><CarrierLogo carrier="FedEx" size={40} />
             </div>
-            <div className="flex flex-col gap-3.5">
-              <div className="lbl">Rate row · the core component</div>
-              <div className="flex flex-col border-t-2 border-ink" role="listbox">
-                <RateRow carrier="USPS" service="Ground Advantage" eta="Mon Sep 7" days={3} tag="Cheapest" retailCents={979} priceCents={643} selected={rate === "ga"} onSelect={() => setRate("ga")} />
-                <RateRow carrier="UPS" service="Ground Saver" eta="Tue Sep 8" days={4} retailCents={1132} priceCents={716} selected={rate === "ugs"} onSelect={() => setRate("ugs")} />
-              </div>
-              <div className="font-mono text-xs text-ink-2">Selected = inverted to ink, price in lime, name grows 16→22px.</div>
+            <div className="text-[12px] font-bold text-muted">Carrier marks show the official logos once the files are in public/carriers/.</div>
+          </section>
+          <section className="flex flex-col gap-4">
+            <div className="lbl px-1">Rate card · the core component</div>
+            <div className="flex flex-col gap-3 pt-2" role="listbox">
+              <RateRow carrier="USPS" service="Ground Advantage" eta="Monday" days={3} tag="Cheapest" retailCents={1080} priceCents={568} selected={rate === "ga"} onSelect={() => setRate("ga")} />
+              <RateRow carrier="UPS" service="Ground Saver" eta="Tuesday" days={4} retailCents={1132} priceCents={716} selected={rate === "ugs"} onSelect={() => setRate("ugs")} />
+              <RateRow carrier="FedEx" service="Ground Economy" eta="Wednesday" days={4} tag="Fastest" retailCents={null} priceCents={749} selected={rate === "fx"} onSelect={() => setRate("fx")} />
             </div>
-          </div>
-        </Section>
+          </section>
+        </div>
       </main>
     </div>
-  );
-}
-
-function Section({ title, children }: { title?: string; children: React.ReactNode }) {
-  return (
-    <section className="flex flex-col gap-3.5 border-t-2 border-ink py-6">
-      {title && <div className="lbl">{title}</div>}
-      {children}
-    </section>
   );
 }

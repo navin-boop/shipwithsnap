@@ -1,32 +1,32 @@
 import type { Metadata } from "next";
-import { Archivo, Syne } from "next/font/google";
+import { Nunito, Sora } from "next/font/google";
 import "./globals.css";
 
-const syne = Syne({
+const sora = Sora({
   subsets: ["latin"],
-  weight: ["700", "800"],
-  variable: "--font-syne",
+  weight: ["600", "700", "800"],
+  variable: "--font-sora",
   display: "swap",
 });
 
-const archivo = Archivo({
+const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-archivo",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-nunito",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Ship with Snap",
   description:
-    "The cheapest USPS and UPS rates for small sellers. No monthly fee — pay postage only.",
+    "The cheapest USPS, UPS and FedEx rates for small sellers. No monthly fee — pay postage only.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${syne.variable} ${archivo.variable}`}>
+    <html lang="en" className={`${sora.variable} ${nunito.variable}`}>
       <body>{children}</body>
     </html>
   );

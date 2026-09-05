@@ -1,30 +1,30 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-// Spec: design/Components.dc.html — "Buttons · 40 / 48 / 56 tall · square · uppercase 600".
+// Spec: design/SunnyShip.dc.html — pills, 2px ink outline, coral primary with an offset hard shadow.
 export type ButtonVariant =
-  | "primary" // electric bg, white text — the one action per screen
-  | "secondary" // ink bg, paper text
-  | "outline" // 1.5px ink border
-  | "onInk" // lime bg, ink text — only on ink panels
-  | "onInkOutline" // paper border, paper text — secondary action on ink panels
-  | "text"; // underlined text link
+  | "primary" // coral pill, ink outline, offset shadow — the one action per screen
+  | "secondary" // ink pill, yellow text
+  | "outline" // white pill, ink outline
+  | "onInk" // yellow pill on dark panels
+  | "onInkOutline" // cream outline on dark panels
+  | "text"; // underlined coral text
 
 export type ButtonSize = "sm" | "md" | "lg";
 
 const sizes: Record<ButtonSize, string> = {
-  sm: "h-10 px-4 text-[11px] tracking-[0.8px]",
-  md: "h-12 px-[22px] text-xs tracking-[1px]",
-  lg: "h-14 px-8 text-sm tracking-[1px]",
+  sm: "h-10 px-4 text-[13px]",
+  md: "h-12 px-[22px] text-[14px]",
+  lg: "h-[58px] px-7 text-[16px]",
 };
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-electric text-white",
-  secondary: "bg-ink text-paper",
-  outline: "border-[1.5px] border-ink text-ink",
-  onInk: "bg-lime text-ink",
-  onInkOutline: "border-[1.5px] border-paper text-paper",
-  text: "h-auto px-0 pb-0.5 border-b-2 border-current",
+  primary: "bg-coral text-white border-2 border-ink offset-shadow hover:translate-x-[1px] hover:translate-y-[1px] hover:[box-shadow:4px_4px_0_var(--color-ink)]",
+  secondary: "bg-ink text-yellow border-2 border-ink",
+  outline: "bg-surface text-ink border-2 border-ink hover:bg-paper",
+  onInk: "bg-yellow text-ink border-2 border-yellow",
+  onInkOutline: "bg-transparent text-paper border-2 border-paper/70 hover:border-paper",
+  text: "h-auto px-0 text-coral underline underline-offset-4 decoration-2",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -48,11 +48,11 @@ export function Button({
       type="button"
       disabled={disabled}
       className={cn(
-        "inline-flex items-center justify-center gap-3 font-semibold uppercase cursor-pointer select-none",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric",
+        "inline-flex items-center justify-center gap-2.5 rounded-pill font-display font-extrabold cursor-pointer select-none transition-transform",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal",
         sizes[size],
         disabled
-          ? "border-[1.5px] border-hairline text-hairline bg-transparent cursor-not-allowed"
+          ? "border-2 border-hairline bg-surface text-hairline cursor-not-allowed shadow-none"
           : variants[variant],
         className,
       )}
@@ -73,7 +73,7 @@ export function ArrowIcon({ size = 18 }: { size?: number }) {
       viewBox="0 0 20 20"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2.2"
+      strokeWidth="2.6"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"

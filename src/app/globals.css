@@ -1,64 +1,93 @@
 @import "tailwindcss";
 
-/* Design tokens — source of truth is design/Components.dc.html */
+/* Design tokens — Sunny direction (design/SunnyShip.dc.html, design/SunnyLanding.dc.html).
+   Token names are kept from v1 so components keep working; values are the Sunny palette. */
 @theme {
-  --color-paper: #f2efe6;
-  --color-surface: #ffffff;
-  --color-ink: #111111;
-  --color-ink-2: #3d3b36;
-  --color-muted: #6b6860;
-  --color-muted-on-ink: #b9b5aa;
-  --color-hairline: #c9c4b6;
-  --color-electric: #2d5bff;
-  --color-lime: #c8ff3d;
-  --color-danger: #b3261e;
+  --color-paper: #fff8ee; /* cream page background */
+  --color-surface: #ffffff; /* cards */
+  --color-ink: #2b2320; /* text, outlines */
+  --color-ink-2: #5c524b; /* body text */
+  --color-muted: #7a6f68; /* labels, hints */
+  --color-muted-on-ink: #d9cfc4; /* secondary text on ink panels */
+  --color-hairline: #e9dfd4; /* soft dividers, quiet card borders */
+  --color-line: #e9dfd4; /* alias used by page dividers */
+  --color-electric: #ff5c39; /* coral — primary action, links */
+  --color-coral: #ff5c39;
+  --color-coral-soft: #fff1ec;
+  --color-teal: #0fa3a3; /* verified, selected, success */
+  --color-teal-soft: #eaf7f7;
+  --color-lime: #ffd23f; /* yellow — the price you pay, highlights */
+  --color-yellow: #ffd23f;
+  --color-danger: #d93a2b;
 
-  --font-display: var(--font-syne), "Arial Black", sans-serif;
-  --font-body: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-sora), "Helvetica Neue", Arial, sans-serif;
+  --font-body: var(--font-nunito), "Helvetica Neue", Arial, sans-serif;
 
-  --radius-none: 0px;
-}
-
-:root {
-  color-scheme: light;
+  --radius-pill: 999px;
+  --radius-card: 22px;
+  --radius-field: 14px;
+  --radius-row: 18px;
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
   html,
   body {
     margin: 0;
     background: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-body);
+    font-weight: 600;
   }
-
   a {
     color: var(--color-ink);
   }
   a:hover {
-    color: var(--color-electric);
+    color: var(--color-coral);
+  }
+  input,
+  select,
+  textarea {
+    font-family: inherit;
   }
 }
 
-/* Type utilities that match the artboards exactly */
+/* Type utilities that match the artboards */
 @utility disp {
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 0.95;
+  line-height: 1;
 }
 
 @utility lbl {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 800;
   color: var(--color-muted);
 }
 
 @utility btn-text {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* Sunny's signature: 2px outline with an offset hard shadow */
+@utility card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-ink);
+  border-radius: 22px;
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+@utility card-quiet {
+  background: var(--color-surface);
+  border: 2px solid var(--color-hairline);
+  border-radius: 18px;
+}
+
+@utility offset-shadow {
+  box-shadow: 5px 5px 0 var(--color-ink);
 }

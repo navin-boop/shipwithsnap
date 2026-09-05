@@ -9,183 +9,158 @@ import stepAddress from "@/images/step-address.png";
 import stepLabel from "@/images/step-label.png";
 import stepRates from "@/images/step-rates.png";
 
-// Spec: design/Landing.dc.html. Product screenshots come from scripts/screenshots.sh (the dev mock at
-// /dev/screens). The stats strip and testimonial from the design are held back until there are real
-// numbers and a real quote to put in them.
+// Spec: design/SunnyLanding.dc.html. Product screenshots come from scripts/screenshots.sh.
 export const revalidate = 3600;
 
 export default async function HomePage() {
   const { rates, live } = await getSampleRates();
   const hero = rates[0];
   return (
-    <main className="flex flex-col">
+    <main className="relative flex flex-col overflow-hidden">
+      <div aria-hidden="true" className="pointer-events-none absolute right-[-120px] top-[140px] hidden h-[520px] w-[520px] rounded-pill bg-yellow/70 lg:block" />
+      <div aria-hidden="true" className="pointer-events-none absolute left-[-100px] top-[720px] h-[320px] w-[320px] rounded-pill bg-[#ffb4a2]/60" />
+
       {/* Hero */}
-      <section className="grid grid-cols-1 border-b-2 border-ink lg:grid-cols-[1fr_1.1fr]">
-        <div className="flex flex-col gap-8 px-6 py-14 sm:px-16 lg:border-r-2 lg:border-ink lg:py-24">
-          <h1 className="disp break-words text-[44px] leading-[0.9] sm:text-[64px] lg:text-[60px] xl:text-[72px]">
-            The cheapest USPS &amp; UPS rates.
-            <br />
-            <span className="text-electric">No monthly fee.</span>
+      <section className="relative grid grid-cols-1 gap-10 px-6 pb-16 pt-10 sm:px-16 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:pb-24 lg:pt-16">
+        <div className="flex flex-col gap-6">
+          <div className="inline-flex items-center gap-2 self-start rounded-pill border-2 border-ink bg-surface px-3.5 py-2 text-[13px] font-extrabold">USPS · UPS · FedEx — one list, cheapest first</div>
+          <h1 className="disp text-[48px] leading-[1] sm:text-[64px] xl:text-[76px]">
+            Ship for less.<br /><span className="text-coral">Seriously</span> less.
           </h1>
-          <p className="max-w-[520px] text-lg leading-[1.45] text-ink-2 sm:text-xl">
-            Snap gives every seller the commercial discounts big shippers negotiate, and charges nothing on top. Paste an
-            address, pick a rate, print. That&apos;s the whole product.
+          <p className="max-w-[540px] text-[18px] font-semibold leading-[1.5] text-ink-2 sm:text-[20px]">
+            The discounts the big shippers get, for the rest of us. No monthly fee — you pay postage and nothing else. Paste an address, pick a rate, print.
           </p>
-          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
-            <Link href="/signup" className="inline-flex h-14 items-center gap-3.5 bg-electric px-[30px] text-sm font-semibold uppercase tracking-[1px] text-white hover:text-white">
-              <span>Start shipping free</span>
-              <ArrowIcon />
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+            <Link href="/signup" className="inline-flex h-[58px] items-center gap-2.5 rounded-pill border-2 border-ink bg-coral px-7 font-display text-[16px] font-extrabold text-white offset-shadow hover:text-white">
+              Start shipping free <ArrowIcon />
             </Link>
-            <div className="text-[13px] text-muted">No card to start. You only ever pay postage.</div>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-[11px] font-semibold uppercase tracking-[1.2px] text-muted">
-            <span>Labels for</span>
-            <span className="text-ink">USPS</span>
-            <span className="text-ink">UPS</span>
-            <span className="text-ink">FedEx</span>
-            <span>· verified addresses · tracking emails · batch from CSV</span>
+            <div className="text-[14px] font-extrabold text-muted">No card to start ✓</div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 bg-ink p-5 text-paper sm:p-8 lg:p-10">
-          <Image src={shipScreen} alt="The Snap Ship screen: a verified address on the left, every carrier's rate on the right with USPS Ground Advantage selected at $5.68 against a $10.80 retail price" priority sizes="(min-width: 1024px) 55vw, 100vw" className="h-auto w-full border-2 border-ink-2" />
-          {hero && (
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink-2 pt-4">
-              <div className="flex flex-col gap-0.5">
-                <div className="lbl text-muted-on-ink">{live ? "Live right now" : "Typical"} · Brooklyn → Austin · 1.8 lb</div>
-                <div className="text-sm">{hero.carrier} {hero.serviceName}{hero.estDays !== null ? ` · ${hero.estDays} days` : ""}</div>
+        <div className="relative flex justify-center lg:justify-end">
+          <div className="card w-full max-w-[600px] -rotate-1 overflow-hidden p-2.5 sm:p-3">
+            <Image src={shipScreen} alt="The Snap Ship screen: a verified address, every carrier's rate as a card, and the cheapest highlighted" priority sizes="(min-width: 1024px) 48vw, 100vw" className="h-auto w-full rounded-[14px] border-2 border-hairline" />
+            {hero && (
+              <div className="flex flex-wrap items-center justify-between gap-3 px-3 pb-2 pt-4">
+                <div className="flex flex-col">
+                  <div className="text-[13px] font-extrabold text-muted">{live ? "Live right now" : "Typical"} · Brooklyn → Austin · 1.8 lb</div>
+                  <div className="text-[15px] font-extrabold">{hero.carrier} {hero.serviceName}{hero.estDays !== null ? ` · ${hero.estDays} days` : ""}</div>
+                </div>
+                <div className="flex items-baseline gap-3">
+                  {hero.retailCents !== null && <div className="text-[14px] font-bold text-muted line-through">{formatCents(hero.retailCents)}</div>}
+                  <div className="disp text-[34px]">{formatCents(hero.priceCents)}</div>
+                </div>
               </div>
-              <div className="flex items-baseline gap-3">
-                {hero.retailCents !== null && <div className="text-sm text-muted-on-ink line-through">{formatCents(hero.retailCents)}</div>}
-                <div className="disp text-[32px] text-lime">{formatCents(hero.priceCents)}</div>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </section>
 
       {/* Live calculator */}
-      <section id="calculator" className="flex flex-col border-b-2 border-ink">
-        <div className="flex flex-col gap-2 px-6 pt-12 sm:px-16">
+      <section id="calculator" className="relative flex flex-col">
+        <div className="flex flex-col gap-2 px-6 sm:px-16">
           <div className="lbl">Try it now — no account needed</div>
-          <h2 className="disp text-[36px] leading-[0.95] sm:text-[48px]">What would your next package cost?</h2>
+          <h2 className="disp text-[36px] leading-[1] sm:text-[48px]">What would your next package cost?</h2>
         </div>
         <RateCalculator />
       </section>
 
       {/* How it works */}
-      <section id="how" className="flex flex-col gap-10 border-b-2 border-ink px-6 py-16 sm:px-16 lg:py-[88px]">
+      <section id="how" className="relative flex flex-col gap-10 px-6 py-16 sm:px-16 lg:py-24">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="disp max-w-[640px] text-[40px] leading-[0.95] sm:text-[56px]">Three steps.<br />Under a minute.</h2>
+          <h2 className="disp max-w-[640px] text-[40px] leading-[1] sm:text-[56px]">Three steps.<br />Under a minute.</h2>
           <div className="lbl">How it works</div>
         </div>
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
-          <Step n="01" title="Paste an address" image={stepAddress} alt="An address pasted as one line, verified as residential">
-            Drop in the whole thing from an email or order — Snap splits, verifies and corrects it, and tells you if it&apos;s
-            residential before a carrier charges you for it.
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <Step n="1" title="Paste an address" image={stepAddress} alt="An address pasted as one line, verified as residential" color="bg-coral">
+            Drop in the whole thing from an email or order — Snap splits, verifies and corrects it, and tells you if it&apos;s residential before a carrier charges you for it.
           </Step>
-          <Step n="02" title="Pick a rate" image={stepRates} alt="Five carrier rates sorted by price, cheapest highlighted">
-            Every USPS, UPS and FedEx service on one list, cheapest first, with the retail price crossed out next to yours.
-            Sort by speed when it matters more than money.
+          <Step n="2" title="Pick a rate" image={stepRates} alt="Five carrier rates sorted by price, cheapest highlighted" color="bg-teal">
+            Every USPS, UPS and FedEx service on one list, cheapest first, with the counter price crossed out next to yours. Sort by speed when it matters more than money.
           </Step>
-          <Step n="03" title="Print and drop off" image={stepLabel} alt="A bought label ready to print, with tracking number and price">
-            4×6 thermal or plain paper — your choice, saved once. Tracking emails go to your customer automatically. Void any
-            label within 28 days for a full refund to your card.
+          <Step n="3" title="Print and drop off" image={stepLabel} alt="A bought label ready to print, with tracking number and price" color="bg-ink">
+            4×6 thermal or plain paper — your choice, saved once. Tracking emails go to your customer automatically. Void any label within 28 days for a full refund to your card.
           </Step>
         </div>
       </section>
 
-      {/* Questions */}
-      <section id="faq" className="grid grid-cols-1 border-b-2 border-ink lg:grid-cols-2">
-        <div className="flex flex-col gap-7 px-6 py-16 sm:px-16 lg:border-r-2 lg:border-ink lg:py-[88px]">
+      {/* Questions + pay as you go */}
+      <section id="faq" className="relative grid grid-cols-1 gap-8 px-6 py-16 sm:px-16 lg:grid-cols-[1.2fr_1fr] lg:py-24">
+        <div className="flex flex-col gap-5">
           <div className="lbl">The questions everyone asks</div>
-          <div className="flex flex-col">
-            <Faq q="Is it really free?">
-              Yes. Carriers pay us a small share of postage for bringing them volume. You pay exactly the discounted rate you
-              see — never a fee, never a plan.
-            </Faq>
-            <Faq q="Do I need a label printer?">
-              No. Print on plain paper and tape it on. If you ship every day, a thermal printer pays for itself — we support
-              any 4×6 printer out of the box.
-            </Faq>
-            <Faq q="What about my Shopify and Etsy orders?">
-              Upload a CSV today, connect a store soon. Open orders appear in Batch: select them all, buy every label in one
-              click, one charge to your card.
-            </Faq>
-            <Faq q="Is the postage the same as at the counter?" last>
-              Same carriers, same services, same delivery. The only thing that changes is the price.
-            </Faq>
+          <div className="flex flex-col gap-3">
+            <Faq q="Is it really free?">Yes. Carriers pay us a small share of postage for bringing them volume. You pay exactly the discounted rate you see — never a fee, never a plan.</Faq>
+            <Faq q="Do I need a label printer?">No. Print on plain paper and tape it on. If you ship every day, a thermal printer pays for itself — we support any 4×6 printer out of the box.</Faq>
+            <Faq q="What about my Shopify and Etsy orders?">Upload a CSV today, connect a store soon. Open orders appear in Batch: select them all, buy every label in one click, one charge to your card.</Faq>
+            <Faq q="Is the postage the same as at the counter?">Same carriers, same services, same delivery. The only thing that changes is the price.</Faq>
           </div>
         </div>
-        <div className="flex flex-col justify-between gap-10 bg-surface px-6 py-16 sm:px-16 lg:py-[88px]">
-          <div className="flex flex-col gap-5">
-            <div className="lbl">Pay as you go</div>
-            <p className="disp text-[28px] leading-[1.15] sm:text-[34px]">
-              Save a card once. Each label — or each batch — is one charge, with a receipt. Nothing to prepay, nothing to top
-              up.
-            </p>
+        <div className="card flex flex-col justify-between gap-8 self-start bg-yellow p-8">
+          <div className="flex flex-col gap-4">
+            <div className="lbl text-ink">Pay as you go</div>
+            <p className="disp text-[28px] leading-[1.15] sm:text-[32px]">Save a card once. Each label — or each batch — is one charge, with a receipt. Nothing to prepay, nothing to top up.</p>
           </div>
-          <Link href="/signup" className="inline-flex self-start border-b-2 border-ink pb-0.5 text-xs font-semibold uppercase tracking-[1px]">
-            Create a free account
-          </Link>
+          <Link href="/signup" className="inline-flex h-12 items-center gap-2 self-start rounded-pill border-2 border-ink bg-ink px-5 font-display text-[14px] font-extrabold text-yellow hover:text-yellow">Create a free account <ArrowIcon size={16} /></Link>
         </div>
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="flex flex-col gap-10 border-b-2 border-ink px-6 py-16 sm:px-16 lg:py-[88px]">
+      <section id="pricing" className="relative flex flex-col gap-10 px-6 py-16 sm:px-16 lg:py-24">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <h2 className="disp text-[40px] leading-[0.95] sm:text-[56px]">One price. Postage.</h2>
+          <h2 className="disp text-[40px] leading-[1] sm:text-[56px]">One price. Postage.</h2>
           <div className="lbl">Pricing</div>
         </div>
-        <div className="grid grid-cols-1 border-2 border-ink md:grid-cols-3">
-          <div className="flex flex-col gap-3 border-b-2 border-ink p-8 md:border-b-0 md:border-r-2">
-            <div className="lbl">Software</div>
-            <div className="disp text-[48px]">$0</div>
-            <p className="text-sm leading-[1.5] text-ink-2">Unlimited labels, users and API calls. Reports, batch, address book — all of it.</p>
-          </div>
-          <div className="flex flex-col gap-3 border-b-2 border-ink p-8 md:border-b-0 md:border-r-2">
-            <div className="lbl">Postage</div>
-            <div className="disp text-[48px]">Commercial rates</div>
-            <p className="text-sm leading-[1.5] text-ink-2">USPS Commercial Pricing and UPS discount rates on every label. See the exact price before you buy.</p>
-          </div>
-          <div className="flex flex-col gap-3 bg-ink p-8 text-paper">
-            <div className="lbl text-muted-on-ink">Payment</div>
-            <div className="disp text-[48px] text-lime">Pay as you go</div>
-            <p className="text-sm leading-[1.5] text-muted-on-ink">One charge per label or batch, receipts by email. Voided labels refund to your card in full.</p>
-          </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <Price label="Software" big="$0">Unlimited labels, users and API calls. Reports, batch, address book — all of it.</Price>
+          <Price label="Postage" big="Commercial rates">USPS Commercial Pricing and UPS discount rates on every label. See the exact price before you buy.</Price>
+          <Price label="Payment" big="Pay as you go" dark>One charge per label or batch, receipts by email. Voided labels refund to your card in full.</Price>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="flex flex-col items-start gap-8 bg-electric px-6 py-16 text-white sm:px-16 lg:flex-row lg:items-center lg:justify-between lg:py-24">
-        <h2 className="disp text-[48px] leading-[0.92] sm:text-[72px]">Your next label<br />costs less.</h2>
-        <Link href="/signup" className="inline-flex h-16 items-center gap-3.5 bg-ink px-9 text-sm font-semibold uppercase tracking-[1px] text-paper hover:text-paper">
-          <span>Start shipping free</span>
-          <ArrowIcon />
-        </Link>
+      <section className="relative px-6 pb-20 sm:px-16">
+        <div className="card flex flex-col items-start gap-8 bg-coral p-8 text-white sm:p-12 lg:flex-row lg:items-center lg:justify-between">
+          <h2 className="disp text-[44px] leading-[1] sm:text-[64px]">Your next label<br />costs less.</h2>
+          <Link href="/signup" className="inline-flex h-16 items-center gap-2.5 rounded-pill border-2 border-ink bg-ink px-9 font-display text-[16px] font-extrabold text-yellow hover:text-yellow">Start shipping free <ArrowIcon /></Link>
+        </div>
       </section>
     </main>
   );
 }
 
-function Step({ n, title, image, alt, children }: { n: string; title: string; image: typeof stepAddress; alt: string; children: React.ReactNode }) {
+function Step({ n, title, image, alt, color, children }: { n: string; title: string; image: typeof stepAddress; alt: string; color: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-3.5 border-t-2 border-ink pt-[18px]">
-      <div className="aspect-[16/9] overflow-hidden border-[1.5px] border-ink bg-surface">
+    <div className="card flex flex-col gap-4 overflow-hidden p-3">
+      <div className="aspect-[16/9] overflow-hidden rounded-[14px] border-2 border-hairline bg-surface">
         <Image src={image} alt={alt} sizes="(min-width: 768px) 30vw, 100vw" className="h-full w-full object-cover object-left-top" />
       </div>
-      <div className="disp text-xl text-electric">{n}</div>
-      <div className="disp text-2xl">{title}</div>
-      <p className="text-[15px] leading-[1.55] text-ink-2">{children}</p>
+      <div className="flex flex-col gap-2 px-2 pb-2">
+        <div className="flex items-center gap-3">
+          <span className={`flex h-8 w-8 items-center justify-center rounded-pill border-2 border-ink font-display text-[14px] font-extrabold text-white ${color}`}>{n}</span>
+          <div className="disp text-[22px]">{title}</div>
+        </div>
+        <p className="text-[15px] font-semibold leading-[1.55] text-ink-2">{children}</p>
+      </div>
     </div>
   );
 }
 
-function Faq({ q, children, last }: { q: string; children: React.ReactNode; last?: boolean }) {
+function Faq({ q, children }: { q: string; children: React.ReactNode }) {
   return (
-    <div className={`flex flex-col gap-2 border-t-[1.5px] border-ink py-[22px] ${last ? "border-b-[1.5px]" : ""}`}>
-      <div className="disp text-[22px]">{q}</div>
-      <p className="text-[15px] leading-[1.55] text-ink-2">{children}</p>
+    <div className="card-quiet flex flex-col gap-2 p-5">
+      <div className="disp text-[20px]">{q}</div>
+      <p className="text-[15px] font-semibold leading-[1.55] text-ink-2">{children}</p>
+    </div>
+  );
+}
+
+function Price({ label, big, dark, children }: { label: string; big: string; dark?: boolean; children: React.ReactNode }) {
+  return (
+    <div className={`card flex flex-col gap-3 p-7 ${dark ? "bg-ink text-paper" : ""}`}>
+      <div className={`lbl ${dark ? "text-muted-on-ink" : ""}`}>{label}</div>
+      <div className={`disp text-[40px] ${dark ? "text-yellow" : ""}`}>{big}</div>
+      <p className={`text-[15px] font-semibold leading-[1.5] ${dark ? "text-muted-on-ink" : "text-ink-2"}`}>{children}</p>
     </div>
   );
 }

@@ -21,21 +21,23 @@ export async function sendEmail(msg: Email): Promise<{ sent: boolean; id?: strin
   return { sent: true, id: data.id };
 }
 
-/** Minimal ink-and-paper email shell that matches the brand without images. */
+/** Sunny email shell — cream background, white card with an ink outline, coral button. */
 export function emailShell(opts: { heading: string; eyebrow?: string; bodyHtml: string; ctaLabel?: string; ctaUrl?: string; footer?: string; logoUrl?: string | null; logoAlt?: string }): string {
   const cta = opts.ctaLabel && opts.ctaUrl
-    ? `<p style="margin:28px 0 0"><a href="${opts.ctaUrl}" style="display:inline-block;background:#2d5bff;color:#fff;text-decoration:none;font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase;padding:16px 26px">${opts.ctaLabel}</a></p>`
+    ? `<p style="margin:28px 0 0"><a href="${opts.ctaUrl}" style="display:inline-block;background:#ff5c39;color:#fff;text-decoration:none;font-weight:800;font-size:15px;padding:16px 26px;border-radius:999px;border:2px solid #2b2320">${opts.ctaLabel}</a></p>`
     : "";
   const brand = opts.logoUrl
-    ? `<img src="${opts.logoUrl}" alt="${opts.logoAlt ?? ""}" style="max-height:40px;max-width:200px;display:block">`
-    : `<div style="font-weight:800;font-size:20px;letter-spacing:-0.5px;text-transform:uppercase">Snap<span style="color:#2d5bff">.</span></div>`;
-  return `<!doctype html><html><body style="margin:0;background:#f2efe6;font-family:Archivo,Helvetica,Arial,sans-serif;color:#111">
+    ? `<img src="${opts.logoUrl}" alt="${opts.logoAlt ?? ""}" style="max-height:44px;max-width:220px;display:block">`
+    : `<div style="font-weight:800;font-size:22px;color:#2b2320">${opts.logoAlt ?? "snap"}<span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:#ff5c39;margin-left:4px"></span></div>`;
+  return `<!doctype html><html><body style="margin:0;background:#fff8ee;font-family:Nunito,Helvetica,Arial,sans-serif;color:#2b2320">
 <div style="max-width:560px;margin:0 auto;padding:40px 24px">
   ${brand}
-  ${opts.eyebrow ? `<div style="margin-top:32px;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#6b6860">${opts.eyebrow}</div>` : ""}
-  <h1 style="margin:8px 0 0;font-size:34px;line-height:1;font-weight:800;letter-spacing:-0.5px">${opts.heading}</h1>
-  <div style="margin-top:20px;font-size:15px;line-height:1.55;color:#3d3b36">${opts.bodyHtml}</div>
-  ${cta}
-  <div style="margin-top:40px;padding-top:16px;border-top:2px solid #111;font-size:12px;color:#6b6860">${opts.footer ?? "Sent by Ship with Snap on behalf of the sender."}</div>
+  <div style="margin-top:24px;background:#fff;border:2px solid #2b2320;border-radius:22px;padding:28px 28px 32px">
+    ${opts.eyebrow ? `<div style="font-size:13px;font-weight:800;color:#7a6f68">${opts.eyebrow}</div>` : ""}
+    <h1 style="margin:8px 0 0;font-size:32px;line-height:1.05;font-weight:800;letter-spacing:-0.5px">${opts.heading}</h1>
+    <div style="margin-top:18px;font-size:16px;line-height:1.55;font-weight:600;color:#5c524b">${opts.bodyHtml}</div>
+    ${cta}
+  </div>
+  <div style="margin-top:20px;font-size:12px;font-weight:700;color:#7a6f68">${opts.footer ?? "Sent by Ship with Snap on behalf of the sender."}</div>
 </div></body></html>`;
 }

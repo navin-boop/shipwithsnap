@@ -1,8 +1,8 @@
 import { forwardRef, useId, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-// Spec: design/Components.dc.html — "Inputs · underline only".
-// 44px tall, 2px ink underline, 15px Archivo 500; focus → electric; error → danger + 12px message.
+// Spec: design/SunnyShip.dc.html — 50px, 2px ink outline, 14px radius, bold 16px text.
+// Focus → coral outline + soft coral fill; error → danger outline + message.
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label?: string;
   error?: string;
@@ -19,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const autoId = useId();
   const inputId = id ?? autoId;
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
+    <div className={cn("flex flex-col gap-1.5", className)}>
       {label && (
         <label htmlFor={inputId} className={cn("lbl", error && "text-danger")}>
           {label}
@@ -31,22 +31,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           id={inputId}
           aria-invalid={error ? true : undefined}
           className={cn(
-            "w-full bg-transparent border-0 border-b-2 border-ink font-medium text-ink outline-none",
-            "placeholder:text-muted focus:border-electric",
-            // 16px on phones so iOS doesn't zoom the page on focus; 15px per the design above sm.
-            size === "lg" ? "h-14 text-[28px]" : "h-11 text-base sm:text-[15px]",
-            unit && "pr-8",
-            error && "border-danger focus:border-danger",
+            "box-border w-full rounded-field border-2 border-ink bg-surface px-4 font-bold text-ink outline-none",
+            "placeholder:font-semibold placeholder:text-muted/70 focus:border-coral focus:bg-coral-soft",
+            "disabled:border-hairline disabled:bg-paper disabled:text-muted",
+            size === "lg" ? "h-16 text-[28px]" : "h-[50px] text-base",
+            unit && "pr-10",
+            error && "border-danger focus:border-danger focus:bg-surface",
           )}
           {...rest}
         />
         {unit && (
-          <span className="pointer-events-none absolute right-0 bottom-3 text-[13px] text-muted">
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[13px] font-bold text-muted">
             {unit}
           </span>
         )}
       </div>
-      {error && <div className="text-xs text-danger">{error}</div>}
+      {error && <div className="text-[13px] font-bold text-danger">{error}</div>}
     </div>
   );
 });

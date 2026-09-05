@@ -75,7 +75,7 @@ export function StoreForm({ account, hasLogo }: { account: Account; hasLogo: boo
       <div className="flex flex-col gap-3">
         <div className="lbl">Logo — on the tracking page and customer emails</div>
         <div className="flex items-center gap-4">
-          <div className="flex h-20 w-40 items-center justify-center border-[1.5px] border-ink bg-surface p-2">
+          <div className="flex h-20 w-40 items-center justify-center rounded-[14px] border-2 border-ink bg-surface bg-surface p-2">
             {logo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={logo} alt="Store logo" className="max-h-full max-w-full object-contain" />
@@ -84,7 +84,7 @@ export function StoreForm({ account, hasLogo }: { account: Account; hasLogo: boo
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <label className="inline-flex h-10 cursor-pointer items-center border-[1.5px] border-ink px-4 text-[11px] font-semibold uppercase tracking-[0.8px]">
+            <label className="inline-flex h-10 cursor-pointer items-center rounded-pill border-2 border-ink bg-surface px-4 text-[14px] font-extrabold">
               {logo ? "Replace" : "Upload logo"}
               <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => e.target.files?.[0] && pickLogo(e.target.files[0])} />
             </label>
@@ -120,7 +120,7 @@ export function PrintingForm({ account }: { account: Account }) {
         <div className="lbl">Label format</div>
         <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
           {opts.map(([k, title, sub]) => (
-            <button key={k} type="button" onClick={() => setFmt(k)} className={cn("flex flex-col gap-1.5 border-[1.5px] border-ink p-4 text-left", fmt === k && "bg-ink text-paper")}>
+            <button key={k} type="button" onClick={() => setFmt(k)} className={cn("flex flex-col gap-1.5 rounded-card border-2 border-ink bg-surface p-5 text-left", fmt === k && "bg-ink text-paper")}>
               <div className="disp text-lg">{title}</div>
               <div className="text-[13px] opacity-75">{sub}</div>
             </button>
@@ -135,7 +135,7 @@ export function PrintingForm({ account }: { account: Account }) {
           ))}
         </div>
       </div>
-      <div className="flex items-center justify-between border-b border-t border-ink py-3 text-sm">
+      <div className="flex items-center justify-between border-b border-t border-line py-3 text-sm">
         <div>Packing slip with order items (batch labels)</div>
         <Switch checked={slip} onChange={setSlip} label="Packing slip" />
       </div>
@@ -152,7 +152,7 @@ export function ShipFromList({ addresses, defaultId }: { addresses: Address[]; d
   return (
     <div className="flex max-w-[760px] flex-col">
       {addresses.map((a) => (
-        <div key={a.id} className="flex flex-col gap-2 border-t border-ink py-3.5 sm:flex-row sm:items-center sm:justify-between">
+        <div key={a.id} className="flex flex-col gap-2 border-t border-line py-3.5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-0.5 text-sm">
             <div className="font-semibold">{a.name ?? a.company}{a.id === defaultId && <span className="lbl ml-2 text-electric">Default</span>}</div>
             <div className="text-ink-2">{formatAddressLine(a)}{a.phone ? ` · ${a.phone}` : ""}</div>
@@ -163,7 +163,7 @@ export function ShipFromList({ addresses, defaultId }: { addresses: Address[]; d
         </div>
       ))}
       {!addresses.length && <div className="text-sm text-muted">No ship-from addresses yet — add one on the Ship page.</div>}
-      <div className="border-t border-ink pt-3 text-xs text-muted">Add or edit addresses from the Ship page (“Change” under Ship from).</div>
+      <div className="border-t border-line pt-3 text-xs text-muted">Add or edit addresses from the Ship page (“Change” under Ship from).</div>
     </div>
   );
 }
@@ -177,13 +177,13 @@ export function TeamPanel({ members, invites, me }: { members: User[]; invites: 
   return (
     <div className="flex max-w-[760px] flex-col gap-7">
       <div className="flex flex-col">
-        <div className="grid grid-cols-[1.4fr_1fr_auto] border-b border-ink py-2"><div className="lbl">Member</div><div className="lbl">Role</div><div className="lbl" /></div>
+        <div className="grid grid-cols-[1.4fr_1fr_auto] border-b border-line py-2"><div className="lbl">Member</div><div className="lbl">Role</div><div className="lbl" /></div>
         {members.map((m) => (
           <div key={m.id} className="grid grid-cols-[1.4fr_1fr_auto] items-center gap-2 border-b border-hairline py-3 text-sm">
             <div className="flex min-w-0 flex-col"><div className="truncate font-semibold">{m.name ?? m.email}</div><div className="truncate text-xs text-muted">{m.email}{m.id === me ? " · you" : ""}</div></div>
             <div>
               {m.id === me ? <span className="lbl text-ink">{m.role}</span> : (
-                <select defaultValue={m.role} onChange={(e) => start(async () => { const r = await changeRole(m.id, e.target.value as "owner"); if (!r.ok) setMsg(r.error); })} className="h-9 border-[1.5px] border-ink bg-transparent px-2 text-[11px] font-semibold uppercase tracking-[0.8px]">
+                <select defaultValue={m.role} onChange={(e) => start(async () => { const r = await changeRole(m.id, e.target.value as "owner"); if (!r.ok) setMsg(r.error); })} className="h-9 rounded-pill border-2 border-ink bg-surface bg-transparent px-2 text-[14px] font-extrabold">
                   <option value="owner">Owner</option><option value="shipper">Shipper</option><option value="viewer">Viewer</option>
                 </select>
               )}
@@ -199,13 +199,13 @@ export function TeamPanel({ members, invites, me }: { members: User[]; invites: 
           </div>
         ))}
       </div>
-      <div className="flex flex-col gap-4 border-[1.5px] border-ink p-4">
+      <div className="flex flex-col gap-4 rounded-card border-2 border-ink bg-surface p-5">
         <div className="lbl">Invite someone</div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_140px_auto] sm:items-end">
           <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="packer@yourstore.com" />
           <div className="flex flex-col gap-1">
             <div className="lbl">Role</div>
-            <select value={role} onChange={(e) => setRole(e.target.value as "owner")} className="h-11 border-0 border-b-2 border-ink bg-transparent text-[15px] font-medium">
+            <select value={role} onChange={(e) => setRole(e.target.value as "owner")} className="h-11 border-0 border-b-2 border-line bg-transparent text-[15px] font-medium">
               <option value="owner">Owner</option><option value="shipper">Shipper</option><option value="viewer">Viewer</option>
             </select>
           </div>
@@ -233,7 +233,7 @@ export function CustomerEmailsForm({ prefs }: { prefs: CustomerEmailPrefs }) {
     <div className="flex max-w-[640px] flex-col gap-5">
       <div className="flex flex-col">
         {rows.map(([k, title, sub]) => (
-          <div key={k} className="flex items-center justify-between gap-6 border-t border-ink py-3.5 text-sm">
+          <div key={k} className="flex items-center justify-between gap-6 border-t border-line py-3.5 text-sm">
             <div className="flex flex-col gap-0.5"><div className="font-semibold">{title}</div><div className="text-xs text-muted">{sub}</div></div>
             <Switch checked={p[k]} onChange={(v) => setP({ ...p, [k]: v })} label={title} />
           </div>
@@ -259,7 +259,7 @@ export function ApiPanel({ keys, endpoints }: { keys: ApiKey[]; endpoints: Webho
     <div className="flex max-w-[800px] flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col">
-          <div className="grid grid-cols-[1fr_1fr_auto] border-b border-ink border-t-2 py-2 sm:grid-cols-[1.2fr_1.4fr_0.8fr_0.6fr]"><div className="lbl">Name</div><div className="lbl">Key</div><div className="lbl hidden sm:block">Last used</div><div className="lbl" /></div>
+          <div className="grid grid-cols-[1fr_1fr_auto] border-b border-line border-t-2 py-2 sm:grid-cols-[1.2fr_1.4fr_0.8fr_0.6fr]"><div className="lbl">Name</div><div className="lbl">Key</div><div className="lbl hidden sm:block">Last used</div><div className="lbl" /></div>
           {keys.map((k) => (
             <div key={k.id} className={cn("grid grid-cols-[1fr_1fr_auto] items-center gap-2 border-b border-hairline py-3 text-sm sm:grid-cols-[1.2fr_1.4fr_0.8fr_0.6fr]", k.revokedAt && "opacity-50")}>
               <div className="truncate font-semibold">{k.name}</div>
@@ -276,7 +276,7 @@ export function ApiPanel({ keys, endpoints }: { keys: ApiKey[]; endpoints: Webho
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_140px_auto] sm:items-end">
           <Input label="Key name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Warehouse app" />
           <div className="flex flex-col gap-1"><div className="lbl">Mode</div>
-            <select value={mode} onChange={(e) => setMode(e.target.value as "live")} className="h-11 border-0 border-b-2 border-ink bg-transparent text-[15px] font-medium"><option value="test">Test</option><option value="live">Live</option></select>
+            <select value={mode} onChange={(e) => setMode(e.target.value as "live")} className="h-11 border-0 border-b-2 border-line bg-transparent text-[15px] font-medium"><option value="test">Test</option><option value="live">Live</option></select>
           </div>
           <Button variant="secondary" size="sm" disabled={pending} onClick={() => start(async () => { const r = await createApiKey({ name, mode }); if (r.ok) { setShown(r.data.key); setName(""); setMsg(null); } else setMsg(r.error); })}>Create key</Button>
         </div>
@@ -287,7 +287,7 @@ export function ApiPanel({ keys, endpoints }: { keys: ApiKey[]; endpoints: Webho
         <div className="lbl">Webhook endpoints</div>
         <div className="flex flex-col">
           {endpoints.map((e) => (
-            <div key={e.id} className="flex flex-col gap-2 border-t border-ink py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <div key={e.id} className="flex flex-col gap-2 border-t border-line py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col gap-0.5"><div className="break-all font-mono text-[13px]">{e.url}</div><div className="text-xs text-muted">{e.events.join(" · ")}</div></div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" disabled={pending} onClick={() => start(async () => { const r = await testWebhookEndpoint(e.id); setMsg(r.ok ? `Ping delivered · HTTP ${r.data.status}` : r.error); })}>Send test</Button>
@@ -297,7 +297,7 @@ export function ApiPanel({ keys, endpoints }: { keys: ApiKey[]; endpoints: Webho
           ))}
         </div>
         {secret && <div className="flex flex-col gap-1 bg-ink p-4 text-paper"><div className="lbl text-lime">Signing secret — copy it now</div><code className="break-all text-sm">{secret}</code><div className="text-xs text-muted-on-ink">Verify <code>x-snap-signature: sha256=HMAC(body)</code> with it.</div></div>}
-        <div className="flex flex-col gap-3 border-[1.5px] border-ink p-4">
+        <div className="flex flex-col gap-3 rounded-card border-2 border-ink bg-surface p-5">
           <Input label="Endpoint URL" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://api.yourstore.com/hooks/snap" />
           <div className="flex flex-wrap gap-2">
             {WEBHOOK_EVENTS.map((ev) => (

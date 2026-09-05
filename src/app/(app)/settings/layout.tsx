@@ -4,7 +4,7 @@ import { SettingsNav } from "@/components/settings/SettingsNav";
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="grid flex-1 grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)]">
-      <aside className="flex flex-col px-6 py-7 sm:px-10 lg:border-r-2 lg:border-ink">
+      <aside className="flex flex-col px-6 py-7 sm:px-10 lg:border-r-2 lg:border-line">
         <h1 className="disp pb-6 text-[40px]">Settings</h1>
         <SettingsNav />
       </aside>

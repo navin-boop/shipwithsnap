@@ -20,7 +20,7 @@ export function SettingsNav() {
       {SECTIONS.map(([href, label]) => {
         const active = path.startsWith(href);
         return (
-          <Link key={href} href={href} aria-current={active ? "page" : undefined} className={cn("py-3 text-[13px] font-semibold uppercase tracking-[0.8px] lg:border-b lg:border-hairline", active ? "text-ink" : "text-muted hover:text-ink")}>
+          <Link key={href} href={href} aria-current={active ? "page" : undefined} className={cn("py-3 text-[14px] font-extrabold lg:border-b lg:border-hairline", active ? "text-ink" : "text-muted hover:text-ink")}>
             {label}
           </Link>
         );

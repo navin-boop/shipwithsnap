@@ -41,33 +41,33 @@ Every screen and every backend flow has an artboard in `design/`. They are plain
 
 `SystemMap.dc.html` and `DirectionA/B/C.dc.html` are archived early sketches — ignore them.
 
-## Design tokens (from `design/Components.dc.html`)
+## Design tokens — "Sunny" (chosen by the team, Sept 2026; artboards `design/SunnyShip.dc.html`, `design/SunnyLanding.dc.html`)
 
-Direction: bold editorial. Paper & ink, square corners, 2px rules, one electric accent.
+Direction: warm and playful. Cream page, white cards with a 2px ink outline and an offset hard shadow, pills, sticker badges. The v1 "bold editorial" screens on the canvas are superseded; token *names* in the code were kept from v1 (`paper`, `ink`, `electric`, `lime`…) and remapped, so `electric` is now coral and `lime` is yellow.
 
-| Token | Value | Use |
+| Token (CSS) | Value | Use |
 |---|---|---|
-| paper | `#f2efe6` | page background |
-| surface | `#ffffff` | cards, print preview |
-| ink | `#111111` | text, rules, selected states, dark panels |
-| ink-2 | `#3d3b36` | body text on paper |
-| muted | `#6b6860` | labels, hints, secondary text |
-| muted-on-ink | `#b9b5aa` | secondary text on ink panels |
-| hairline | `#c9c4b6` | list row dividers, empty states |
-| electric | `#2d5bff` | primary action, links on hover, "in transit", live/focused |
-| lime | `#c8ff3d` | **only on ink**, only for the price you pay / success |
-| danger | `#b3261e` | exceptions, errors, destructive |
+| paper | `#fff8ee` | page background (cream) |
+| surface | `#ffffff` | cards |
+| ink | `#2b2320` | text, outlines, dark panels |
+| ink-2 | `#5c524b` | body text |
+| muted | `#7a6f68` | labels, hints |
+| muted-on-ink | `#d9cfc4` | secondary text on ink |
+| hairline / line | `#e9dfd4` | quiet card borders, dividers |
+| coral (= electric) | `#ff5c39` | primary action, links, "Cheapest!" sticker |
+| teal | `#0fa3a3` | verified, selected chips, success, "Fastest" sticker |
+| yellow (= lime) | `#ffd23f` | the selected rate card, price highlights, active nav text on ink |
+| danger | `#d93a2b` | errors, exceptions |
 
-- **Type**: `Syne` 800 for display (96 / 72 / 56 / 44 / 40 / 36 / 28 / 22 / 16, line-height 0.9–0.95, letter-spacing −2%); `Archivo` 400/500/600 for body (20 / 16 / 15 / 14 / 13 / 12, line-height 1.45–1.55). Labels: Archivo 600, 11px, uppercase, letter-spacing 1.2px, muted. Google Fonts, with `"Arial Black"` / `"Helvetica Neue"` fallbacks.
-- **Radius**: 0 everywhere (4px only on chart bar tops). **Shadows**: none — depth comes from ink panels.
-- **Rules**: section 2px ink; data rows 1px ink; list rows 1px hairline.
-- **Buttons**: 40 / 48 / 56px tall, square, uppercase 600, letter-spacing 1px. Primary = electric bg, white text. Secondary = ink bg. Outline = 1.5px ink border. On ink panels: lime bg for the primary action.
-- **Inputs**: underline only (2px ink), 44–48px tall, 15–16px Archivo 500; focused = electric underline; error = danger underline + 12px message.
-- **Chips / toggles**: 36–44px, 1.5px ink border, uppercase 11px; selected = ink bg. Switch 52×28 (lime knob when on).
-- **Rate row**: unselected = 15–16px name, 20–22px Syne price, retail struck through in muted; selected = inverted to ink, name 22px, price 36px in lime.
-- **Icons**: inline SVG, 2px stroke, 14–18px, `currentColor`. No emoji anywhere.
-- **Gutters**: 40px in the app, 64px on marketing pages. Nav: 56px header, 2px ink rule, 12px uppercase items, active item underlined 2px.
-- Hit targets ≥ 44px on mobile.
+- **Type**: `Sora` 800 for display (76 / 56 / 44 / 40 / 24 / 22, line-height 1, letter-spacing −2%) — headlines, prices, buttons; `Nunito` 600/700/800 for body (20 / 18 / 16 / 15 / 14 / 13). Labels: Nunito 800, 13px, muted, sentence case (no uppercase). Google Fonts via `next/font`.
+- **Radius**: pills for buttons/chips/nav (999), 14px fields, 18px quiet cards, 22px cards. **Shadow**: `6px 6px 0 ink` on cards, `5px 5px 0` on primary buttons; nothing soft.
+- **Cards** (`card` utility): white, 2px ink outline, 22px radius, offset shadow. `card-quiet`: 2px hairline outline, 18px radius, no shadow.
+- **Buttons**: 40 / 48 / 58px pills, Sora 800. Primary = coral bg, white text, ink outline, offset shadow. Secondary = ink bg, yellow text. Outline = white, ink outline. On ink panels = yellow.
+- **Inputs**: 50px, 2px ink outline, 14px radius, 16px Nunito 700; focused = coral outline + `coral-soft` fill; error = danger outline + 13px message.
+- **Chips**: 38–44px pills, 2px ink outline; selected = teal fill, white text. Switch 54×30 (teal when on). Checkbox 22px rounded, teal when checked.
+- **Rate card**: white card with hairline outline; selected = yellow card, ink outline, offset shadow, price 40px Sora, "You save $x" in teal; "Cheapest!" (coral) / "Fastest!" (teal) rotated sticker badges. Carrier mark = `CarrierLogo` (official SVG from `public/carriers/` when present, text badge otherwise).
+- **Nav**: 72px, pill items, active = ink pill with yellow text. Wordmark: "snap" + coral dot.
+- **Icons**: inline SVG, 2.4–2.8px stroke, 14–18px, `currentColor`. Hit targets ≥ 44px on mobile.
 
 ## Stack — deployed on Vercel
 

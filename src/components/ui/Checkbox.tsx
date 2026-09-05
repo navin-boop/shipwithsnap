@@ -1,12 +1,12 @@
 import { cn } from "@/lib/cn";
 
-// Spec: design/Components.dc.html — 16px box, 1.5px ink border, checked = 8px ink square inside.
+// Sunny checkbox: 22px rounded square, 2px ink outline; checked = teal fill with a white tick.
 export interface CheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label?: string;
   className?: string;
-  /** Renders the inner mark in paper — for use on ink rows. */
+  /** Renders the outline in paper — for use on ink rows. */
   onInk?: boolean;
 }
 
@@ -19,13 +19,17 @@ export function Checkbox({ checked, onChange, label, className, onInk }: Checkbo
       aria-label={label}
       onClick={() => onChange(!checked)}
       className={cn(
-        "flex h-4 w-4 shrink-0 items-center justify-center border-[1.5px] cursor-pointer",
-        onInk ? "border-paper" : "border-ink",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-electric",
+        "flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[7px] border-2 cursor-pointer",
+        checked ? "border-teal bg-teal text-white" : onInk ? "border-paper bg-transparent" : "border-ink bg-surface",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal",
         className,
       )}
     >
-      {checked && <span className={cn("block h-2 w-2", onInk ? "bg-paper" : "bg-ink")} />}
+      {checked && (
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="m3 8 3 3 7-7" />
+        </svg>
+      )}
     </button>
   );
 }

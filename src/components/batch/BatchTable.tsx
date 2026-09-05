@@ -72,10 +72,10 @@ export function BatchTable({ orders, storeCounts }: { orders: Order[]; storeCoun
         )}
         <div className="flex flex-wrap gap-2.5">
           <Button variant="onInk" onClick={() => window.open(`/api/batches/${done.batchId}/labels.pdf`, "_blank", "noopener")}>Print all labels</Button>
-          <a href={`/api/batches/${done.batchId}/labels.pdf`} download className="inline-flex h-12 items-center border-[1.5px] border-paper px-[22px] text-xs font-semibold uppercase tracking-[1px] text-paper hover:text-paper">Download PDF</a>
-          <a href="/shipments" className="inline-flex h-12 items-center px-[22px] text-xs font-semibold uppercase tracking-[1px] text-muted-on-ink hover:text-paper">View shipments</a>
+          <a href={`/api/batches/${done.batchId}/labels.pdf`} download className="inline-flex h-12 items-center rounded-pill border-2 border-paper px-[22px] text-[14px] font-extrabold text-paper hover:text-paper">Download PDF</a>
+          <a href="/shipments" className="inline-flex h-12 items-center px-[22px] text-[14px] font-extrabold text-muted-on-ink hover:text-paper">View shipments</a>
         </div>
-        <button type="button" onClick={() => location.reload()} className="mt-auto self-start border-b-2 border-paper pb-0.5 text-xs font-semibold uppercase tracking-[1px]">Back to batch</button>
+        <button type="button" onClick={() => location.reload()} className="mt-auto self-start border-b-2 border-paper pb-0.5 text-[14px] font-extrabold">Back to batch</button>
       </div>
     );
   }
@@ -89,17 +89,17 @@ export function BatchTable({ orders, storeCounts }: { orders: Order[]; storeCoun
         </div>
         <div className="flex flex-wrap gap-2">
           <input ref={fileRef} type="file" accept=".csv,text/csv" className="hidden" onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])} />
-          <button type="button" onClick={() => fileRef.current?.click()} className="inline-flex h-10 items-center gap-2 border-[1.5px] border-ink bg-ink px-3.5 text-[11px] font-semibold uppercase tracking-[0.8px] text-paper">
+          <button type="button" onClick={() => fileRef.current?.click()} className="inline-flex h-10 items-center gap-2 rounded-pill border-2 border-ink bg-ink px-4 text-[14px] font-extrabold text-yellow">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 4v12M6 10l6 6 6-6M4 20h16" /></svg>
             <span>Upload CSV{storeCounts.csv ? ` · ${storeCounts.csv} open` : ""}</span>
           </button>
-          <a href="/api/batch/template.csv" className="inline-flex h-10 items-center border-[1.5px] border-ink px-3.5 text-[11px] font-semibold uppercase tracking-[0.8px]">CSV template</a>
-          <span title="Store connections need Shopify partner credentials — coming soon" className="inline-flex h-10 cursor-not-allowed items-center border-[1.5px] border-hairline px-3.5 text-[11px] font-semibold uppercase tracking-[0.8px] text-hairline">Connect Shopify</span>
-          <span title="Coming soon" className="inline-flex h-10 cursor-not-allowed items-center border-[1.5px] border-hairline px-3.5 text-[11px] font-semibold uppercase tracking-[0.8px] text-hairline">Connect Etsy</span>
+          <a href="/api/batch/template.csv" className="inline-flex h-10 items-center rounded-pill border-2 border-ink bg-surface px-3.5 text-[14px] font-extrabold">CSV template</a>
+          <span title="Store connections need Shopify partner credentials — coming soon" className="inline-flex h-10 cursor-not-allowed items-center rounded-pill border-2 border-hairline px-3.5 text-[14px] font-extrabold text-hairline">Connect Shopify</span>
+          <span title="Coming soon" className="inline-flex h-10 cursor-not-allowed items-center rounded-pill border-2 border-hairline px-3.5 text-[14px] font-extrabold text-hairline">Connect Etsy</span>
         </div>
       </div>
 
-      <div className="hidden grid-cols-[40px_0.9fr_1.5fr_1fr_1.6fr_0.7fr] items-center border-b border-ink border-t-2 px-10 py-2.5 md:grid">
+      <div className="hidden grid-cols-[40px_0.9fr_1.5fr_1fr_1.6fr_0.7fr] items-center border-b border-line border-t-2 px-10 py-2.5 md:grid">
         <Checkbox checked={allSelected} onChange={(v) => setSelected(v ? new Set(orders.map((o) => o.id)) : new Set())} label="Select all" />
         <div className="lbl">Order</div><div className="lbl">Ship to</div><div className="lbl">Package</div><div className="lbl">Rate · cheapest picked</div><div className="lbl text-right">Cost</div>
       </div>
@@ -120,7 +120,7 @@ export function BatchTable({ orders, storeCounts }: { orders: Order[]; storeCoun
               <div className="col-start-2 flex flex-col gap-1 md:col-start-auto">
                 {r?.error && <div className="text-xs text-danger">{r.error}</div>}
                 {r && !r.error && (
-                  <select value={choice[o.id] ?? r.chosenQuoteId ?? ""} onChange={(e) => setChoice({ ...choice, [o.id]: e.target.value })} className="h-9 max-w-[320px] border-[1.5px] border-ink bg-transparent px-2 text-sm font-semibold">
+                  <select value={choice[o.id] ?? r.chosenQuoteId ?? ""} onChange={(e) => setChoice({ ...choice, [o.id]: e.target.value })} className="h-9 max-w-[320px] rounded-pill border-2 border-ink bg-surface bg-transparent px-2 text-sm font-semibold">
                     {r.quotes.map((x) => (
                       <option key={x.id} value={x.id}>{x.carrier} {x.serviceName} — {formatCents(x.priceCents)}{x.estDays ? ` · ${x.estDays}d` : ""}</option>
                     ))}
@@ -140,7 +140,7 @@ export function BatchTable({ orders, storeCounts }: { orders: Order[]; storeCoun
         )}
       </div>
 
-      <div className="sticky bottom-0 mt-auto flex flex-col gap-4 border-t-2 border-ink bg-ink px-6 py-5 text-paper sm:px-10 lg:flex-row lg:items-center lg:justify-between">
+      <div className="sticky bottom-0 mt-auto flex flex-col gap-4 border-t-2 border-line bg-ink px-6 py-5 text-paper sm:px-10 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-10">
           <div className="flex flex-col gap-0.5"><div className="lbl text-muted-on-ink">Selected</div><div className="disp text-2xl">{selectedOrders.length} of {orders.length}</div></div>
           <div className="flex flex-col gap-0.5"><div className="lbl text-muted-on-ink">Retail would be</div><div className="disp text-2xl text-muted-on-ink line-through">{formatCents(totalRetail)}</div></div>
