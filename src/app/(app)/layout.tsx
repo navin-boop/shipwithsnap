@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { AppFooter } from "@/components/AppFooter";
 import { AppNav } from "@/components/AppNav";
 import { auth } from "@/lib/auth";
 
@@ -10,6 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-screen flex-col bg-paper">
       <AppNav />
       {children}
+      <AppFooter />
     </div>
   );
 }

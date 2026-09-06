@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "API docs · Ship with Snap" };
+export const metadata: Metadata = {
+  title: "API documentation",
+  description: "The REST API behind Ship with Snap: rates, labels, tracking, pickups, manifests, claims and webhooks. Free with every account, no developer plan.",
+  alternates: { canonical: "/docs" },
+};
 
 type Row = [string, string, string];
 

@@ -7,10 +7,11 @@ import { cn } from "@/lib/cn";
 
 // Spec: design/SunnyLanding.dc.html header — 76px, bold nav, "Start free" ink pill with yellow text.
 const LINKS = [
-  ["/rates", "Rates"],
-  ["/#how", "How it works"],
-  ["/#faq", "Questions"],
-  ["/#pricing", "Pricing"],
+  ["/how-it-works", "How it works"],
+  ["/pricing", "Pricing"],
+  ["/carriers", "Carriers"],
+  ["/rates", "Rate calculator"],
+  ["/faq", "Questions"],
 ] as const;
 
 export function MarketingNav() {
@@ -41,20 +42,5 @@ export function MarketingNav() {
         <Link href="/login" onClick={() => setOpen(false)} className="rounded-pill px-4 py-3 sm:hidden">Log in</Link>
       </nav>
     </header>
-  );
-}
-
-export function MarketingFooter() {
-  return (
-    <footer className="flex flex-col gap-4 px-6 py-10 text-[14px] font-bold text-muted sm:flex-row sm:items-center sm:justify-between sm:px-16">
-      <Wordmark className="text-[22px]" />
-      <nav className="flex flex-wrap gap-6">
-        <Link href="/rates">Rates</Link>
-        <Link href="/docs">API docs</Link>
-        <Link href="/signup">Sign up</Link>
-        <Link href="/login">Log in</Link>
-      </nav>
-      <div>© {new Date().getFullYear()} Ship with Snap · USPS, UPS and FedEx labels</div>
-    </footer>
   );
 }

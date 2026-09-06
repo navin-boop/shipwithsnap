@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { RateCalculator } from "@/components/marketing/RateCalculator";
@@ -11,6 +12,12 @@ import stepRates from "@/images/step-rates.png";
 
 // Spec: design/SunnyLanding.dc.html. Product screenshots come from scripts/screenshots.sh.
 export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  description:
+    "Compare USPS, UPS, FedEx and DHL rates side by side and print the label in a minute. No monthly fee and no markup on postage, with a written lowest price guarantee.",
+};
 
 export default async function HomePage() {
   const { rates, live } = await getSampleRates();
@@ -90,11 +97,12 @@ export default async function HomePage() {
         <div className="flex flex-col gap-5">
           <div className="lbl">The questions everyone asks</div>
           <div className="flex flex-col gap-3">
-            <Faq q="Is it really free?">Yes. Carriers pay us a small share of postage for bringing them volume. You pay exactly the discounted rate you see — never a fee, never a plan.</Faq>
+            <Faq q="Is it really free?">The software is, and there is no plan to upgrade to. You pay the carrier&apos;s commercial rate exactly as we receive it — we add no markup, no per-label fee and no monthly fee.</Faq>
             <Faq q="Do I need a label printer?">No. Print on plain paper and tape it on. If you ship every day, a thermal printer pays for itself — we support any 4×6 printer out of the box.</Faq>
             <Faq q="What about my Shopify and Etsy orders?">Upload a CSV today, connect a store soon. Open orders appear in Batch: select them all, buy every label in one click, one charge to your card.</Faq>
             <Faq q="Is the postage the same as at the counter?">Same carriers, same services, same delivery. The only thing that changes is the price.</Faq>
           </div>
+          <Link href="/faq" className="inline-flex w-fit items-center gap-2 text-[15px] font-extrabold text-coral">Read all the questions <ArrowIcon size={16} /></Link>
         </div>
         <div className="card flex flex-col justify-between gap-8 self-start bg-yellow p-8">
           <div className="flex flex-col gap-4">
@@ -109,12 +117,24 @@ export default async function HomePage() {
       <section id="pricing" className="relative flex flex-col gap-10 px-6 py-16 sm:px-16 lg:py-24">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <h2 className="disp text-[40px] leading-[1] sm:text-[56px]">One price. Postage.</h2>
-          <div className="lbl">Pricing</div>
+          <Link href="/pricing" className="lbl text-coral hover:text-coral">Full pricing detail →</Link>
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <Price label="Software" big="$0">Unlimited labels, users and API calls. Reports, batch, address book — all of it.</Price>
           <Price label="Postage" big="Commercial rates">USPS Commercial Pricing and UPS discount rates on every label. See the exact price before you buy.</Price>
           <Price label="Payment" big="Pay as you go" dark>One charge per label or batch, receipts by email. Voided labels refund to your card in full.</Price>
+        </div>
+      </section>
+
+      {/* Lowest price guarantee */}
+      <section className="relative px-6 pb-4 sm:px-16">
+        <div className="card flex flex-col items-start gap-6 bg-yellow p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-3">
+            <div className="lbl text-ink">Lowest price guarantee</div>
+            <h2 className="disp max-w-[560px] text-[30px] leading-[1.1] sm:text-[38px]">Find the same label cheaper and we refund the difference.</h2>
+            <p className="max-w-[520px] text-[16px] font-semibold leading-[1.6] text-ink-2">Same carrier, same service, same package, within 14 days. One email and the money goes back on your card.</p>
+          </div>
+          <Link href="/lowest-price-guarantee" className="inline-flex h-14 shrink-0 items-center gap-2.5 rounded-pill border-2 border-ink bg-surface px-7 font-display text-[15px] font-extrabold text-ink hover:text-ink">Read the terms <ArrowIcon size={16} /></Link>
         </div>
       </section>
 

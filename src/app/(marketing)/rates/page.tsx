@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { RateCalculator } from "@/components/marketing/RateCalculator";
 
-export const metadata: Metadata = { title: "Rate calculator · Ship with Snap", description: "Compare USPS, UPS and FedEx rates for any package. No account needed." };
+export const metadata: Metadata = {
+  title: "Free shipping rate calculator",
+  description: "Compare live USPS, UPS, FedEx and DHL rates for your package in seconds. No account, no card, no email required.",
+  alternates: { canonical: "/rates" },
+};
 
 export default function RatesPage() {
   return (

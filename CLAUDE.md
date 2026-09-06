@@ -87,7 +87,8 @@ Payments: `stripe` SDK + Stripe Elements (phase 4). Shipping: `@easypost/api` be
 Layout (single Next.js app):
 
 ```
-src/app/(marketing)  landing, /rates calculator, /docs
+src/app/(marketing)  landing, /pricing, /how-it-works, /lowest-price-guarantee, /faq, /about,
+                     /contact, /carriers (+ /[carrier]), /rates calculator, /docs, /legal/*
 src/app/(auth)       /signup, /login; /invite/[token] accepts team invites
 src/app/(app)        ship, shipments (+ /[id] detail), batch, pickups, manifests, claims, track,
                      reports, billing (placeholder), settings/*, addresses
@@ -105,6 +106,8 @@ src/lib/tracking/    ingest + state machine + customer emails (TrackingFlow.dc.h
 src/lib/batch/       CSV → orders, rate-all, buy-all
 src/lib/webhooks/    outbound deliveries with HMAC + retries
 src/lib/settings/    account, printing, team, API keys, webhook endpoints
+src/lib/company.ts   every fact the site states about Snap3PL LLC — legal pages read from here
+src/lib/carriers-content.ts  copy for the public /carriers pages
 src/lib/api/         API-key auth + problem+json helpers for /api/v1
 src/lib/db/          Drizzle schema + drizzle/ migrations (DataModel.dc.html) — `npm run db:generate` then `db:migrate`
 design/              the artboards (do not edit by hand; ask Claude to update the canvas)
@@ -140,6 +143,18 @@ Built and verified against EasyPost test mode: design system, auth, Ship flow, s
 Limits of EasyPost **test** mode, verified: carrier types (bring-your-own-account) need a production key, USPS's sandbox pickup API times out, and most labels refuse format conversion after purchase. All three surface as plain-language messages rather than raw carrier errors.
 
 **Not built:** Stripe billing (phase 4 — `/billing` is a placeholder and labels are bought without a charge), Shopify/Etsy connectors (need partner-app credentials), our own label file storage.
+
+## Public site, legal and SEO
+
+The marketing site is operated by **Snap3PL LLC** and is built to be indexable and to satisfy a payment processor's review.
+
+- **One source of company facts**: `src/lib/company.ts`. Legal pages, the footer and the structured data all read from it. Fields left `""` (registered address, `governingState`, `phone`) are omitted from the rendered page rather than shown blank, and the Terms fall back to a governing-law clause that works without naming a state. Fill them in there and they appear everywhere at once.
+- **Legal pages**: `/legal/terms`, `/legal/privacy`, `/legal/refunds`, `/legal/acceptable-use`, `/legal/cookies`, all rendered through `LegalPage` (jump list, numbered sections, 620px reading column).
+- **Commercial pages**: `/pricing`, `/how-it-works`, `/lowest-price-guarantee`, `/faq`, `/about`, `/contact`, `/carriers` and a page per carrier.
+- **Lowest price guarantee**: we never mark up postage (`applyPricing` in `src/lib/ship/service.ts` is pass-through — keep it that way, the promise is public), and we price-match on evidence within 14 days. Terms are on `/lowest-price-guarantee`.
+- **SEO**: `src/app/sitemap.ts` and `src/app/robots.ts` (app routes and `/t/` tracking links are disallowed), per-page `alternates.canonical`, and JSON-LD from `src/components/marketing/JsonLd.tsx` — Organization, WebSite and SoftwareApplication site-wide, plus FAQPage and BreadcrumbList where they apply.
+- **Titles stay 25–65 characters and descriptions 110–165**, one `<h1>` per page. Long-form pages use the `prose-snap` utility and a `max-w-[620px]` column, which keeps lines near 78 characters.
+- Carrier names are trademarks; the footer carries the disclaimer and it must stay.
 
 ## Build order
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CarrierLogo, Wordmark } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -116,7 +117,11 @@ export default async function TrackingPage({ params }: { params: Promise<{ token
 
       <footer className="mt-auto flex flex-col gap-3 pt-4 text-[13px] font-bold text-muted sm:flex-row sm:items-center sm:justify-between">
         <div>Questions about your order? {account.replyTo ? <a href={`mailto:${account.replyTo}`} className="text-coral">Contact {account.name}</a> : `Contact ${account.name}`}</div>
-        <div className="flex items-center gap-2"><span>Shipped with</span><Wordmark className="text-[18px]" href="https://shipwithsnap.com" /></div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <Link href="/legal/privacy" className="hover:text-ink">Privacy</Link>
+          <Link href="/legal/terms" className="hover:text-ink">Terms</Link>
+          <div className="flex items-center gap-2"><span>Shipped with</span><Wordmark className="text-[18px]" href="https://shipwithsnap.com" /></div>
+        </div>
       </footer>
     </div>
   );
