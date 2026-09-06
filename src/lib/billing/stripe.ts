@@ -34,8 +34,15 @@ export function billingEnabled(): boolean {
   return getStripe() !== null;
 }
 
+/**
+ * The publishable key, read on the server and handed to the card form as a prop — it is never
+ * inlined into the client bundle, so it does not need the NEXT_PUBLIC_ prefix.
+ *
+ * Both names work. Prefer plain STRIPE_PUBLISHABLE_KEY: a NEXT_PUBLIC_ name marked "Secret" on
+ * Vercel triggers a public-prefix warning, and a saved Secret cannot be converted to Config.
+ */
 export function publishableKey(): string | null {
-  return process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? null;
+  return process.env.STRIPE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? null;
 }
 
 /** Errors we surface to the seller, with the decline reason the card issuer gave. */
