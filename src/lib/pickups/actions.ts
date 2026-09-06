@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireSession, requireWriter } from "@/lib/auth/require";
 import {
   cancelPickupFor,
   listPickupCandidatesFor,
@@ -15,18 +15,21 @@ import {
 
 export type { PickupView } from "./service";
 
+/** Writes spend money or change carrier state, so viewers are excluded. Reads are open to them. */
 async function requireAccount() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Not signed in");
-  return session.user;
+  return requireWriter();
+}
+
+async function requireReader() {
+  return requireSession();
 }
 
 export async function listPickups(): Promise<PickupView[]> {
-  return listPickupsFor((await requireAccount()).accountId);
+  return listPickupsFor((await requireReader()).accountId);
 }
 
 export async function listPickupCandidates() {
-  return listPickupCandidatesFor((await requireAccount()).accountId);
+  return listPickupCandidatesFor((await requireReader()).accountId);
 }
 
 const requestInput = z.object({

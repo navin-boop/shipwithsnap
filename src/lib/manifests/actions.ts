@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
+import { requireSession, requireWriter } from "@/lib/auth/require";
 import {
   createManifestFor,
   listManifestCandidatesFor,
@@ -14,18 +14,21 @@ import {
 
 export type { ManifestCandidate, ManifestView } from "./service";
 
+/** Writes spend money or change carrier state, so viewers are excluded. Reads are open to them. */
 async function requireAccount() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Not signed in");
-  return session.user;
+  return requireWriter();
+}
+
+async function requireReader() {
+  return requireSession();
 }
 
 export async function listManifests(): Promise<ManifestView[]> {
-  return listManifestsFor((await requireAccount()).accountId);
+  return listManifestsFor((await requireReader()).accountId);
 }
 
 export async function listManifestCandidates(): Promise<ManifestCandidate[]> {
-  return listManifestCandidatesFor((await requireAccount()).accountId);
+  return listManifestCandidatesFor((await requireReader()).accountId);
 }
 
 export type ManifestResult = { ok: true; manifest: ManifestView } | { ok: false; error: string };

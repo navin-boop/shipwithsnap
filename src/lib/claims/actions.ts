@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireSession, requireWriter } from "@/lib/auth/require";
 import {
   cancelClaimFor,
   claimErrorMessage,
@@ -15,18 +15,21 @@ import {
 
 export type { ClaimView } from "./service";
 
+/** Writes spend money or change carrier state, so viewers are excluded. Reads are open to them. */
 async function requireAccount() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Not signed in");
-  return session.user;
+  return requireWriter();
+}
+
+async function requireReader() {
+  return requireSession();
 }
 
 export async function listClaims(): Promise<ClaimView[]> {
-  return listClaimsFor((await requireAccount()).accountId);
+  return listClaimsFor((await requireReader()).accountId);
 }
 
 export async function listClaimableLabels() {
-  return listClaimableLabelsFor((await requireAccount()).accountId);
+  return listClaimableLabelsFor((await requireReader()).accountId);
 }
 
 const fileInput = z.object({ name: z.string(), dataUrl: z.string().regex(/^data:(image\/(png|jpeg|webp)|application\/pdf);base64,[A-Za-z0-9+/=]+$/) });

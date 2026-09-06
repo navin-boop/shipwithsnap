@@ -79,3 +79,29 @@ describe("buying is blocked while money is owed", () => {
 async function freshStripeModule() {
   return import(`@/lib/billing/stripe?cachebust=${Math.random()}`);
 }
+
+describe("outbound webhooks cannot be aimed at our own network", () => {
+  const blocked = [
+    "https://169.254.169.254/latest/meta-data/",
+    "https://127.0.0.1/hook",
+    "https://10.0.0.5/hook",
+    "https://192.168.1.1/hook",
+    "https://172.16.4.4/hook",
+    "https://localhost/hook",
+    "https://thing.internal/hook",
+    "https://[::1]/hook",
+    "http://example.com/hook",
+    "https://example.com:8080/hook",
+    "https://user:pass@example.com/hook",
+  ];
+  for (const url of blocked) {
+    it(`refuses ${url}`, async () => {
+      const { checkWebhookUrl } = await import("@/lib/webhooks/ssrf");
+      assert.equal(checkWebhookUrl(url).ok, false, `${url} should be refused`);
+    });
+  }
+  it("allows an ordinary public https endpoint", async () => {
+    const { checkWebhookUrl } = await import("@/lib/webhooks/ssrf");
+    assert.equal(checkWebhookUrl("https://hooks.example.com/snap").ok, true);
+  });
+});

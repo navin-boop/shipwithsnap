@@ -2,18 +2,15 @@
 
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireWriterAccount } from "@/lib/auth/require";
 import { db, schema } from "@/lib/db";
 import { getShippingProvider, ProviderError, type AddressInput, type DeliveryEstimate } from "@/lib/shipping";
 import { parseAddressLine } from "./address";
 import { BuyError, buyLabel, convertLabel, quoteMultiParcel, quoteReturn, quoteShipment, upsertAddress, type Quote } from "./service";
 
+/** Buying, rating and voting money out of the account is never a viewer's job. */
 async function requireAccount() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Not signed in");
-  const account = await db().query.accounts.findFirst({ where: eq(schema.accounts.id, session.user.accountId) });
-  if (!account) throw new Error("Account not found");
-  return { account, userId: session.user.id };
+  return requireWriterAccount();
 }
 
 const addressInput = z

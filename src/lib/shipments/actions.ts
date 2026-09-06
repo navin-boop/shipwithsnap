@@ -2,17 +2,16 @@
 
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
+import { requireWriter } from "@/lib/auth/require";
 import { db, schema } from "@/lib/db";
 import { refundForLabel } from "@/lib/billing/service";
 import { getShippingProvider, ProviderError } from "@/lib/shipping";
 import { sendTrackingEmail } from "@/lib/tracking/service";
 import { deliverWebhooks } from "@/lib/webhooks/outbound";
 
+/** Voiding a label refunds money, so viewers are excluded. */
 async function requireSession() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Not signed in");
-  return session.user;
+  return requireWriter();
 }
 
 export type ActionResult = { ok: true; message?: string } | { ok: false; error: string };

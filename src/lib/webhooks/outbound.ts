@@ -1,6 +1,7 @@
 import { createHmac, randomUUID } from "node:crypto";
 import { and, eq, lte, or, isNull } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
+import { assertSafeWebhookTarget } from "./ssrf";
 
 // Spec: design/API.dc.html — outbound webhooks signed with HMAC-SHA256, retried over 24 h.
 
@@ -45,6 +46,17 @@ export async function deliverWebhooks(accountId: string, event: WebhookEvent, da
 }
 
 async function attempt(delivery: typeof schema.webhookDeliveries.$inferSelect, endpoint: typeof schema.webhookEndpoints.$inferSelect) {
+  // Re-check the target on every attempt: a hostname that was public when the endpoint was saved
+  // can be repointed at an internal address later.
+  const safe = await assertSafeWebhookTarget(endpoint.url);
+  if (!safe.ok) {
+    await db()
+      .update(schema.webhookDeliveries)
+      .set({ status: "failed", attempts: delivery.attempts + 1, lastError: `Refused: ${safe.reason}`, nextRetryAt: null })
+      .where(eq(schema.webhookDeliveries.id, delivery.id));
+    return;
+  }
+
   const body = JSON.stringify(delivery.payload);
   const attempts = delivery.attempts + 1;
   try {

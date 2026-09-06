@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import type { CustomerEmailPrefs } from "@/lib/db/schema";
 import { WEBHOOK_EVENTS, sign, type WebhookEvent } from "@/lib/webhooks/outbound";
+import { assertSafeWebhookTarget } from "@/lib/webhooks/ssrf";
 
 export type Result<T = undefined> = ({ ok: true } & (T extends undefined ? { data?: undefined } : { data: T })) | { ok: false; error: string };
 
@@ -125,8 +126,11 @@ export async function revokeApiKey(id: string): Promise<Result> {
 
 export async function addWebhookEndpoint(input: { url: string; events: string[] }): Promise<Result<{ secret: string }>> {
   const user = await requireUser();
-  const p = z.object({ url: z.string().trim().url("Enter a full https:// URL.").refine((u) => u.startsWith("https://"), "Webhooks must use https."), events: z.array(z.enum(WEBHOOK_EVENTS)).min(1, "Pick at least one event.") }).safeParse(input);
+  const p = z.object({ url: z.string().trim().url("Enter a full https:// URL."), events: z.array(z.enum(WEBHOOK_EVENTS)).min(1, "Pick at least one event.") }).safeParse(input);
   if (!p.success) return { ok: false, error: p.error.issues[0].message };
+  // Refuse targets our server should never be made to reach (see webhooks/ssrf.ts).
+  const target = await assertSafeWebhookTarget(p.data.url);
+  if (!target.ok) return { ok: false, error: target.reason };
   const secret = `whsec_${randomBytes(24).toString("base64url")}`;
   await db().insert(schema.webhookEndpoints).values({ accountId: user.accountId, url: p.data.url, secret, events: p.data.events as WebhookEvent[] });
   revalidatePath("/settings/api");

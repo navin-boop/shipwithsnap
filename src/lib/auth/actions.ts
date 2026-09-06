@@ -3,7 +3,9 @@
 import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { AuthError } from "next-auth";
+import { headers } from "next/headers";
 import { z } from "zod";
+import { LOGIN_BLOCKED_MESSAGE, clearLoginFailures, loginAllowed, recordFailedLogin } from "./throttle";
 import { createAccountWithOwner, signIn, signOut } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 
@@ -58,11 +60,21 @@ export async function logIn(_prev: AuthFormState, formData: FormData): Promise<A
   const values = keep(formData, "email");
   const parsed = logInSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { fieldErrors: fieldErrors(parsed.error), values };
+
+  // Guessing a password should cost something. See auth/throttle.ts for the limits.
+  const headerList = await headers();
+  const ip = (headerList.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+  if (!loginAllowed(parsed.data.email, ip)) return { error: LOGIN_BLOCKED_MESSAGE, values };
+
   try {
     await signIn("credentials", { ...parsed.data, redirectTo: "/ship" });
   } catch (err) {
-    if (err instanceof AuthError) return { error: "That email and password don't match.", values };
-    throw err; // NEXT_REDIRECT
+    if (err instanceof AuthError) {
+      recordFailedLogin(parsed.data.email, ip);
+      return { error: "That email and password don't match.", values };
+    }
+    clearLoginFailures(parsed.data.email); // NEXT_REDIRECT means the sign-in succeeded
+    throw err;
   }
 }
 

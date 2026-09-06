@@ -3,7 +3,7 @@
 import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { requireWriterAccount } from "@/lib/auth/require";
 import { db, schema } from "@/lib/db";
 import type { Parcel } from "@/lib/db/schema";
 import { BillingError, authorize, billingEnabled, cancelAuthorization, capture } from "@/lib/billing/service";
@@ -14,12 +14,9 @@ import { ordersFromCsv } from "./csv";
 
 const DEFAULT_PARCEL: Parcel = { type: "box", lengthIn: 12, widthIn: 9, heightIn: 4, weightOz: 16 };
 
+/** Buying, rating and voting money out of the account is never a viewer's job. */
 async function requireAccount() {
-  const session = await auth();
-  if (!session?.user) throw new Error("Not signed in");
-  const account = await db().query.accounts.findFirst({ where: eq(schema.accounts.id, session.user.accountId) });
-  if (!account) throw new Error("Account not found");
-  return { account, userId: session.user.id };
+  return requireWriterAccount();
 }
 
 async function csvStore(accountId: string) {
