@@ -89,12 +89,18 @@ Layout (single Next.js app):
 ```
 src/app/(marketing)  landing, /rates calculator, /docs
 src/app/(auth)       /signup, /login; /invite/[token] accepts team invites
-src/app/(app)        ship, shipments, batch, reports, billing (placeholder), settings/*, addresses
+src/app/(app)        ship, shipments (+ /[id] detail), batch, pickups, manifests, claims, track,
+                     reports, billing (placeholder), settings/*, addresses
 src/app/t/[token]    public customer tracking page
 src/app/api          labels file, exports, batch template + merged PDF, cron, webhooks/easypost, v1/* public API
 src/components/      ui primitives (Components.dc.html), AppNav, feature components
-src/lib/shipping/    ShippingProvider seam: provider.ts, easypost.ts, fake.ts (CarrierAdapter.dc.html)
-src/lib/ship/        address parsing, quoteShipment / buyLabel (BuyLabelFlow.dc.html), server actions
+src/lib/shipping/    ShippingProvider seam: provider.ts, easypost.ts, fake.ts, options.ts (CarrierAdapter.dc.html)
+src/lib/pickups/     carrier pickups (service.ts = account-scoped core, actions.ts = session wrapper)
+src/lib/manifests/   end-of-day manifests (EasyPost scan forms)
+src/lib/claims/      insurance claims
+src/lib/trackers/    standalone tracking for packages we didn't label
+src/lib/carriers/    customer carrier accounts, rate rules, carrier metadata, customs defaults
+src/lib/ship/        address parsing, quoteShipment / quoteMultiParcel / buyLabel / quoteReturn, rate rules, actions
 src/lib/tracking/    ingest + state machine + customer emails (TrackingFlow.dc.html)
 src/lib/batch/       CSV → orders, rate-all, buy-all
 src/lib/webhooks/    outbound deliveries with HMAC + retries
@@ -108,7 +114,32 @@ Environment variables are listed in `.env.example`; local dev uses `.env.local`.
 
 ## Status (Sept 2026)
 
-Built and verified against EasyPost test mode: design system, auth, Ship flow, shipments (void/reprint/email tracking/CSV export), tracking (webhook + poll + public page + emails), batch (CSV import, rate-all, buy-all, merged PDF), reports, settings (store, printing, ship-from, team invites, customer emails, API keys + webhooks), public API v1, landing page + public rate calculator. **Not built:** Stripe billing (phase 4 — `/billing` is a placeholder and labels are bought without a charge), Shopify/Etsy connectors (need partner-app credentials), our own label file storage.
+Built and verified against EasyPost test mode: design system, auth, Ship flow, shipments (list + per-shipment detail, void/reprint/email tracking/CSV export), tracking (webhook + poll + public page + emails), batch (CSV import, rate-all, buy-all, merged PDF), reports, settings (store, printing, ship-from, carriers & rates, saved packages, international, team invites, customer emails, API keys + webhooks), public API v1, landing page + public rate calculator.
+
+**The EasyPost surface we use** — all of it behind `src/lib/shipping`:
+
+| Capability | Where it lives |
+|---|---|
+| Address verification (+ residential flag, lat/long) | Ship flow, address book |
+| Shipment options — signature levels, Saturday, hold for pickup, ship date, print references, invoice number, handling instructions, endorsement, hazmat, dry ice, alcohol, perishable, machinable, certified/registered mail, return receipt, Media/Library Mail, carbon neutral, carrier notifications | "More options" on Ship (`OptionsPanel`), `options` in API v1 |
+| Insurance (declared value) and claims (damage/loss/theft with attachments) | Ship card, `/claims` |
+| Customs info + items for international | `CustomsForm`, Settings → International |
+| Return labels (`is_return`) | Shipment detail → "Create return label" |
+| Multi-parcel (Orders API): N boxes, one rate, N labels | "+ Another box" on Ship, `parcels[]` in API v1 |
+| Predefined packages (USPS flat rate, UPS/FedEx/DHL packaging) | Package chips, Settings → Saved packages |
+| Label format conversion | Shipment detail → "Reprint as …" |
+| Standalone trackers | `/track`, `POST /api/v1/trackers` |
+| SmartRate delivery estimates (percentile transit times) | Note under each rate row, `POST /api/v1/delivery-estimates` |
+| Pickups (rates → buy → cancel) | `/pickups` |
+| Scan forms (end-of-day manifests) | `/manifests` |
+| Carrier accounts + carrier types (bring your own UPS/FedEx) | Settings → Carriers & rates |
+| Carrier metadata (service levels, predefined packages) | Settings → Carriers & rates, `GET /api/v1/carriers` |
+| EndShipper | `accounts.provider_end_shipper_id`, passed on buy when set |
+| Webhooks: `tracker.*`, `refund.successful`, `scan_form.*`, `claim.*` | `/api/webhooks/easypost` |
+
+Limits of EasyPost **test** mode, verified: carrier types (bring-your-own-account) need a production key, USPS's sandbox pickup API times out, and most labels refuse format conversion after purchase. All three surface as plain-language messages rather than raw carrier errors.
+
+**Not built:** Stripe billing (phase 4 — `/billing` is a placeholder and labels are bought without a charge), Shopify/Etsy connectors (need partner-app credentials), our own label file storage.
 
 ## Build order
 
@@ -125,5 +156,6 @@ Built and verified against EasyPost test mode: design system, auth, Ship flow, s
 - Write the failure branches from `BuyLabelFlow.dc.html` as tests before the happy path (EasyPost timeout → check for `postage_label`; DB failure → refund orphan + cancel PaymentIntent; capture failure → retry worker).
 - Money is integer cents everywhere. Every table carries `account_id`.
 - Every POST accepts an `Idempotency-Key`; Stripe and EasyPost calls reuse our ids as idempotency keys / `reference`.
+- Anything the public API also needs lives in a plain `service.ts` taking `accountId`; `actions.ts` is a thin `"use server"` wrapper that resolves the session. Never export an account-scoped function from a `"use server"` file — every export there is callable by the browser.
 - Sample data in the artboards (names, rates, totals) is illustrative; bracketed `[placeholders]` are facts nobody has confirmed yet — ask, don't invent.
 - Never expose EasyPost label URLs to customers; store label files in our bucket and serve signed URLs.

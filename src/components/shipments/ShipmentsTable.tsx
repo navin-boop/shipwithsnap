@@ -78,6 +78,7 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search name, tracking, city" className="w-full bg-transparent text-[13px] outline-none placeholder:text-muted" />
           </form>
+          <Link href="/manifests" className="inline-flex h-10 items-center rounded-pill border-2 border-ink bg-surface px-4 text-[14px] font-extrabold">End-of-day manifest</Link>
           <Link href="/addresses" className="inline-flex h-10 items-center rounded-pill border-2 border-ink bg-surface px-4 text-[14px] font-extrabold">Address book</Link>
           <a href={`/api/exports/shipments.csv?filter=${filter}${q ? `&q=${encodeURIComponent(q)}` : ""}`} className="inline-flex h-10 items-center rounded-pill border-2 border-ink bg-surface px-4 text-[14px] font-extrabold">Export CSV</a>
         </div>
@@ -101,7 +102,7 @@ export function ShipmentsTable({ rows, counts, filter, q }: { rows: ShipmentRow[
           return (
             <div key={r.labelId} className={cn("grid grid-cols-[40px_1fr] items-center gap-y-1 border-b border-hairline px-6 py-3.5 sm:px-10 md:grid-cols-[40px_1.5fr_1.4fr_1fr_1fr_0.7fr_0.9fr]", on && "bg-surface")}>
               <Checkbox checked={on} onChange={(v) => setSelected((prev) => { const n = new Set(prev); if (v) n.add(r.labelId); else n.delete(r.labelId); return n; })} label={`Select ${r.name}`} />
-              <div className="flex flex-col gap-0.5"><div className="text-sm font-semibold">{r.name}</div><div className="text-xs text-muted">{r.city}</div></div>
+              <Link href={`/shipments/${r.labelId}`} className="flex flex-col gap-0.5"><div className="text-sm font-semibold">{r.name}</div><div className="text-xs text-muted">{r.city}</div></Link>
               <div className="col-start-2 text-sm md:col-start-auto">{r.service}</div>
               <Link href={`/t/${r.trackingToken}`} target="_blank" className="col-start-2 text-sm tracking-[0.4px] text-ink-2 md:col-start-auto">{r.trackingNumber}</Link>
               <div className={cn("col-start-2 inline-flex items-center gap-1.5 text-[14px] font-extrabold md:col-start-auto", s.color)}>

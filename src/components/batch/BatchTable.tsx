@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
 import { ArrowIcon, Button, Checkbox } from "@/components/ui";
 import type { Order } from "@/lib/db/schema";
@@ -73,7 +74,7 @@ export function BatchTable({ orders, storeCounts }: { orders: Order[]; storeCoun
         <div className="flex flex-wrap gap-2.5">
           <Button variant="onInk" onClick={() => window.open(`/api/batches/${done.batchId}/labels.pdf`, "_blank", "noopener")}>Print all labels</Button>
           <a href={`/api/batches/${done.batchId}/labels.pdf`} download className="inline-flex h-12 items-center rounded-pill border-2 border-paper px-[22px] text-[14px] font-extrabold text-paper hover:text-paper">Download PDF</a>
-          <a href="/shipments" className="inline-flex h-12 items-center px-[22px] text-[14px] font-extrabold text-muted-on-ink hover:text-paper">View shipments</a>
+          <Link href="/shipments" className="inline-flex h-12 items-center px-[22px] text-[14px] font-extrabold text-muted-on-ink hover:text-paper">View shipments</Link>
         </div>
         <button type="button" onClick={() => location.reload()} className="mt-auto self-start border-b-2 border-paper pb-0.5 text-[14px] font-extrabold">Back to batch</button>
       </div>

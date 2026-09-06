@@ -11,13 +11,22 @@ export default async function ShipPage() {
   const session = await auth();
   const accountId = session!.user.accountId;
   const account = await db().query.accounts.findFirst({ where: eq(schema.accounts.id, accountId) });
-  const [from, [{ n }]] = await Promise.all([
+  const [from, [{ n }], presets] = await Promise.all([
     account ? getDefaultShipFrom(account) : null,
     db().select({ n: count() }).from(schema.labels).where(and(eq(schema.labels.accountId, accountId), isNull(schema.labels.voidedAt))),
+    db().query.parcelPresets.findMany({ where: eq(schema.parcelPresets.accountId, accountId), orderBy: schema.parcelPresets.createdAt }),
   ]);
   return (
     <main className="flex flex-1 flex-col">
-      <ShipFlow initialFrom={from} afterBuy={(account?.afterBuy as "print" | "download" | "nothing") ?? "print"} labelCount={Number(n)} />
+      <ShipFlow
+        initialFrom={from}
+        afterBuy={(account?.afterBuy as "print" | "download" | "nothing") ?? "print"}
+        labelCount={Number(n)}
+        presets={presets}
+        rateRules={account?.rateRules ?? { mode: "cheapest" }}
+        customsDefaults={account?.customsDefaults ?? {}}
+        accountName={account?.name ?? ""}
+      />
     </main>
   );
 }

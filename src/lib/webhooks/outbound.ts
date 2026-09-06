@@ -12,6 +12,12 @@ export const WEBHOOK_EVENTS = [
   "tracking.exception",
   "batch.completed",
   "batch.partial",
+  "label.refunded",
+  "pickup.scheduled",
+  "pickup.canceled",
+  "manifest.created",
+  "claim.submitted",
+  "claim.updated",
 ] as const;
 export type WebhookEvent = (typeof WEBHOOK_EVENTS)[number];
 

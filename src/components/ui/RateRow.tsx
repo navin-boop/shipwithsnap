@@ -20,9 +20,11 @@ export interface RateRowProps {
   onSelect?: () => void;
   /** Force the phone layout at every width. */
   compact?: boolean;
+  /** Extra line under the service — SmartRate confidence, guaranteed delivery. */
+  note?: string;
 }
 
-export function RateRow({ carrier, service, eta, days, tag, retailCents, priceCents, selected, onSelect, compact }: RateRowProps) {
+export function RateRow({ carrier, service, eta, days, tag, retailCents, priceCents, selected, onSelect, compact, note }: RateRowProps) {
   const saves = retailCents !== null && retailCents > priceCents ? retailCents - priceCents : null;
   return (
     <div
@@ -60,6 +62,7 @@ export function RateRow({ carrier, service, eta, days, tag, retailCents, priceCe
           {eta}{days ? ` · ${days} day${days === 1 ? "" : "s"}` : ""}
           {retailCents !== null && !compact && <span className="hidden sm:inline"> · <span className="line-through">{formatCents(retailCents)}</span> at the counter</span>}
         </div>
+        {note && <div className={cn("text-[12px] font-extrabold", selected ? "text-ink/70" : "text-teal")}>{note}</div>}
       </div>
       <div className="flex shrink-0 flex-col items-end">
         <div className={cn("disp", selected ? "text-[34px] sm:text-[40px]" : "text-[24px]")}>{formatCents(priceCents)}</div>

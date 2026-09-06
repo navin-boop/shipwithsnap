@@ -2,6 +2,8 @@ export { Button, ArrowIcon } from "./Button";
 export type { ButtonProps, ButtonVariant, ButtonSize } from "./Button";
 export { Input } from "./Input";
 export type { InputProps } from "./Input";
+export { Select } from "./Select";
+export type { SelectProps } from "./Select";
 export { Chip } from "./Chip";
 export type { ChipProps } from "./Chip";
 export { Switch } from "./Switch";
