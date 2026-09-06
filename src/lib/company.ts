@@ -11,7 +11,12 @@ export const company = {
   brand: "Ship with Snap",
   shortBrand: "Snap",
   domain: "shipwithsnap.com",
-  url: "https://shipwithsnap.com",
+  /**
+   * The canonical origin, used for canonical tags, the sitemap, robots.txt and JSON-LD.
+   * It follows NEXT_PUBLIC_APP_URL so it always matches whichever hostname Vercel serves as
+   * production — canonical tags pointing at a hostname that only redirects are worse than useless.
+   */
+  url: (process.env.NEXT_PUBLIC_APP_URL ?? "https://shipwithsnap.com").replace(/\/+$/, ""),
 
   /** Registered mailing address. Leave a line empty to omit it. */
   address: {
