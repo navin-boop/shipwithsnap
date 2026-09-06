@@ -1,11 +1,15 @@
 /**
- * Transactional email behind one function. Resend when RESEND_API_KEY is set; otherwise the
- * message is logged so local development never sends anything.
+ * Transactional email behind one function. Resend when a key is set; otherwise the message is
+ * logged so local development never sends anything.
+ *
+ * The key is read from RESEND_API_KEY or EMAIL_API_KEY — both names are in use, and a mismatch
+ * between them silently turns every customer email into a console line, which is very hard to
+ * notice from the outside.
  */
 export type Email = { to: string; subject: string; html: string; text: string; replyTo?: string | null };
 
 export async function sendEmail(msg: Email): Promise<{ sent: boolean; id?: string }> {
-  const key = process.env.RESEND_API_KEY;
+  const key = process.env.RESEND_API_KEY || process.env.EMAIL_API_KEY;
   const from = process.env.EMAIL_FROM ?? "Ship with Snap <labels@shipwithsnap.com>";
   if (!key) {
     console.info(`[email:dev] to=${msg.to} subject="${msg.subject}"\n${msg.text}`);

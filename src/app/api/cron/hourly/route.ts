@@ -15,8 +15,17 @@ export const maxDuration = 60;
  * and sweeps abandoned draft shipments.
  */
 export async function GET(req: Request) {
+  // Vercel sends `Authorization: Bearer $CRON_SECRET`. Without the secret set there is nothing to
+  // check, so this route would be open to anyone — refuse in production rather than run unguarded.
   const secret = process.env.CRON_SECRET;
-  if (secret && req.headers.get("authorization") !== `Bearer ${secret}`) return new NextResponse("Unauthorized", { status: 401 });
+  if (!secret) {
+    if (process.env.VERCEL_ENV === "production") {
+      console.error("CRON_SECRET is not set — refusing to run the cron job unauthenticated. Add it in the Vercel project settings.");
+      return new NextResponse("CRON_SECRET is not configured", { status: 503 });
+    }
+  } else if (req.headers.get("authorization") !== `Bearer ${secret}`) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
 
   const tracking = await pollStaleTrackers();
   const webhooks = await retryPendingWebhooks();
