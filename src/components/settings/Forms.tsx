@@ -21,7 +21,8 @@ import {
   updateStore,
 } from "@/lib/settings/actions";
 import { WEBHOOK_EVENTS } from "@/lib/webhooks/outbound";
-import { formatAddressLine } from "@/lib/ship/address";
+import { formatAddressLine } from "@/lib/ship/address-parse";
+import { ShipFromForm } from "@/components/ship/ShipFromForm";
 
 function Notice({ text, error }: { text: string | null; error?: boolean }) {
   return text ? <div className={cn("text-xs", error ? "text-danger" : "text-electric")}>{text}</div> : null;
@@ -147,23 +148,46 @@ export function PrintingForm({ account }: { account: Account }) {
   );
 }
 
-export function ShipFromList({ addresses, defaultId }: { addresses: Address[]; defaultId: string | null }) {
+export function ShipFromList({ addresses: initial, defaultId: initialDefault }: { addresses: Address[]; defaultId: string | null }) {
+  const [addresses, setAddresses] = useState(initial);
+  const [defaultId, setDefaultId] = useState(initialDefault);
+  const [adding, setAdding] = useState(false);
   const [pending, start] = useTransition();
   return (
-    <div className="flex max-w-[760px] flex-col">
-      {addresses.map((a) => (
-        <div key={a.id} className="flex flex-col gap-2 border-t border-line py-3.5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-0.5 text-sm">
-            <div className="font-semibold">{a.name ?? a.company}{a.id === defaultId && <span className="lbl ml-2 text-electric">Default</span>}</div>
-            <div className="text-ink-2">{formatAddressLine(a)}{a.phone ? ` · ${a.phone}` : ""}</div>
+    <div className="flex max-w-[760px] flex-col gap-4">
+      <div className="flex flex-col">
+        {addresses.map((a) => (
+          <div key={a.id} className="flex flex-col gap-2 border-t border-line py-3.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-0.5 text-sm">
+              <div className="font-semibold">{a.name ?? a.company}{a.id === defaultId && <span className="lbl ml-2 text-electric">Default</span>}</div>
+              <div className="text-ink-2">{formatAddressLine(a)}</div>
+              <div className="text-xs text-muted">{a.phone ? a.phone : <span className="text-danger">No phone — FedEx and UPS refuse labels without one</span>}</div>
+            </div>
+            {a.id !== defaultId && (
+              <Button variant="outline" size="sm" disabled={pending} onClick={() => start(async () => { await setDefaultShipFrom(a.id); setDefaultId(a.id); })}>Make default</Button>
+            )}
           </div>
-          {a.id !== defaultId && (
-            <Button variant="outline" size="sm" disabled={pending} onClick={() => start(async () => { await setDefaultShipFrom(a.id); })}>Make default</Button>
-          )}
+        ))}
+        {!addresses.length && <div className="border-t border-line py-3.5 text-sm text-muted">No ship-from addresses yet. Add the first one below.</div>}
+      </div>
+
+      {adding ? (
+        <div className="card flex flex-col gap-3 p-5">
+          <div className="lbl">New ship-from address</div>
+          <ShipFromForm
+            initial={null}
+            onSaved={(a) => {
+              setAddresses((prev) => [a, ...prev.filter((x) => x.id !== a.id)]);
+              setDefaultId(a.id); // saveShipFrom makes the newest one the default
+              setAdding(false);
+            }}
+            onCancel={() => setAdding(false)}
+          />
         </div>
-      ))}
-      {!addresses.length && <div className="text-sm text-muted">No ship-from addresses yet — add one on the Ship page.</div>}
-      <div className="border-t border-line pt-3 text-xs text-muted">Add or edit addresses from the Ship page (“Change” under Ship from).</div>
+      ) : (
+        <Button variant="outline" size="sm" className="self-start" onClick={() => setAdding(true)}>+ Add a ship-from address</Button>
+      )}
+      <p className="text-xs text-muted">Saving a new address makes it the default for new shipments. You can also switch address per shipment on the Ship page.</p>
     </div>
   );
 }

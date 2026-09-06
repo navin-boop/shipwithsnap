@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { and, count, eq, isNull } from "drizzle-orm";
+import { and, count, desc, eq, isNull } from "drizzle-orm";
 import { ShipFlow } from "@/components/ship/ShipFlow";
 import { auth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
@@ -11,15 +11,17 @@ export default async function ShipPage() {
   const session = await auth();
   const accountId = session!.user.accountId;
   const account = await db().query.accounts.findFirst({ where: eq(schema.accounts.id, accountId) });
-  const [from, [{ n }], presets] = await Promise.all([
+  const [from, [{ n }], presets, shipFromOptions] = await Promise.all([
     account ? getDefaultShipFrom(account) : null,
     db().select({ n: count() }).from(schema.labels).where(and(eq(schema.labels.accountId, accountId), isNull(schema.labels.voidedAt))),
     db().query.parcelPresets.findMany({ where: eq(schema.parcelPresets.accountId, accountId), orderBy: schema.parcelPresets.createdAt }),
+    db().query.addresses.findMany({ where: and(eq(schema.addresses.accountId, accountId), eq(schema.addresses.kind, "ship_from")), orderBy: desc(schema.addresses.lastUsedAt) }),
   ]);
   return (
     <main className="flex flex-1 flex-col">
       <ShipFlow
         initialFrom={from}
+        shipFromOptions={shipFromOptions}
         afterBuy={(account?.afterBuy as "print" | "download" | "nothing") ?? "print"}
         labelCount={Number(n)}
         presets={presets}

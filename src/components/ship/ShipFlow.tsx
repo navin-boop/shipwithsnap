@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { ArrowIcon, Button, Chip, Input, RateRow, Select } from "@/components/ui";
 import type { Address, CustomsDefaults, Parcel, ParcelPreset, RateRules } from "@/lib/db/schema";
-import { formatAddressLine } from "@/lib/ship/address";
+import { formatAddressLine } from "@/lib/ship/address-parse";
 import { describeRule, pickRate, serviceKey } from "@/lib/ship/rules";
 import {
   buy,
@@ -12,7 +12,6 @@ import {
   getRates,
   saveParcelPreset,
   verifyAddressFields,
-  verifyShipTo,
   type BuyResult,
   type QuoteResult,
   type VerifyResult,
@@ -21,6 +20,8 @@ import { COUNTRIES, PREDEFINED_PACKAGES } from "@/lib/shipping/options";
 import type { CustomsInput, DeliveryEstimate, ShipmentOptions } from "@/lib/shipping/provider";
 import { formatCents } from "@/lib/money";
 import { cn } from "@/lib/cn";
+import { AddressFields, EMPTY_ADDRESS, addressIsComplete, type AddressFieldValues, type AddressMode } from "./AddressFields";
+import { ShipFromCard } from "./ShipFromCard";
 import { ShipFromForm } from "./ShipFromForm";
 import { OptionsPanel } from "./OptionsPanel";
 import { CustomsForm, customsProblems, emptyCustoms } from "./CustomsForm";
@@ -58,6 +59,8 @@ function etaLabel(r: Rate): string {
 
 export interface ShipFlowProps {
   initialFrom: Address | null;
+  /** Every saved ship-from, so the Ship page can switch between warehouses. */
+  shipFromOptions: Address[];
   afterBuy: "print" | "download" | "nothing";
   /** Labels bought so far — drives the getting-started strip. */
   labelCount: number;
@@ -67,21 +70,22 @@ export interface ShipFlowProps {
   accountName: string;
 }
 
-export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPresets, rateRules, customsDefaults, accountName }: ShipFlowProps) {
+export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, presets: initialPresets, rateRules, customsDefaults, accountName }: ShipFlowProps) {
   // Ship to
   const [toName, setToName] = useState("");
   const [toEmail, setToEmail] = useState("");
   const [toPhone, setToPhone] = useState("");
   const [country, setCountry] = useState("US");
-  const [mode, setMode] = useState<"paste" | "fields">("paste");
+  const [mode, setMode] = useState<AddressMode>("paste");
   const [toLine, setToLine] = useState("");
-  const [f, setF] = useState({ street1: "", street2: "", city: "", state: "", zip: "" });
+  const [f, setF] = useState<AddressFieldValues>(EMPTY_ADDRESS);
   const [verified, setVerified] = useState<Extract<VerifyResult, { ok: true }> | null>(null);
   const [verifyErrors, setVerifyErrors] = useState<string[]>([]);
   const [verifying, startVerify] = useTransition();
 
   // Ship from
   const [from, setFrom] = useState<Address | null>(initialFrom);
+  const [fromOptions, setFromOptions] = useState<Address[]>(shipFromOptions);
   const [editingFrom, setEditingFrom] = useState(!initialFrom);
 
   // Package
@@ -114,8 +118,7 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPr
   const locked = !!label;
   const today = new Date().toISOString().slice(0, 10);
 
-  const composedLine = mode === "paste" ? toLine : [f.street1, f.street2, f.city, `${f.state} ${f.zip}`].filter((s) => s.trim()).join(", ");
-  const canVerify = mode === "paste" ? toLine.trim().length > 8 : !!(f.street1 && f.city && f.state && f.zip);
+  const canVerify = addressIsComplete(f, country);
 
   const parcels = useMemo<Parcel[] | null>(() => {
     const out: Parcel[] = [];
@@ -143,7 +146,6 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPr
     if (next === "US") {
       setCustoms(null);
     } else {
-      setMode("fields"); // a single pasted line can't be parsed reliably abroad
       setCustoms((c) => c ?? emptyCustoms(customsDefaults, from?.name ?? accountName));
     }
   }
@@ -151,9 +153,7 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPr
   const verify = useCallback(() => {
     if (!canVerify) return;
     startVerify(async () => {
-      const res = mode === "fields" || intl
-        ? await verifyAddressFields({ ...f, street2: f.street2 || null, country, name: toName.trim() || null, email: toEmail.trim() || null, phone: toPhone.trim() || null })
-        : await verifyShipTo(toName, composedLine, toEmail, country);
+      const res = await verifyAddressFields({ ...f, street2: f.street2 || null, country, name: toName.trim() || null, email: toEmail.trim() || null, phone: toPhone.trim() || null });
       if (res.ok) {
         setVerified(res);
         setVerifyErrors([]);
@@ -162,7 +162,7 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPr
         setVerifyErrors(res.errors);
       }
     });
-  }, [toName, composedLine, toEmail, toPhone, canVerify, mode, intl, f, country]);
+  }, [toName, toEmail, toPhone, canVerify, f, country]);
 
   // Re-rate whenever the inputs that affect price settle.
   const quoteKey = JSON.stringify({ to: verified?.address, fromId: from?.id, parcels, insuranceCents, options, isReturn, customs });
@@ -254,7 +254,7 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPr
     setToLine("");
     setToEmail("");
     setToPhone("");
-    setF({ street1: "", street2: "", city: "", state: "", zip: "" });
+    setF(EMPTY_ADDRESS);
     setBuyError(null);
     setShowAll(false);
     setBoxes([newBox()]);
@@ -299,36 +299,58 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPr
       <div className="grid flex-1 grid-cols-1 gap-6 lg:grid-cols-[540px_minmax(0,1fr)]">
         {/* Left: who and what */}
         <div className="flex flex-col gap-5">
+          {/* Ship from — the return address on the label, shown in full rather than as a footnote. */}
+          {from && !editingFrom ? (
+            <ShipFromCard
+              from={from}
+              options={fromOptions}
+              disabled={locked}
+              onSelect={(a) => setFrom(a)}
+              onEdit={() => setEditingFrom(true)}
+            />
+          ) : (
+            <section className="card flex flex-col gap-3.5 p-5 sm:p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="lbl">{from ? "Edit ship-from address" : "Where are you shipping from?"}</div>
+                {from && <button type="button" className="text-[13px] font-extrabold text-muted" onClick={() => setEditingFrom(false)}>Cancel</button>}
+              </div>
+              <ShipFromForm
+                initial={from}
+                onSaved={(a) => {
+                  setFrom(a);
+                  setFromOptions((prev) => [a, ...prev.filter((x) => x.id !== a.id)]);
+                  setEditingFrom(false);
+                }}
+                onCancel={from ? () => setEditingFrom(false) : undefined}
+              />
+            </section>
+          )}
+
           <section className="card flex flex-col gap-3.5 p-5 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div className="lbl">Who&apos;s it for?</div>
-              {!intl && (
-                <button type="button" className="text-[13px] font-extrabold text-coral" onClick={() => { setMode(mode === "paste" ? "fields" : "paste"); setVerified(null); setVerifyErrors([]); }}>
-                  {mode === "paste" ? "Type it in fields" : "Paste one line"}
-                </button>
-              )}
-            </div>
+            <div className="lbl">Who&apos;s it for?</div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_190px]">
               <Input aria-label="Recipient name" placeholder="Recipient name" value={toName} onChange={(e) => setToName(e.target.value)} disabled={locked} />
               <Select aria-label="Destination country" value={country} onChange={(e) => changeCountry(e.target.value)} options={COUNTRY_OPTS} disabled={locked} />
             </div>
-            {mode === "paste" && !intl ? (
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-                <Input aria-label="Address" placeholder="Paste the whole address — 418 Bergen St, Brooklyn, NY 11217" value={toLine} onChange={(e) => { setToLine(e.target.value); setVerified(null); }} onBlur={verify} onKeyDown={(e) => e.key === "Enter" && verify()} disabled={locked} className="flex-1" />
-                <Button variant="outline" size="lg" className="h-[50px] shrink-0" onClick={verify} disabled={!canVerify || verifying || locked}>{verifying ? "Checking…" : "Verify"}</Button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                <Input aria-label="Street" placeholder="Street address" value={f.street1} onChange={(e) => { setF({ ...f, street1: e.target.value }); setVerified(null); }} disabled={locked} />
-                <Input aria-label="Apartment or unit" placeholder="Apt, suite, unit (optional)" value={f.street2} onChange={(e) => setF({ ...f, street2: e.target.value })} disabled={locked} />
-                <div className="grid grid-cols-[minmax(0,1fr)_92px_104px] gap-3">
-                  <Input aria-label="City" placeholder="City" value={f.city} onChange={(e) => { setF({ ...f, city: e.target.value }); setVerified(null); }} disabled={locked} />
-                  <Input aria-label={intl ? "State or province" : "State"} placeholder={intl ? "Region" : "NY"} maxLength={intl ? 40 : 2} value={f.state} onChange={(e) => { setF({ ...f, state: intl ? e.target.value : e.target.value.toUpperCase() }); setVerified(null); }} disabled={locked} />
-                  <Input aria-label={intl ? "Postal code" : "ZIP"} placeholder={intl ? "Postal" : "ZIP"} inputMode={intl ? "text" : "numeric"} value={f.zip} onChange={(e) => { setF({ ...f, zip: e.target.value }); setVerified(null); }} onBlur={verify} disabled={locked} />
-                </div>
-                <Button variant="outline" size="md" className="self-start" onClick={verify} disabled={!canVerify || verifying || locked}>{verifying ? "Checking…" : "Verify address"}</Button>
-              </div>
-            )}
+
+            <AddressFields
+              value={f}
+              onChange={(next) => { setF(next); setVerified(null); }}
+              mode={mode}
+              onModeChange={setMode}
+              pasted={toLine}
+              onPastedChange={setToLine}
+              country={country}
+              disabled={locked}
+              onCommit={verify}
+              idPrefix="to"
+              action={
+                <Button variant="outline" size="lg" className="h-[50px] shrink-0 self-start" onClick={verify} disabled={!canVerify || verifying || locked}>
+                  {verifying ? "Checking…" : "Verify address"}
+                </Button>
+              }
+            />
+
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Input aria-label="Recipient email" placeholder="Email for tracking (optional)" type="email" value={toEmail} onChange={(e) => setToEmail(e.target.value)} disabled={locked} />
               <Input aria-label="Recipient phone" placeholder={intl ? "Phone (required abroad)" : "Phone (optional)"} value={toPhone} onChange={(e) => setToPhone(e.target.value)} disabled={locked} />
@@ -343,20 +365,6 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPr
               </div>
             )}
             {!verifying && verifyErrors.map((e) => <div key={e} className="text-[13px] font-bold text-danger">{e}</div>)}
-
-            <div className="border-t-2 border-hairline pt-3 text-[13px] font-bold text-muted">
-              {from && !editingFrom ? (
-                <div className="flex flex-col gap-1">
-                  <div>Shipping from <b className="text-ink">{from.name ?? from.company}, {from.city} {from.zip}</b> · <button type="button" className="font-extrabold text-coral" onClick={() => setEditingFrom(true)}>change</button></div>
-                  {!from.phone && <div className="text-danger">Add a phone number to this address — FedEx and UPS won&apos;t print labels without one.</div>}
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2 text-ink">
-                  <div className="lbl">Where are you shipping from?</div>
-                  <ShipFromForm initial={from} onSaved={(a) => { setFrom(a); setEditingFrom(false); }} onCancel={from ? () => setEditingFrom(false) : undefined} />
-                </div>
-              )}
-            </div>
           </section>
 
           <section className="card flex flex-col gap-3.5 p-5 sm:p-6">
@@ -471,7 +479,8 @@ export function ShipFlow({ initialFrom, afterBuy, labelCount, presets: initialPr
             {quoteError && rates.length > 0 && <div className="px-1 text-[13px] font-bold text-danger">{quoteError}</div>}
             {quote?.messages?.length ? <div className="px-1 text-[13px] font-bold text-muted">{quote.messages[0]}</div> : null}
 
-            <div className="sticky bottom-0 mt-auto flex flex-col gap-3 bg-paper/95 pt-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+            {/* Solid, with a rule above it: content scrolls underneath, so a translucent bar reads as a glitch. */}
+            <div className="sticky bottom-0 mt-auto flex flex-col gap-3 border-t-2 border-hairline bg-paper px-1 pb-2 pt-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-[14px] font-bold text-muted">
                 {selected ? `Charged to your card · ${multi ? `${boxes.length} labels` : "label"} ready in seconds · void within 28 days` : "Pick a rate to continue"}
                 {buyError && <div className="text-danger">{buyError}</div>}
