@@ -13,6 +13,7 @@ import {
   type ShipmentOptions,
 } from "@/lib/shipping";
 import { addressHash } from "./address";
+import { BillingError, authorize, billingEnabled, cancelAuthorization, capture, getDefaultPaymentMethod } from "@/lib/billing/service";
 
 const QUOTE_TTL_MS = 10 * 60 * 1000;
 
@@ -255,16 +256,30 @@ export async function quoteMultiParcel(account: Account, input: Omit<QuoteInput,
   return { shipmentId: rows[0].id, groupId, shipmentIds: rows.map((r) => r.id), rates: stored, messages: messages ?? [] };
 }
 
-export type BuyInput = { shipmentId: string; rateQuoteId: string; idempotencyKey: string };
+export type BuyInput = {
+  shipmentId: string;
+  rateQuoteId: string;
+  idempotencyKey: string;
+  /** Set for batch rows: they ride on the batch's single authorization instead of taking their own. */
+  chargeId?: string | null;
+};
 
 export class BuyError extends Error {
   constructor(
-    public readonly code: "rate_expired" | "already_labeled" | "provider_unavailable" | "address_invalid" | "not_supported" | "unknown",
+    public readonly code: "rate_expired" | "already_labeled" | "provider_unavailable" | "address_invalid" | "not_supported" | "card_declined" | "no_card" | "billing_locked" | "unknown",
     message: string,
+    /** The issuer's decline code, when the card was the problem. */
+    public readonly declineCode?: string | null,
   ) {
     super(message);
     this.name = "BuyError";
   }
+}
+
+/** Billing failures are buy failures from the caller's point of view. */
+function buyErrorFromBilling(err: BillingError): BuyError {
+  const code = err.code === "card_declined" || err.code === "no_card" || err.code === "billing_locked" ? err.code : err.code === "provider_unavailable" ? "provider_unavailable" : "unknown";
+  return new BuyError(code, err.message, err.declineCode ?? null);
 }
 
 function buyErrorFrom(err: unknown): never {
@@ -304,7 +319,25 @@ export async function buyLabel(account: Account, input: BuyInput): Promise<Label
   }
   if (!shipment.providerShipmentId) throw new BuyError("unknown", "Shipment was never rated");
 
-  // 5–7. Buy at the provider.
+  // 3. Authorize the card before anything is bought (design/BuyLabelFlow.dc.html). With billing
+  //    switched off the label is still bought, just without a charge.
+  let chargeId: string | null = input.chargeId ?? null;
+  const ownsCharge = !input.chargeId;
+  if (billingEnabled() && ownsCharge) {
+    try {
+      const authorized = await authorize(account, {
+        amountCents: quote.priceCents,
+        description: `Label · ${quote.carrier} ${quote.serviceName}`,
+        idempotencyKey: `label:${input.idempotencyKey}`,
+      });
+      chargeId = authorized.charge.id;
+    } catch (err) {
+      if (err instanceof BillingError) throw buyErrorFromBilling(err);
+      throw err;
+    }
+  }
+
+  // 5–7. Buy at the provider. Any failure here cancels the hold — nothing is charged.
   let result;
   try {
     result = await getShippingProvider().buy({
@@ -315,40 +348,68 @@ export async function buyLabel(account: Account, input: BuyInput): Promise<Label
       endShipperId: account.providerEndShipperId,
     });
   } catch (err) {
+    if (chargeId && ownsCharge) await cancelAuthorization(chargeId).catch((e) => console.error("could not cancel authorization", e));
     buyErrorFrom(err);
   }
 
-  // 8. Record the label and advance the shipment atomically.
-  const [inserted] = await db().batch([
-    db()
-      .insert(schema.labels)
-      .values({
-        accountId: account.id,
-        shipmentId: shipment.id,
-        rateQuoteId: quote.id,
-        carrier: quote.carrier,
-        serviceCode: quote.serviceCode,
-        serviceName: quote.serviceName,
-        trackingNumber: result.trackingCode,
-        priceCents: quote.priceCents,
-        retailCents: quote.retailCents,
-        insuredCents: shipment.extras.insuranceCents ?? 0,
-        feesCents: result.feesCents ?? {},
-        forms: result.forms ?? [],
-        providerLabelId: result.providerLabelId,
-        providerTrackerId: result.providerTrackerId,
-        fileUrl: result.labelUrl,
-        format: account.labelFormat,
-        idempotencyKey: input.idempotencyKey,
-        estDeliveryDate: quote.estDeliveryDate,
-      })
-      .returning(),
-    db()
-      .update(schema.shipments)
-      .set({ status: "label_created", updatedAt: new Date() })
-      .where(eq(schema.shipments.id, shipment.id)),
-  ]);
+  // 8. Record the label and advance the shipment atomically, then capture.
+  let inserted;
+  try {
+    [inserted] = await db().batch([
+      db()
+        .insert(schema.labels)
+        .values({
+          accountId: account.id,
+          shipmentId: shipment.id,
+          rateQuoteId: quote.id,
+          carrier: quote.carrier,
+          serviceCode: quote.serviceCode,
+          serviceName: quote.serviceName,
+          trackingNumber: result.trackingCode,
+          priceCents: quote.priceCents,
+          retailCents: quote.retailCents,
+          insuredCents: shipment.extras.insuranceCents ?? 0,
+          feesCents: result.feesCents ?? {},
+          forms: result.forms ?? [],
+          providerLabelId: result.providerLabelId,
+          providerTrackerId: result.providerTrackerId,
+          fileUrl: result.labelUrl,
+          format: account.labelFormat,
+          chargeId,
+          idempotencyKey: input.idempotencyKey,
+          estDeliveryDate: quote.estDeliveryDate,
+        })
+        .returning(),
+      db()
+        .update(schema.shipments)
+        .set({ status: "label_created", updatedAt: new Date() })
+        .where(eq(schema.shipments.id, shipment.id)),
+    ]);
+  } catch (err) {
+    // The label exists at the carrier but we could not record it: refund the orphan and drop the
+    // hold, so the seller is not charged for a label they can never see.
+    console.error("recording the label failed — refunding the orphan", err);
+    await getShippingProvider().void(shipment.providerShipmentId).catch((e) => console.error("orphan refund failed", e));
+    if (chargeId && ownsCharge) await cancelAuthorization(chargeId).catch((e) => console.error("could not cancel authorization", e));
+    throw new BuyError("unknown", "The label was bought but could not be saved. It has been refunded — nothing was charged.");
+  }
+
+  // Capture last. A capture failure leaves the label valid and the charge authorized; the cron
+  // retries it rather than losing the label.
+  if (chargeId && ownsCharge) {
+    try {
+      await capture(chargeId, quote.priceCents);
+    } catch (err) {
+      console.error(`capture failed for charge ${chargeId} — the cron will retry`, err);
+    }
+  }
   return inserted[0];
+}
+
+/** Cards on file, for the Ship page's "charged to …" line. */
+export async function hasPaymentMethod(accountId: string): Promise<boolean> {
+  if (!billingEnabled()) return true;
+  return (await getDefaultPaymentMethod(accountId)) !== null;
 }
 
 /** Buys every box of a multi-parcel group with one provider call. */

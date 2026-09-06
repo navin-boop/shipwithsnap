@@ -18,6 +18,8 @@ export const WEBHOOK_EVENTS = [
   "manifest.created",
   "claim.submitted",
   "claim.updated",
+  "payment.failed",
+  "payment.refunded",
 ] as const;
 export type WebhookEvent = (typeof WEBHOOK_EVENTS)[number];
 

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { db, schema } from "@/lib/db";
 import { normalizeTracker, type EpTracker } from "@/lib/shipping/easypost";
 import { findLabelsByTracker, findTrackersByProvider, ingestTrackerDetails, ingestTrackingEvents } from "@/lib/tracking/service";
+import { refundForLabel } from "@/lib/billing/service";
 import { deliverWebhooks } from "@/lib/webhooks/outbound";
 
 // Spec: design/TrackingFlow.dc.html — verify HMAC, dedupe on event id, 200 fast, then process.
@@ -64,6 +65,8 @@ export async function POST(req: Request) {
         await db().update(schema.labels).set({ refundStatus: status, ...(status === "refunded" && !label.voidedAt ? { voidedAt: new Date() } : {}) }).where(eq(schema.labels.id, label.id));
         if (status === "refunded") {
           await db().update(schema.shipments).set({ status: "voided", updatedAt: new Date() }).where(eq(schema.shipments.id, label.shipmentId));
+          // The carrier has approved, so the money can go back on the original card.
+          await refundForLabel(label.accountId, label.id, label.priceCents, `Voided ${label.carrier} ${label.serviceName}`);
           await deliverWebhooks(label.accountId, "label.refunded", { label_id: label.id, tracking_number: label.trackingNumber, price_cents: label.priceCents });
         }
       }

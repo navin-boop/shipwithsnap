@@ -4,6 +4,8 @@ import { ShipFlow } from "@/components/ship/ShipFlow";
 import { auth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import { getDefaultShipFrom } from "@/lib/ship/service";
+import { getDefaultPaymentMethod } from "@/lib/billing/service";
+import { billingEnabled } from "@/lib/billing/stripe";
 
 export const metadata: Metadata = { title: "Ship · Ship with Snap" };
 
@@ -17,6 +19,7 @@ export default async function ShipPage() {
     db().query.parcelPresets.findMany({ where: eq(schema.parcelPresets.accountId, accountId), orderBy: schema.parcelPresets.createdAt }),
     db().query.addresses.findMany({ where: and(eq(schema.addresses.accountId, accountId), eq(schema.addresses.kind, "ship_from")), orderBy: desc(schema.addresses.lastUsedAt) }),
   ]);
+  const card = billingEnabled() ? await getDefaultPaymentMethod(accountId) : null;
   return (
     <main className="flex flex-1 flex-col">
       <ShipFlow
@@ -28,6 +31,9 @@ export default async function ShipPage() {
         rateRules={account?.rateRules ?? { mode: "cheapest" }}
         customsDefaults={account?.customsDefaults ?? {}}
         accountName={account?.name ?? ""}
+        cardLabel={card ? `${card.brand} ·· ${card.last4}` : null}
+        billingOn={billingEnabled()}
+        billingLocked={account?.billingLockedReason ?? null}
       />
     </main>
   );

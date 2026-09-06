@@ -10,11 +10,14 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@easypost/api": "^8.9.0",
     "@neondatabase/serverless": "^1.1.0",
+    "@stripe/react-stripe-js": "^6.9.0",
+    "@stripe/stripe-js": "^9.15.0",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "next": "^16.3.4",
@@ -22,6 +25,7 @@
     "pdf-lib": "^1.17.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "stripe": "^22.6.1",
     "zod": "^4.5.4"
   },
   "devDependencies": {
@@ -33,6 +37,7 @@
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.4",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
     "typescript": "^6.0.3"
   }
 }

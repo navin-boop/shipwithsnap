@@ -4,6 +4,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
+import { refundForLabel } from "@/lib/billing/service";
 import { getShippingProvider, ProviderError } from "@/lib/shipping";
 import { sendTrackingEmail } from "@/lib/tracking/service";
 import { deliverWebhooks } from "@/lib/webhooks/outbound";
@@ -37,9 +38,15 @@ export async function voidLabel(labelId: string): Promise<ActionResult> {
     db().update(schema.labels).set({ voidedAt: new Date(), refundStatus: status }).where(eq(schema.labels.id, label.id)),
     db().update(schema.shipments).set({ status: "voided", updatedAt: new Date() }).where(eq(schema.shipments.id, shipment.id)),
   ]);
+  // Refunds follow the carrier (design/Ledger.dc.html): the card is only refunded once EasyPost
+  // says "refunded". A "submitted" void stays pending until the tracker webhook confirms it.
+  if (status === "refunded") {
+    await refundForLabel(user.accountId, label.id, label.priceCents, `Voided ${label.carrier} ${label.serviceName}`);
+  }
   await deliverWebhooks(user.accountId, "label.voided", { label_id: label.id, tracking_number: label.trackingNumber, refund_status: status });
   revalidatePath("/shipments");
-  return { ok: true, message: status === "refunded" ? "Voided and refunded." : "Voided — refund pending carrier approval." };
+  revalidatePath("/billing");
+  return { ok: true, message: status === "refunded" ? "Voided and refunded." : "Voided — the refund lands once the carrier approves it." };
 }
 
 /** Email the tracking link to the recipient (needs an email on the ship-to address). */

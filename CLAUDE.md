@@ -79,10 +79,10 @@ Vercel has no long-running processes, so "workers" and "queue" from `Architectur
 | Postgres | **Neon** (Vercel Postgres integration) via **Drizzle**; pooled URL in the app, unpooled for migrations |
 | Job queue + workers, cron | **Vercel Cron** → `/api/cron/hourly` (`vercel.json`): polls quiet EasyPost trackers, retries outbound webhook deliveries, sweeps stale draft shipments. Batch buys run in-request with bounded concurrency. (Inngest can replace this later if jobs outgrow request limits.) |
 | Object store (label PDF/ZPL) | Not yet — labels are streamed from the provider URL through `/api/labels/[id]/file` (session) and `/api/v1/labels/[id]/file` (API key). Move to Vercel Blob when we want our own copies. |
-| Webhook receiver | `/api/webhooks/easypost` — verifies HMAC, dedupes on `inbound_events(id)`, feeds `ingestTrackingEvents` (state machine + notifications). Stripe arrives with phase 4. |
+| Webhook receiver | `/api/webhooks/stripe` (payment_intent.*, charge.refunded, charge.dispute.created) and `/api/webhooks/easypost` — verifies HMAC, dedupes on `inbound_events(id)`, feeds `ingestTrackingEvents` (state machine + notifications). |
 | Email | `src/lib/email.ts` — Resend when `RESEND_API_KEY` is set, console log otherwise |
 
-Payments: `stripe` SDK + Stripe Elements (phase 4). Shipping: `@easypost/api` behind `src/lib/shipping` (fake provider when no key; live key refused for buys outside Vercel Production). Auth: Auth.js v5 (email + Google), JWT sessions.
+Payments: `stripe` SDK + Stripe Elements, behind `src/lib/billing` (inert with no `STRIPE_SECRET_KEY`). Shipping: `@easypost/api` behind `src/lib/shipping` (fake provider when no key; live key refused for buys outside Vercel Production). Auth: Auth.js v5 (email + Google), JWT sessions.
 
 Layout (single Next.js app):
 
@@ -101,6 +101,8 @@ src/lib/manifests/   end-of-day manifests (EasyPost scan forms)
 src/lib/claims/      insurance claims
 src/lib/trackers/    standalone tracking for packages we didn't label
 src/lib/carriers/    customer carrier accounts, rate rules, carrier metadata, customs defaults
+src/lib/billing/     Stripe seam: stripe.ts (client + guards), policy.ts (lock rules), service.ts,
+                     actions.ts (Ledger.dc.html / Wallet.dc.html)
 src/lib/ship/        address parsing, quoteShipment / quoteMultiParcel / buyLabel / quoteReturn, rate rules, actions
 src/lib/tracking/    ingest + state machine + customer emails (TrackingFlow.dc.html)
 src/lib/batch/       CSV → orders, rate-all, buy-all
@@ -142,7 +144,20 @@ Built and verified against EasyPost test mode: design system, auth, Ship flow, s
 
 Limits of EasyPost **test** mode, verified: carrier types (bring-your-own-account) need a production key, USPS's sandbox pickup API times out, and most labels refuse format conversion after purchase. All three surface as plain-language messages rather than raw carrier errors.
 
-**Not built:** Stripe billing (phase 4 — `/billing` is a placeholder and labels are bought without a charge), Shopify/Etsy connectors (need partner-app credentials), our own label file storage.
+### Billing (Stripe)
+
+Built to `design/Ledger.dc.html` and `design/Wallet.dc.html`. Pay as you go on a saved card, no wallet and no plans.
+
+- **Authorize → buy → capture.** Every label creates a manual-capture PaymentIntent before anything is bought. The buy failing cancels the authorization, so the hold drops off the card and nothing is charged. Capture happens after the label is recorded; a capture that fails leaves the label valid and is retried by the cron.
+- **One charge per batch.** The batch total is authorized once, rows buy in parallel, and only the rows that succeeded are captured (partial capture). Batch rows pass `chargeId` into `buyLabel` so they never take their own charge.
+- **Refunds follow the carrier.** A void asks EasyPost first; the card is only refunded when EasyPost reports `refunded`, either immediately or later through the webhook. Until then Billing shows the refund as pending.
+- **Locks.** An unpaid adjustment or an open dispute blocks buying (`accounts.billing_locked_reason`); adding a card clears a decline lock. The rules live in `policy.ts` and are covered by `npm test`.
+- **Idempotency.** Stripe idempotency keys are our own charge ids, so a retry never double-authorizes.
+- **Degrades to free.** With no `STRIPE_SECRET_KEY` the seam is inert and labels are bought without a charge, so the app works before keys exist. A live key outside Vercel Production is refused unless `ALLOW_LIVE_STRIPE=1`, mirroring the EasyPost guard.
+
+`npm test` runs the failure branches (`tests/billing.test.ts`) with node's test runner via tsx.
+
+**Not built:** Shopify/Etsy connectors (need partner-app credentials), our own label file storage.
 
 ## Public site, legal and SEO
 
@@ -161,7 +176,7 @@ The marketing site is operated by **Snap3PL LLC** and is built to be indexable a
 1. Tokens + components from `Components.dc.html` (verify against the sheet in the browser).
 2. Auth (email + Google), accounts, roles.
 3. Ship flow (`Main.dc.html`) against EasyPost **test** keys: address verify → rates → buy → label file.
-4. Billing (`Ledger.dc.html`, `Wallet.dc.html`) in Stripe **test** mode: save card, authorize/capture, refunds.
+4. Billing (`Ledger.dc.html`, `Wallet.dc.html`) in Stripe **test** mode: save card, authorize/capture, refunds. ✅
 5. Shipments + tracking: EasyPost webhooks, state machine, customer tracking page, emails.
 6. Batch + store import (Shopify first), one charge per batch, merged PDF.
 7. Reports, settings, address book, API keys + outbound webhooks.

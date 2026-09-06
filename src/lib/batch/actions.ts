@@ -6,6 +6,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import type { Parcel } from "@/lib/db/schema";
+import { BillingError, authorize, billingEnabled, cancelAuthorization, capture } from "@/lib/billing/service";
 import { buyLabel, getDefaultShipFrom, quoteShipment } from "@/lib/ship/service";
 import { getShippingProvider, ProviderError } from "@/lib/shipping";
 import { deliverWebhooks } from "@/lib/webhooks/outbound";
@@ -100,15 +101,40 @@ export async function buyBatch(rows: Array<{ orderId: string; shipmentId: string
   const [batch] = await db().insert(schema.batches).values({ accountId: account.id, status: "buying", createdBy: userId }).returning();
   await db().update(schema.shipments).set({ batchId: batch.id }).where(inArray(schema.shipments.id, rows.map((r) => r.shipmentId)));
 
+  // One charge for the whole batch (design/Ledger.dc.html): authorize the total up front, then
+  // capture only the rows that actually bought. A decline here stops the batch before any label.
+  let batchChargeId: string | null = null;
+  if (billingEnabled()) {
+    const quotes = await db().query.rateQuotes.findMany({ where: inArray(schema.rateQuotes.id, rows.map((r) => r.rateQuoteId)) });
+    const total = quotes.reduce((a, q) => a + q.priceCents, 0);
+    try {
+      const authorized = await authorize(account, {
+        amountCents: total,
+        description: `Batch · ${rows.length} label${rows.length === 1 ? "" : "s"}`,
+        idempotencyKey: `batch:${batch.id}`,
+        kind: "batch",
+        batchId: batch.id,
+      });
+      batchChargeId = authorized.charge.id;
+    } catch (err) {
+      const message = err instanceof BillingError ? err.message : "Could not authorize the batch total.";
+      await db().update(schema.batches).set({ status: "partial", counts: { ok: 0, failed: rows.length }, updatedAt: new Date() }).where(eq(schema.batches.id, batch.id));
+      return { ok: false, error: message };
+    }
+  }
+
   const failed: Array<{ orderId: string; error: string }> = [];
   let okCount = 0;
+  let capturedCents = 0;
   const CONCURRENCY = 4;
   for (let i = 0; i < rows.length; i += CONCURRENCY) {
     await Promise.all(
       rows.slice(i, i + CONCURRENCY).map(async (r) => {
         try {
-          await buyLabel(account, { shipmentId: r.shipmentId, rateQuoteId: r.rateQuoteId, idempotencyKey: `batch:${batch.id}:${r.shipmentId}` });
+          // The rows ride on the batch's single authorization, so no per-label charge is taken.
+          const label = await buyLabel(account, { shipmentId: r.shipmentId, rateQuoteId: r.rateQuoteId, idempotencyKey: `batch:${batch.id}:${r.shipmentId}`, chargeId: batchChargeId });
           await db().update(schema.orders).set({ shipmentId: r.shipmentId, fulfilledAt: new Date() }).where(eq(schema.orders.id, r.orderId));
+          capturedCents += label.priceCents;
           okCount++;
         } catch (err) {
           const msg = err instanceof Error ? err.message : "Buy failed";
@@ -118,7 +144,17 @@ export async function buyBatch(rows: Array<{ orderId: string; shipmentId: string
       }),
     );
   }
-  const status = failed.length ? (okCount ? "partial" : "partial") : "done";
+  // Partial capture: charge for the labels that exist, release the hold on the ones that failed.
+  if (batchChargeId) {
+    try {
+      if (capturedCents > 0) await capture(batchChargeId, capturedCents);
+      else await cancelAuthorization(batchChargeId);
+    } catch (err) {
+      console.error(`batch capture failed for charge ${batchChargeId} — the cron will retry`, err);
+    }
+  }
+
+  const status = failed.length ? "partial" : "done";
   await db().update(schema.batches).set({ status, counts: { ok: okCount, failed: failed.length }, updatedAt: new Date() }).where(eq(schema.batches.id, batch.id));
   await deliverWebhooks(account.id, failed.length ? "batch.partial" : "batch.completed", { batch_id: batch.id, ok: okCount, failed: failed.length });
   revalidatePath("/batch");

@@ -68,9 +68,13 @@ export interface ShipFlowProps {
   rateRules: RateRules;
   customsDefaults: CustomsDefaults;
   accountName: string;
+  /** "Visa ·· 4242", or null when no card is saved. */
+  cardLabel: string | null;
+  billingOn: boolean;
+  billingLocked: string | null;
 }
 
-export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, presets: initialPresets, rateRules, customsDefaults, accountName }: ShipFlowProps) {
+export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, presets: initialPresets, rateRules, customsDefaults, accountName, cardLabel, billingOn, billingLocked }: ShipFlowProps) {
   // Ship to
   const [toName, setToName] = useState("");
   const [toEmail, setToEmail] = useState("");
@@ -111,6 +115,7 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
   // Buy
   const [buying, startBuy] = useTransition();
   const [buyError, setBuyError] = useState<string | null>(null);
+  const [needsBilling, setNeedsBilling] = useState(false);
   const [label, setLabel] = useState<Label | null>(null);
 
   const intl = country !== "US";
@@ -227,6 +232,7 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
     if (!quote || !selected) return;
     setBuyError(null);
     startBuy(async () => {
+      setNeedsBilling(false);
       const res = await buy({ shipmentId: quote.shipmentId, rateQuoteId: selected.id, idempotencyKey: idemKey.current });
       if (res.ok) {
         setLabel(res.label);
@@ -240,7 +246,10 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
       } else if (res.code === "rate_expired") {
         setBuyError(res.error);
         setQuote(null);
-      } else setBuyError(res.error);
+      } else {
+        setBuyError(res.error);
+        setNeedsBilling(["card_declined", "no_card", "billing_locked"].includes(res.code));
+      }
     });
   }
 
@@ -296,6 +305,18 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
         )}
       </div>
 
+      {billingOn && billingLocked && (
+        <div className="card flex flex-wrap items-center justify-between gap-3 bg-coral p-4 text-white">
+          <div className="text-[15px] font-extrabold">Buying is paused on this account.</div>
+          <Link href="/billing" className="inline-flex h-10 items-center rounded-pill border-2 border-ink bg-ink px-4 text-[14px] font-extrabold text-yellow hover:text-yellow">Open Billing</Link>
+        </div>
+      )}
+      {billingOn && !cardLabel && !billingLocked && (
+        <div className="card-quiet flex flex-wrap items-center justify-between gap-3 border-coral bg-coral-soft p-4">
+          <div className="text-[15px] font-extrabold">Add a card before your first label.</div>
+          <Link href="/billing" className="text-[14px] font-extrabold text-coral">Open Billing →</Link>
+        </div>
+      )}
       <div className="grid flex-1 grid-cols-1 gap-6 lg:grid-cols-[540px_minmax(0,1fr)]">
         {/* Left: who and what */}
         <div className="flex flex-col gap-5">
@@ -482,8 +503,15 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
             {/* Solid, with a rule above it: content scrolls underneath, so a translucent bar reads as a glitch. */}
             <div className="sticky bottom-0 mt-auto flex flex-col gap-3 border-t-2 border-hairline bg-paper px-1 pb-2 pt-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-[14px] font-bold text-muted">
-                {selected ? `Charged to your card · ${multi ? `${boxes.length} labels` : "label"} ready in seconds · void within 28 days` : "Pick a rate to continue"}
-                {buyError && <div className="text-danger">{buyError}</div>}
+                {selected
+                  ? `${billingOn ? (cardLabel ? `Charged to ${cardLabel}` : "Add a card to buy") : "No charge — billing is off"} · ${multi ? `${boxes.length} labels` : "label"} ready in seconds · void within 28 days`
+                  : "Pick a rate to continue"}
+                {buyError && (
+                  <div className="text-danger">
+                    {buyError}{" "}
+                    {needsBilling && <Link href="/billing" className="underline underline-offset-2">Open Billing</Link>}
+                  </div>
+                )}
               </div>
               <Button size="lg" icon={<ArrowIcon />} disabled={!selected || quoting || buying} onClick={onBuy}>
                 {buying ? "Buying…" : selected ? `Buy ${multi ? "labels" : "label"} · ${formatCents(selected.priceCents)}` : "Buy label"}

@@ -28,6 +28,9 @@ export const batchStatus = pgEnum("batch_status", ["rating", "ready", "buying", 
 export const deliveryStatus = pgEnum("delivery_status", ["pending", "delivered", "failed"]);
 export const pickupStatus = pgEnum("pickup_status", ["quoted", "scheduled", "canceled", "failed"]);
 export const scanFormStatus = pgEnum("scan_form_status", ["creating", "created", "failed"]);
+export const chargeKind = pgEnum("charge_kind", ["label", "batch", "adjustment"]);
+export const chargeStatus = pgEnum("charge_status", ["authorized", "captured", "canceled", "failed", "refunded", "partially_refunded"]);
+export const refundStatusEnum = pgEnum("stripe_refund_status", ["requested", "refunded", "failed"]);
 
 export type CustomerEmailPrefs = { shipped: boolean; outForDelivery: boolean; delivered: boolean; exception: boolean };
 
@@ -65,6 +68,9 @@ export const accounts = pgTable("accounts", {
   customsDefaults: jsonb("customs_defaults").$type<CustomsDefaults>().notNull().default({}),
   /** EasyPost EndShipper id, created from the default ship-from when the platform requires it. */
   providerEndShipperId: text("provider_end_shipper_id"),
+  /** Email a receipt for every charge, and where to send it. */
+  receiptEmails: boolean("receipt_emails").notNull().default(true),
+  receiptEmail: text("receipt_email"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -437,6 +443,78 @@ export const webhookDeliveries = pgTable(
   (t) => [index("webhook_deliveries_retry").on(t.status, t.nextRetryAt)],
 );
 
+/** Cards saved with Stripe. We keep only what is safe to display; Stripe holds the number. */
+export const paymentMethods = pgTable(
+  "payment_methods",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountId: uuid("account_id").notNull().references(() => accounts.id, { onDelete: "cascade" }),
+    stripePaymentMethodId: text("stripe_payment_method_id").notNull(),
+    brand: text("brand").notNull(),
+    last4: text("last4").notNull(),
+    expMonth: integer("exp_month").notNull(),
+    expYear: integer("exp_year").notNull(),
+    nameOnCard: text("name_on_card"),
+    isDefault: boolean("is_default").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("payment_methods_provider_id").on(t.stripePaymentMethodId), index("payment_methods_account").on(t.accountId)],
+);
+
+/**
+ * One row per PaymentIntent. Spec: design/Ledger.dc.html — authorize before the buy, capture
+ * after, cancel if the buy failed. A batch is a single charge with a partial capture.
+ */
+export const charges = pgTable(
+  "charges",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountId: uuid("account_id").notNull().references(() => accounts.id, { onDelete: "cascade" }),
+    kind: chargeKind("kind").notNull().default("label"),
+    status: chargeStatus("status").notNull().default("authorized"),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    paymentMethodId: uuid("payment_method_id").references(() => paymentMethods.id),
+    /** Snapshot, so a removed card still reads correctly on an old receipt. */
+    cardLabel: text("card_label"),
+    amountAuthorizedCents: integer("amount_authorized_cents").notNull(),
+    amountCapturedCents: integer("amount_captured_cents").notNull().default(0),
+    amountRefundedCents: integer("amount_refunded_cents").notNull().default(0),
+    currency: text("currency").notNull().default("usd"),
+    description: text("description").notNull(),
+    receiptUrl: text("receipt_url"),
+    failureCode: text("failure_code"),
+    failureMessage: text("failure_message"),
+    batchId: uuid("batch_id").references(() => batches.id),
+    idempotencyKey: text("idempotency_key").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("charges_idempotency_key").on(t.idempotencyKey),
+    index("charges_account_created").on(t.accountId, t.createdAt),
+    index("charges_payment_intent").on(t.stripePaymentIntentId),
+  ],
+);
+
+/** A refund against a charge, raised once the carrier approves a void. */
+export const refunds = pgTable(
+  "refunds",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accountId: uuid("account_id").notNull().references(() => accounts.id, { onDelete: "cascade" }),
+    chargeId: uuid("charge_id").notNull().references(() => charges.id),
+    labelId: uuid("label_id").references(() => labels.id),
+    stripeRefundId: text("stripe_refund_id"),
+    amountCents: integer("amount_cents").notNull(),
+    status: refundStatusEnum("status").notNull().default("requested"),
+    reason: text("reason"),
+    failureMessage: text("failure_message"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("refunds_account_created").on(t.accountId, t.createdAt), index("refunds_charge").on(t.chargeId)],
+);
+
 export type Account = typeof accounts.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Address = typeof addresses.$inferSelect;
@@ -455,3 +533,6 @@ export type ScanForm = typeof scanForms.$inferSelect;
 export type Claim = typeof claims.$inferSelect;
 export type ParcelPreset = typeof parcelPresets.$inferSelect;
 export type CarrierAccount = typeof carrierAccounts.$inferSelect;
+export type PaymentMethod = typeof paymentMethods.$inferSelect;
+export type Charge = typeof charges.$inferSelect;
+export type Refund = typeof refunds.$inferSelect;

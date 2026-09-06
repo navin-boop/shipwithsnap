@@ -1,6 +1,7 @@
 import { lt, and, eq, inArray, isNull, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db, schema } from "@/lib/db";
+import { cancelAuthorization, capture } from "@/lib/billing/service";
 import { claimErrorMessage, refreshClaimFor } from "@/lib/claims/service";
 import { manifestErrorMessage, refreshManifestFor } from "@/lib/manifests/service";
 import { pollStaleTrackers } from "@/lib/tracking/service";
@@ -54,6 +55,21 @@ export async function GET(req: Request) {
     }
   }
 
+  // A capture that failed after the label committed leaves money authorized but not taken.
+  // Retry it here rather than losing the charge (design/BuyLabelFlow.dc.html, step 8).
+  const stuck = await db().query.charges.findMany({ where: and(eq(schema.charges.status, "authorized"), lt(schema.charges.createdAt, new Date(Date.now() - 10 * 60_000))), limit: 50 });
+  let recaptured = 0;
+  for (const c of stuck) {
+    const labels = await db().query.labels.findMany({ where: eq(schema.labels.chargeId, c.id) });
+    const due = labels.filter((l) => !l.voidedAt).reduce((a, l) => a + l.priceCents, 0);
+    try {
+      if (due > 0) { await capture(c.id, Math.min(due, c.amountAuthorizedCents)); recaptured++; }
+      else { await cancelAuthorization(c.id); }
+    } catch (err) {
+      console.error(`retrying capture for charge ${c.id} failed:`, err instanceof Error ? err.message : err);
+    }
+  }
+
   // A pickup window that has passed is done with, whatever the carrier says.
   const stalePickups = await db()
     .update(schema.pickups)
@@ -66,5 +82,5 @@ export async function GET(req: Request) {
     .where(and(eq(schema.shipments.status, "draft"), lt(schema.shipments.createdAt, new Date(Date.now() - 24 * 3600 * 1000)), or(isNull(schema.shipments.groupId), isNull(schema.shipments.providerOrderId))))
     .returning({ id: schema.shipments.id });
 
-  return NextResponse.json({ ok: true, tracking, webhooksRetried: webhooks, manifestsRefreshed: manifests, claimsRefreshed: claims, pickupsExpired: stalePickups.length, draftsDeleted: staleDrafts.length });
+  return NextResponse.json({ ok: true, tracking, webhooksRetried: webhooks, manifestsRefreshed: manifests, claimsRefreshed: claims, capturesRetried: recaptured, pickupsExpired: stalePickups.length, draftsDeleted: staleDrafts.length });
 }
