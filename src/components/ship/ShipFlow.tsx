@@ -20,11 +20,14 @@ import { COUNTRIES, PREDEFINED_PACKAGES } from "@/lib/shipping/options";
 import type { CustomsInput, DeliveryEstimate, ShipmentOptions } from "@/lib/shipping/provider";
 import { formatCents } from "@/lib/money";
 import { cn } from "@/lib/cn";
+import { AddCardButton } from "@/components/billing/AddCardDialog";
+import { INSURANCE_MAX_VALUE_CENTS, insurancePremiumCents, insuranceRateLabel } from "@/lib/ship/insurance";
 import { AddressFields, EMPTY_ADDRESS, addressIsComplete, type AddressFieldValues, type AddressMode } from "./AddressFields";
 import { ShipFromCard } from "./ShipFromCard";
 import { ShipFromForm } from "./ShipFromForm";
 import { OptionsPanel } from "./OptionsPanel";
 import { CustomsForm, customsProblems, emptyCustoms } from "./CustomsForm";
+import { useRouter } from "next/navigation";
 
 // Spec: design/SunnyShip.dc.html — "Let's ship something." with a 1-2-3 stepper, two cards on the left
 // (Who's it for? / What's in the box?), the rate cards on the right with the cheapest as a yellow hero.
@@ -72,9 +75,15 @@ export interface ShipFlowProps {
   cardLabel: string | null;
   billingOn: boolean;
   billingLocked: string | null;
+  /** Stripe publishable key, so a card can be added without leaving the Ship page. */
+  stripePublishableKey: string | null;
 }
 
-export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, presets: initialPresets, rateRules, customsDefaults, accountName, cardLabel, billingOn, billingLocked }: ShipFlowProps) {
+export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, presets: initialPresets, rateRules, customsDefaults, accountName, cardLabel: initialCardLabel, billingOn, billingLocked, stripePublishableKey }: ShipFlowProps) {
+  // Held in state, not read straight from props: adding a card mid-flow has to clear the prompt
+  // and re-enable Buy without bouncing the seller to another page and losing the form.
+  const [cardLabel, setCardLabel] = useState(initialCardLabel);
+  const router = useRouter();
   // Ship to
   const [toName, setToName] = useState("");
   const [toEmail, setToEmail] = useState("");
@@ -116,6 +125,7 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
   const [buying, startBuy] = useTransition();
   const [buyError, setBuyError] = useState<string | null>(null);
   const [needsBilling, setNeedsBilling] = useState(false);
+  const [needsCard, setNeedsCard] = useState<string | null>(null);
   const [label, setLabel] = useState<Label | null>(null);
 
   const intl = country !== "US";
@@ -141,6 +151,8 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
 
   const totalOz = parcels?.reduce((a, p) => a + p.weightOz, 0) ?? null;
   const insuranceCents = Math.round((parseFloat(insureValue) || 0) * 100);
+  // One source of truth with the server: what is quoted here is exactly what gets charged.
+  const insurancePremium = insurancePremiumCents(insuranceCents);
 
   const customsReady = !intl || (customs !== null && customsProblems(customs).length === 0);
 
@@ -249,8 +261,18 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
       } else {
         setBuyError(res.error);
         setNeedsBilling(["card_declined", "no_card", "billing_locked"].includes(res.code));
+        setNeedsCard(res.code === "no_card" || res.code === "card_declined" ? res.code : null);
       }
     });
+  }
+
+  /** A card was saved without leaving the page: clear the prompt and let them buy straight away. */
+  function onCardAdded() {
+    setNeedsCard(null);
+    setNeedsBilling(false);
+    setBuyError(null);
+    setCardLabel("card on file");
+    router.refresh();
   }
 
   function reset() {
@@ -312,9 +334,12 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
         </div>
       )}
       {billingOn && !cardLabel && !billingLocked && (
-        <div className="card-quiet flex flex-wrap items-center justify-between gap-3 border-coral bg-coral-soft p-4">
-          <div className="text-[15px] font-extrabold">Add a card before your first label.</div>
-          <Link href="/billing" className="text-[14px] font-extrabold text-coral">Open Billing →</Link>
+        <div className="card-quiet flex flex-col gap-3 border-coral bg-coral-soft p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="text-[15px] font-extrabold">Add a card before your first label.</div>
+            <AddCardButton publishableKey={stripePublishableKey} label="Add a card" onAdded={onCardAdded} />
+          </div>
+          <p className="text-[13px] font-bold text-muted">You are charged per label — postage at cost, plus insurance if you add it. No monthly fee and nothing to prepay.</p>
         </div>
       )}
       <div className="grid flex-1 grid-cols-1 gap-6 lg:grid-cols-[540px_minmax(0,1fr)]">
@@ -447,7 +472,13 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
 
             <div className="flex flex-wrap items-end gap-3 border-t-2 border-hairline pt-3">
               <Input label="Insure the contents for" unit="$" inputMode="decimal" placeholder="0" value={insureValue} onChange={(e) => setInsureValue(e.target.value)} disabled={locked} className="w-[190px]" />
-              <div className="pb-3 text-[13px] font-bold text-muted">{insuranceCents > 0 ? `Adds about ${formatCents(Math.max(125, Math.round(insuranceCents * 0.01)))} · claims up to $5,000` : "Leave blank for no coverage."}</div>
+              <div className="pb-3 text-[13px] font-bold text-muted">
+                {insuranceCents > INSURANCE_MAX_VALUE_CENTS
+                  ? <span className="text-danger">{`The most we can insure is ${formatCents(INSURANCE_MAX_VALUE_CENTS)}.`}</span>
+                  : insuranceCents > 0
+                    ? `Adds ${formatCents(insurancePremium)} — ${insuranceRateLabel()}. Claims filed from the shipment.`
+                    : `Leave blank for no coverage. ${insuranceRateLabel()}.`}
+              </div>
             </div>
 
             <OptionsPanel value={options} onChange={setOptions} isReturn={isReturn} onReturnChange={setIsReturn} disabled={locked} today={today} />
@@ -506,15 +537,24 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
                 {selected
                   ? `${billingOn ? (cardLabel ? `Charged to ${cardLabel}` : "Add a card to buy") : "No charge — billing is off"} · ${multi ? `${boxes.length} labels` : "label"} ready in seconds · void within 28 days`
                   : "Pick a rate to continue"}
+                {selected && insurancePremium > 0 && (
+                  <div className="text-ink">
+                    {`Postage ${formatCents(selected.priceCents)} + insurance ${formatCents(insurancePremium)}`}
+                  </div>
+                )}
                 {buyError && (
-                  <div className="text-danger">
-                    {buyError}{" "}
-                    {needsBilling && <Link href="/billing" className="underline underline-offset-2">Open Billing</Link>}
+                  <div className="flex flex-col gap-2 text-danger">
+                    <div>
+                      {buyError}{" "}
+                      {needsBilling && needsCard !== "no_card" && <Link href="/billing" className="underline underline-offset-2">Open Billing</Link>}
+                    </div>
+                    {/* No card is the one billing failure we can fix without leaving the page. */}
+                    {needsCard === "no_card" && <AddCardButton publishableKey={stripePublishableKey} label="Add a card and try again" onAdded={onCardAdded} />}
                   </div>
                 )}
               </div>
               <Button size="lg" icon={<ArrowIcon />} disabled={!selected || quoting || buying} onClick={onBuy}>
-                {buying ? "Buying…" : selected ? `Buy ${multi ? "labels" : "label"} · ${formatCents(selected.priceCents)}` : "Buy label"}
+                {buying ? "Buying…" : selected ? `Buy ${multi ? "labels" : "label"} · ${formatCents(selected.priceCents + insurancePremium)}` : "Buy label"}
               </Button>
             </div>
           </div>

@@ -53,7 +53,7 @@ export default function LowestPricePage() {
           The price you see is the price the carrier gives us. We do not add a margin to postage, and the rate list shows the retail counter price beside it so you can check.
         </Promise>
         <Promise label="No fees" big="$0 forever">
-          No monthly subscription, no per-label fee, no minimum volume, no charge for users, batches or API calls. Postage is the only line on your receipt.
+          No monthly subscription, no per-label fee, no minimum volume, no charge for users, batches or API calls. Unless you add insurance, postage is the only line on your receipt.
         </Promise>
         <Promise label="If we are beaten" big="We refund it" dark>
           Find the same label cheaper on any other platform and we put the difference back on your card. The terms below are the whole of it.

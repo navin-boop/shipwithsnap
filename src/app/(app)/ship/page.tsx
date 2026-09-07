@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import { getDefaultShipFrom } from "@/lib/ship/service";
 import { getDefaultPaymentMethod } from "@/lib/billing/service";
-import { billingEnabled } from "@/lib/billing/stripe";
+import { billingEnabled, publishableKey } from "@/lib/billing/stripe";
 
 export const metadata: Metadata = { title: "Ship · Ship with Snap" };
 
@@ -34,6 +34,7 @@ export default async function ShipPage() {
         cardLabel={card ? `${card.brand} ·· ${card.last4}` : null}
         billingOn={billingEnabled()}
         billingLocked={account?.billingLockedReason ?? null}
+        stripePublishableKey={publishableKey()}
       />
     </main>
   );

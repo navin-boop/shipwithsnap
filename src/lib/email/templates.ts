@@ -229,17 +229,23 @@ export function passwordReset(input: { email: string; resetUrl: string; expiresI
 
 /* ---------------------------------------------------------------------------- account: billing */
 
-export type LabelLine = { carrier: string; serviceName: string; trackingNumber: string; to: string; amountCents: number };
+export type LabelLine = { carrier: string; serviceName: string; trackingNumber: string; to: string; amountCents: number; insuredCents?: number; insuranceFeeCents?: number };
 
 export function labelReceipt(input: { accountName: string; amountCents: number; cardLabel?: string | null; label: LabelLine; receiptUrl: string }): RenderedEmail {
   const base = appUrl();
   const card = input.cardLabel ? `your ${input.cardLabel}` : "your card on file";
+  const fee = input.label.insuranceFeeCents ?? 0;
   const rows: Row[] = [
     { label: "Service", value: esc(`${input.label.carrier} ${input.label.serviceName}`) },
     { label: "To", value: esc(input.label.to) },
     { label: "Tracking number", value: esc(input.label.trackingNumber) },
-    { label: "Charged", value: esc(money(input.amountCents)), strong: true },
   ];
+  // Itemise whenever there is more than postage on the charge, so the total always adds up.
+  if (fee > 0) {
+    rows.push({ label: "Postage", value: esc(money(input.label.amountCents)) });
+    rows.push({ label: `Insurance (${money(input.label.insuredCents ?? 0)} declared)`, value: esc(money(fee)) });
+  }
+  rows.push({ label: "Charged", value: esc(money(input.amountCents)), strong: true });
   return {
     subject: `Receipt — ${money(input.amountCents)} for ${input.label.carrier} ${input.label.serviceName}`,
     html: renderEmail({
@@ -249,7 +255,9 @@ export function labelReceipt(input: { accountName: string; amountCents: number; 
       heading: "Label bought.",
       bodyHtml:
         p(`We charged ${money(input.amountCents)} to ${card} for the label below.`) +
-        raw(`That's postage at cost. ${strong("We never mark it up")} — the whole amount goes to the carrier.`),
+        (fee > 0
+          ? raw(`Postage is at cost — ${strong("we never mark it up")}. The insurance premium is ours.`)
+          : raw(`That's postage at cost. ${strong("We never mark it up")} — the whole amount goes to the carrier.`)),
       rows,
       cta: { label: "View receipt", url: input.receiptUrl },
       secondaryCta: { label: "Print label", url: `${base}/shipments`, variant: "outline" },

@@ -120,6 +120,8 @@ export function notifyChargeCaptured(chargeId: string): Promise<void> {
           trackingNumber: label.trackingNumber,
           to: [shipTo?.name, shipTo?.city, shipTo?.state].filter(Boolean).join(", ") || "—",
           amountCents: label.priceCents,
+          insuredCents: label.insuredCents,
+          insuranceFeeCents: label.insuranceFeeCents,
         },
         receiptUrl: charge.receiptUrl ?? `${base}/billing`,
       }),

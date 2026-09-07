@@ -281,6 +281,8 @@ export const labels = pgTable(
     priceCents: integer("price_cents").notNull(),
     retailCents: integer("retail_cents"),
     insuredCents: integer("insured_cents").notNull().default(0),
+    /** What we charged for that cover. Postage is pass-through; insurance is a priced product. */
+    insuranceFeeCents: integer("insurance_fee_cents").notNull().default(0),
     feesCents: jsonb("fees_cents").$type<Record<string, number>>().notNull().default({}),
     forms: jsonb("forms").$type<Array<{ type: string; url: string }>>().notNull().default([]),
     providerLabelId: text("provider_label_id"),

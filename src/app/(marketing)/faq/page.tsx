@@ -86,7 +86,7 @@ const GROUPS: Group[] = [
     items: [
       {
         q: "How do I insure a package?",
-        a: "Enter a declared value when you buy the label. The cost is included in the rate you see before you commit, and coverage runs up to 5,000 dollars per package.",
+        a: "Enter a declared value when you buy the label. Coverage costs 70 cents per 100 dollars of declared value with a 1 dollar minimum, shown on the Ship screen before you commit and listed separately on your receipt. Coverage runs up to 5,000 dollars per package.",
       },
       {
         q: "A package was lost or damaged. What now?",

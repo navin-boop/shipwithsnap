@@ -13,6 +13,7 @@ import {
   type ShipmentOptions,
 } from "@/lib/shipping";
 import { addressHash } from "./address";
+import { insurancePremiumCents, insuranceValueError } from "./insurance";
 import { BillingError, authorize, billingEnabled, cancelAuthorization, capture, getDefaultPaymentMethod } from "@/lib/billing/service";
 
 const QUOTE_TTL_MS = 10 * 60 * 1000;
@@ -323,11 +324,20 @@ export async function buyLabel(account: Account, input: BuyInput): Promise<Label
   //    switched off the label is still bought, just without a charge.
   let chargeId: string | null = input.chargeId ?? null;
   const ownsCharge = !input.chargeId;
+  // Insurance is a priced product, not pass-through postage: the premium is charged on top and
+  // itemised on the receipt. Before this it was passed to EasyPost and never billed at all.
+  const valueError = insuranceValueError(shipment.extras.insuranceCents ?? 0);
+  if (valueError) throw new BuyError("not_supported", valueError);
+  const insurancePremium = insurancePremiumCents(shipment.extras.insuranceCents);
+  const totalCents = quote.priceCents + insurancePremium;
+
   if (billingEnabled() && ownsCharge) {
     try {
       const authorized = await authorize(account, {
-        amountCents: quote.priceCents,
-        description: `Label · ${quote.carrier} ${quote.serviceName}`,
+        amountCents: totalCents,
+        description: insurancePremium
+          ? `Label · ${quote.carrier} ${quote.serviceName} + insurance`
+          : `Label · ${quote.carrier} ${quote.serviceName}`,
         idempotencyKey: `label:${input.idempotencyKey}`,
       });
       chargeId = authorized.charge.id;
@@ -369,6 +379,7 @@ export async function buyLabel(account: Account, input: BuyInput): Promise<Label
           priceCents: quote.priceCents,
           retailCents: quote.retailCents,
           insuredCents: shipment.extras.insuranceCents ?? 0,
+          insuranceFeeCents: insurancePremium,
           feesCents: result.feesCents ?? {},
           forms: result.forms ?? [],
           providerLabelId: result.providerLabelId,
@@ -398,7 +409,7 @@ export async function buyLabel(account: Account, input: BuyInput): Promise<Label
   // retries it rather than losing the label.
   if (chargeId && ownsCharge) {
     try {
-      await capture(chargeId, quote.priceCents);
+      await capture(chargeId, totalCents);
     } catch (err) {
       console.error(`capture failed for charge ${chargeId} — the cron will retry`, err);
     }

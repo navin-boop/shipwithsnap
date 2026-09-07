@@ -131,7 +131,9 @@ export async function buyBatch(rows: Array<{ orderId: string; shipmentId: string
           // The rows ride on the batch's single authorization, so no per-label charge is taken.
           const label = await buyLabel(account, { shipmentId: r.shipmentId, rateQuoteId: r.rateQuoteId, idempotencyKey: `batch:${batch.id}:${r.shipmentId}`, chargeId: batchChargeId });
           await db().update(schema.orders).set({ shipmentId: r.shipmentId, fulfilledAt: new Date() }).where(eq(schema.orders.id, r.orderId));
-          capturedCents += label.priceCents;
+          // Batch rows carry no declared value today, so the premium is zero — but read it from
+          // the label rather than assuming, so insurance in a batch can never go uncaptured.
+          capturedCents += label.priceCents + label.insuranceFeeCents;
           okCount++;
         } catch (err) {
           const msg = err instanceof Error ? err.message : "Buy failed";

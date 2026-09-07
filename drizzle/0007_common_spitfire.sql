@@ -1,0 +1,1 @@
+ALTER TABLE "labels" ADD COLUMN "insurance_fee_cents" integer DEFAULT 0 NOT NULL;

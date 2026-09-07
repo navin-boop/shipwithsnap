@@ -40,7 +40,8 @@ export async function voidLabel(labelId: string): Promise<ActionResult> {
   // Refunds follow the carrier (design/Ledger.dc.html): the card is only refunded once EasyPost
   // says "refunded". A "submitted" void stays pending until the tracker webhook confirms it.
   if (status === "refunded") {
-    await refundForLabel(user.accountId, label.id, label.priceCents, `Voided ${label.carrier} ${label.serviceName}`);
+    // Refund the whole charge, insurance premium included — a voided label was never insured.
+    await refundForLabel(user.accountId, label.id, label.priceCents + label.insuranceFeeCents, `Voided ${label.carrier} ${label.serviceName}`);
   }
   await deliverWebhooks(user.accountId, "label.voided", { label_id: label.id, tracking_number: label.trackingNumber, refund_status: status });
   revalidatePath("/shipments");

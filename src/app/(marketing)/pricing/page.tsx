@@ -32,7 +32,12 @@ const CHARGES = [
   {
     title: "Extras you choose",
     detail:
-      "Signature confirmation, declared-value insurance, Saturday delivery and similar carrier options. Each one is priced into the rate you see before you buy — never added afterwards.",
+      "Signature confirmation, Saturday delivery and similar carrier options are priced into the rate you see before you buy — never added afterwards.",
+  },
+  {
+    title: "Insurance, if you add it",
+    detail:
+      "Declared-value coverage is 70 cents per 100 dollars of value, minimum 1 dollar, shown on the Ship screen before you buy and listed separately on your receipt. It is the one thing we price ourselves rather than pass through; postage stays at cost.",
   },
   {
     title: "Carrier adjustments",
