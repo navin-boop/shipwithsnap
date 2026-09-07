@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowIcon, CarrierLogo } from "@/components/ui";
 import { JsonLd, breadcrumbSchema } from "@/components/marketing/JsonLd";
-import { CARRIERS } from "@/lib/carriers-content";
+import { CARRIERS, carrierCountWord, carrierListSentence } from "@/lib/carriers-content";
 
 export const metadata: Metadata = {
-  title: "Carriers: USPS, UPS, FedEx and DHL",
-  description: "Compare USPS, UPS, FedEx and DHL on one list. Which carrier is cheapest by weight, which delivers to PO boxes, and which surcharges to watch for.",
+  title: `Carriers: ${carrierListSentence}`,
+  description: `Compare ${carrierListSentence} on one list. Which carrier is cheapest by weight, which delivers to PO boxes, and which surcharges to watch for.`,
   alternates: { canonical: "/carriers" },
 };
 
@@ -16,7 +16,8 @@ const RULES = [
   ["5 to 70 lb", "UPS Ground and FedEx Ground usually beat USPS as weight climbs, especially over longer distances."],
   ["Over 70 lb", "UPS and FedEx only. USPS will not carry a parcel above 70 pounds."],
   ["To a PO box", "USPS only. No other carrier can deliver to one."],
-  ["International", "DHL Express for speed, USPS International for price. Both need a customs declaration."],
+  ["International", "DHL Express for speed, USPS International for price. Canada Post is usually cheapest into Canada and avoids the couriers\u2019 brokerage fees."],
+  ["To Canada", "Canada Post reaches every Canadian address, including the rural routes the couriers surcharge or refuse."],
 ];
 
 export default function CarriersPage() {
@@ -28,10 +29,10 @@ export default function CarriersPage() {
       <section className="relative flex flex-col gap-5 px-6 pb-12 pt-12 sm:px-16 lg:pt-16">
         <div className="lbl">Carriers</div>
         <h1 className="disp max-w-[860px] text-[44px] leading-[1] sm:text-[60px] xl:text-[68px]">
-          Four carriers.<br />One list. Cheapest first.
+          {carrierCountWord.charAt(0).toUpperCase() + carrierCountWord.slice(1)} carriers.<br />One list. Cheapest first.
         </h1>
         <p className="max-w-[640px] text-[18px] font-semibold leading-[1.55] text-ink-2 sm:text-[20px]">
-          You do not have to guess which carrier is cheapest for a package — enter it once and every service from all four prices itself in front of you. This page is for when you want to know why.
+          You do not have to guess which carrier is cheapest for a package — enter it once and every service from all of them prices itself in front of you. This page is for when you want to know why.
         </p>
       </section>
 

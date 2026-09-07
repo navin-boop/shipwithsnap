@@ -33,15 +33,19 @@ const BRAND: Record<string, { bg: string; fg: string }> = {
 const DEFAULT_BRAND = { bg: "#2b2320", fg: "#fff8ee" };
 
 export function CarrierLogo({ carrier, size = 44, className, inverted }: { carrier: string; size?: number; className?: string; inverted?: boolean }) {
-  const [loaded, setLoaded] = useState(false);
+  // Optimistic: assume the file is there and show it, and fall back only when it actually fails.
+  // The reverse — hide it until onLoad fires — loses the race on a prerendered page, where the
+  // image is usually already complete before React hydrates and the event never reaches it.
+  const [failed, setFailed] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
   const slug = SLUG[carrier];
   const brand = BRAND[carrier] ?? DEFAULT_BRAND;
+  const showFile = Boolean(slug) && !failed;
 
-  // A cached file can finish loading before hydration, so check once on mount.
+  // An image that finished before hydration never fires onError either, so check it once.
   useEffect(() => {
     const img = ref.current;
-    if (img?.complete && img.naturalWidth > 0) setLoaded(true);
+    if (img?.complete && img.naturalWidth === 0) setFailed(true);
   }, []);
 
   // A long name would be cut mid-word ("Canada " ), so multi-word carriers use their initials.
@@ -49,12 +53,12 @@ export function CarrierLogo({ carrier, size = 44, className, inverted }: { carri
 
   return (
     <div
-      className={cn("relative flex shrink-0 items-center justify-center overflow-hidden rounded-[12px]", loaded && "bg-surface p-[12%]", inverted && "ring-2 ring-ink", className)}
+      className={cn("relative flex shrink-0 items-center justify-center overflow-hidden rounded-[12px]", showFile && "bg-surface p-[12%]", inverted && "ring-2 ring-ink", className)}
       style={{ width: size, height: size }}
       role="img"
       aria-label={carrier}
     >
-      {!loaded && (
+      {!showFile && (
         <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true" className="h-full w-full">
           <rect width="100" height="100" rx="22" fill={brand.bg} />
           <text
@@ -74,9 +78,9 @@ export function CarrierLogo({ carrier, size = 44, className, inverted }: { carri
           </text>
         </svg>
       )}
-      {slug && (
+      {showFile && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img ref={ref} src={`/carriers/${slug}.svg`} alt="" width={size} height={size} onLoad={() => setLoaded(true)} className={cn("h-full w-full object-contain", !loaded && "absolute h-0 w-0 opacity-0")} />
+        <img ref={ref} src={`/carriers/${slug}.svg`} alt="" width={size} height={size} onError={() => setFailed(true)} className="h-full w-full object-contain" />
       )}
     </div>
   );

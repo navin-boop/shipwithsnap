@@ -184,6 +184,14 @@ export const CARRIERS: CarrierContent[] = [
   },
 ];
 
+const COUNT_WORDS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+
+/** "five" — so a page never claims a number that adding a carrier quietly falsifies. */
+export const carrierCountWord = COUNT_WORDS[CARRIERS.length] ?? String(CARRIERS.length);
+
+/** "USPS, UPS, FedEx, DHL and Canada Post". */
+export const carrierListSentence = CARRIERS.map((c) => c.name).slice(0, -1).join(", ") + " and " + CARRIERS[CARRIERS.length - 1].name;
+
 export function getCarrier(slug: string): CarrierContent | undefined {
   return CARRIERS.find((c) => c.slug === slug);
 }

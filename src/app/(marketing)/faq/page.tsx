@@ -44,7 +44,7 @@ const GROUPS: Group[] = [
     items: [
       {
         q: "Which carriers can I use?",
-        a: "USPS, UPS, FedEx and DHL, for domestic and international shipments. Every service each carrier offers for your package appears in one list, sorted cheapest first.",
+        a: "USPS, UPS, FedEx, DHL and Canada Post, for domestic and international shipments. Every service each carrier offers for your package appears in one list, sorted cheapest first.",
       },
       {
         q: "Is the postage the same as at the post office counter?",
