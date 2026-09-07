@@ -4,7 +4,7 @@ import { addressLine, company, hasAddress } from "@/lib/company";
 
 export const metadata: Metadata = {
   title: "Contact us — support, billing and privacy",
-  description: `How to reach ${company.legalName} about ${company.brand}. Separate addresses for support, billing, privacy and legal, answered within one business day.`,
+  description: `How to reach ${company.legalName} about ${company.brand} — support, billing, privacy and legal, answered within one business day.`,
   alternates: { canonical: "/contact" },
 };
 
@@ -14,6 +14,18 @@ const ROUTES = [
   { label: "Privacy", email: company.email.privacy, blurb: "Access, correction or deletion of personal data, and questions about how we handle it." },
   { label: "Legal", email: company.email.legal, blurb: "Terms, acceptable use, law enforcement requests and anything else for the company's records." },
 ];
+
+/**
+ * Several topics can share one inbox — today they all do. Grouping by address means the page shows
+ * one card per real mailbox rather than the same address four times, and splitting them out later
+ * needs nothing here but a change in company.ts.
+ */
+const MAILBOXES = ROUTES.reduce<Array<{ email: string; topics: typeof ROUTES }>>((acc, route) => {
+  const existing = acc.find((m) => m.email === route.email);
+  if (existing) existing.topics.push(route);
+  else acc.push({ email: route.email, topics: [route] });
+  return acc;
+}, []);
 
 const FAST = [
   ["Include the tracking number", "It lets us pull the carrier's own record of your package straight away."],
@@ -30,16 +42,25 @@ export default function ContactPage() {
         <div className="lbl">Contact</div>
         <h1 className="disp max-w-[760px] text-[44px] leading-[1] sm:text-[60px]">Talk to a person.</h1>
         <p className="max-w-[600px] text-[18px] font-semibold leading-[1.55] text-ink-2 sm:text-[20px]">
-          We answer within {company.responseTime}, {company.supportHours}. Pick the address that fits and write in your own words — there is no ticket form to fight.
+          We answer within {company.responseTime}, {company.supportHours}. Write in your own words — there is no ticket form to fight.
         </p>
       </section>
 
-      <section className="relative grid grid-cols-1 gap-6 px-6 pb-16 sm:px-16 md:grid-cols-2">
-        {ROUTES.map((r) => (
-          <a key={r.email} href={`mailto:${r.email}`} className="card flex flex-col gap-2 p-6 hover:text-ink">
-            <div className="lbl">{r.label}</div>
-            <div className="disp text-[22px] text-coral">{r.email}</div>
-            <p className="text-[15px] font-semibold leading-[1.55] text-ink-2">{r.blurb}</p>
+      <section className={`relative grid grid-cols-1 gap-6 px-6 pb-16 sm:px-16 ${MAILBOXES.length > 1 ? "md:grid-cols-2" : ""}`}>
+        {MAILBOXES.map((box) => (
+          <a key={box.email} href={`mailto:${box.email}`} className="card flex flex-col gap-4 p-6 hover:text-ink sm:p-8">
+            <div className="flex flex-col gap-1">
+              <div className="lbl">{box.topics.length > 1 ? "Email us" : box.topics[0].label}</div>
+              <div className="disp text-[26px] text-coral sm:text-[32px]">{box.email}</div>
+            </div>
+            <div className="flex flex-col gap-3 border-t-2 border-hairline pt-4">
+              {box.topics.map((t) => (
+                <div key={t.label} className="flex flex-col gap-0.5">
+                  <div className="text-[15px] font-extrabold">{t.label}</div>
+                  <p className="text-[15px] font-semibold leading-[1.55] text-ink-2">{t.blurb}</p>
+                </div>
+              ))}
+            </div>
           </a>
         ))}
       </section>

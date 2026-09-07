@@ -20,22 +20,28 @@ export const company = {
 
   /** Registered mailing address. Leave a line empty to omit it. */
   address: {
-    line1: "",
+    line1: "11034 Shady Trail",
     line2: "",
-    city: "",
-    state: "",
-    zip: "",
+    city: "Dallas",
+    state: "TX",
+    zip: "75229",
     country: "United States",
   },
 
   /** The US state whose law governs the Terms. Empty renders a generic clause. */
   governingState: "",
 
+  /**
+   * All four point at the same inbox on purpose: support@ is the only mailbox that exists, and a
+   * published address that bounces is worse than one that is shared — a privacy or legal request
+   * sent into a black hole is a compliance problem, not a tidiness one. The four keys stay
+   * separate so each can be split out later without touching the pages that read them.
+   */
   email: {
     support: "support@shipwithsnap.com",
-    legal: "legal@shipwithsnap.com",
-    privacy: "privacy@shipwithsnap.com",
-    billing: "billing@shipwithsnap.com",
+    legal: "support@shipwithsnap.com",
+    privacy: "support@shipwithsnap.com",
+    billing: "support@shipwithsnap.com",
   },
 
   /** Shown on Contact. Empty omits the line. */

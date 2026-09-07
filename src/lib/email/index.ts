@@ -9,6 +9,7 @@
 export * from "./layout";
 export * from "./templates";
 
+import { company } from "@/lib/company";
 import type { RenderedEmail } from "./templates";
 
 export type Email = { to: string; subject: string; html: string; text: string; replyTo?: string | null };
@@ -24,6 +25,9 @@ export function safeSubject(subject: string): string {
 export async function sendEmail(msg: Email): Promise<{ sent: boolean; id?: string }> {
   const key = process.env.RESEND_API_KEY || process.env.EMAIL_API_KEY;
   const from = process.env.EMAIL_FROM ?? "Ship with Snap <labels@shipwithsnap.com>";
+  // We send as labels@, which is not a mailbox anyone reads. Customer mail carries the seller's
+  // own reply-to; everything else falls back to support@, so hitting Reply never bounces.
+  const replyTo = msg.replyTo ?? company.email.support;
   const subject = safeSubject(msg.subject);
   if (!key) {
     console.info(`[email:dev] to=${msg.to} subject="${subject}"\n${msg.text}`);
@@ -32,7 +36,7 @@ export async function sendEmail(msg: Email): Promise<{ sent: boolean; id?: strin
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
-    body: JSON.stringify({ from, to: [msg.to], subject, html: msg.html, text: msg.text, reply_to: msg.replyTo ?? undefined }),
+    body: JSON.stringify({ from, to: [msg.to], subject, html: msg.html, text: msg.text, reply_to: replyTo }),
   });
   if (!res.ok) throw new Error(`Email send failed: ${res.status} ${await res.text()}`);
   const data = (await res.json()) as { id?: string };

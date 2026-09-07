@@ -1,4 +1,4 @@
-import { company } from "@/lib/company";
+import { company, hasAddress } from "@/lib/company";
 
 // Structured data for search engines and AI answer engines.
 // Rendered as a script tag; the payload is our own static content, never user input.
@@ -23,6 +23,19 @@ export function organizationSchema() {
     logo: `${company.url}/icon.svg`,
     foundingDate: company.founded,
     description: `${company.brand} gives small sellers commercial USPS, UPS, FedEx and DHL shipping rates with no monthly fee.`,
+    // Omitted entirely when unset — a PostalAddress with empty fields is worse than none.
+    ...(hasAddress()
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: [company.address.line1, company.address.line2].filter(Boolean).join(", "),
+            addressLocality: company.address.city,
+            addressRegion: company.address.state,
+            postalCode: company.address.zip,
+            addressCountry: "US",
+          },
+        }
+      : {}),
     contactPoint: [
       { "@type": "ContactPoint", contactType: "customer support", email: company.email.support, availableLanguage: "English" },
       { "@type": "ContactPoint", contactType: "billing support", email: company.email.billing, availableLanguage: "English" },
