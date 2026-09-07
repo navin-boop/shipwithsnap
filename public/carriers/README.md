@@ -2,16 +2,30 @@
 
 `CarrierLogo` renders a carrier mark in two ways, and it picks the first that is available.
 
-## 1. The official logo (optional — drop a file in here)
+## 1. The official logo (drop a file in here)
 
-Put the carrier's own SVG in this folder and it is used everywhere immediately, with no code change:
+Put the carrier's own SVG in this folder and it is used everywhere immediately, with no code change.
 
-| File | Carrier | Where to get it |
+| File | Carrier | Status |
 |---|---|---|
-| `usps.svg` | USPS | usps.com → "Rights & Permissions". The Eagle logo needs **written permission**; the "USPS" wordmark as text does not. |
-| `ups.svg` | UPS | UPS Brand Central (brand.ups.com). The shield is released **on approval** of your request. |
-| `fedex.svg` | FedEx | FedEx brand identity resources. The wordmark may be used to indicate FedEx services within their guidelines. |
-| `dhl.svg` | DHL | DHL brand portal. |
+| `ups.svg` | UPS | **Present** — 2017 shield |
+| `fedex.svg` | FedEx | **Present** — FedEx Express wordmark |
+| `dhl.svg` | DHL | **Present** — red wordmark on the yellow bar |
+| `usps.svg` | USPS | Missing — falls back to our own mark |
+| `canadapost.svg` | Canada Post | Missing — falls back to our own mark |
+
+The three present files came from Wikimedia Commons, not from a carrier brand portal. They are
+accurate and unmodified, but they are community reproductions rather than the approved artwork.
+**Replace them with the files from each carrier's brand portal** — brand.ups.com for UPS, FedEx
+brand identity resources, the DHL brand portal — since that is what a permission grant actually
+covers. Same filenames, no code change.
+
+USPS and Canada Post are still missing because their marks are not available under a free licence
+anywhere public; request them from usps.com "Rights & Permissions" and the Canada Post brand team,
+and drop them in as `usps.svg` and `canadapost.svg`.
+
+Never alter a carrier's colours or proportions, keep their required clear space, and never imply
+endorsement.
 
 Square-ish files, or ones with generous internal padding, sit best in the tile. Never alter a carrier's
 colours or proportions, keep their required clear space, and never imply endorsement.
@@ -27,6 +41,7 @@ brand colour:
 | UPS | `#351C15` | `#FFB500` |
 | FedEx | `#4D148C` | white |
 | DHL | `#FFCC00` | `#D40511` |
+| Canada Post | `#DA291C` | white |
 
 This identifies whose service a rate belongs to without reproducing artwork that USPS and UPS
 require permission for. It is the same nominative use the trademark disclaimer in the site footer

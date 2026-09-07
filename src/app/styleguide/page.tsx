@@ -87,7 +87,7 @@ export default function Styleguide() {
             <div className="flex items-center gap-4">
               <Switch checked={on} onChange={setOn} label="Example switch" />
               <Checkbox checked={checked} onChange={setChecked} label="Example checkbox" />
-              <CarrierLogo carrier="USPS" size={40} /><CarrierLogo carrier="UPS" size={40} /><CarrierLogo carrier="FedEx" size={40} />
+              <CarrierLogo carrier="USPS" size={40} /><CarrierLogo carrier="UPS" size={40} /><CarrierLogo carrier="FedEx" size={40} /><CarrierLogo carrier="DHL" size={40} /><CarrierLogo carrier="Canada Post" size={40} />
             </div>
             <div className="text-[12px] font-bold text-muted">Carrier marks show the official logos once the files are in public/carriers/.</div>
           </section>

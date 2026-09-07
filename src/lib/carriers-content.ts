@@ -149,6 +149,39 @@ export const CARRIERS: CarrierContent[] = [
       { q: "Does DHL handle customs?", a: "Yes, customs clearance is part of DHL Express. You still need to complete an accurate customs declaration when you buy the label, which we generate as the CN22 or commercial invoice." },
     ],
   },
+  {
+    slug: "canada-post",
+    name: "Canada Post",
+    title: "Canada Post shipping labels and rates",
+    blurb: "The national carrier of Canada, and the cheapest way to reach a Canadian address.",
+    metaDescription:
+      "Compare Canada Post rates for parcels into and within Canada. Regular Parcel, Expedited, Xpresspost and international tracked packets, priced before you buy.",
+    intro:
+      "Canada Post reaches every address in Canada, including rural and northern communities the private carriers either surcharge heavily or do not serve at all. For anything going to a Canadian consumer it is usually both the cheapest option and the one that avoids the brokerage fees couriers add at the border.",
+    services: [
+      { name: "Regular Parcel", speed: "2 to 9 business days", best: "The economy option within Canada. Tracked, with no delivery guarantee.", maxWeight: "66 lb" },
+      { name: "Expedited Parcel", speed: "1 to 7 business days", best: "The everyday commercial service — faster than Regular at a similar price.", maxWeight: "66 lb" },
+      { name: "Xpresspost", speed: "1 to 2 business days", best: "Guaranteed delivery with a money-back commitment on transit time.", maxWeight: "66 lb" },
+      { name: "Priority", speed: "Next business day", best: "The fastest domestic service, delivered by noon in most urban centres.", maxWeight: "66 lb" },
+      { name: "Tracked Packet International", speed: "6 to 12 business days", best: "Lightweight international parcels with end-to-end tracking, without courier pricing.", maxWeight: "4.4 lb" },
+    ],
+    strengths: [
+      "Delivers to every Canadian address, including rural routes and postal boxes the couriers will not.",
+      "No customs brokerage fee on the recipient's doorstep, which is the usual complaint about couriers into Canada.",
+      "Flat-rate and small-packet options are very cheap for light parcels.",
+    ],
+    watchOut: [
+      "Canadian addresses use a six-character postal code (K1A 0B1) — the space matters to some systems, and we normalise it for you.",
+      "Regular Parcel carries no delivery guarantee, so use Expedited or Xpresspost when a date matters.",
+      "Anything crossing the border needs a customs declaration, whichever direction it travels.",
+    ],
+    packaging: "Canada Post sells prepaid flat-rate boxes at post offices; otherwise use your own packaging and pay by size and weight.",
+    faqs: [
+      { q: "Do I need a Canada Post account?", a: "Yes. Canada Post rates come from your own Canada Post account, which you connect under Settings, Carriers and rates. Your negotiated rates then appear alongside every other carrier." },
+      { q: "Is Canada Post cheaper than UPS or FedEx into Canada?", a: "For consumer parcels, almost always — mainly because the couriers add customs brokerage fees the recipient pays on delivery. Compare them side by side on the rate list before you buy." },
+      { q: "How long does a parcel from the US to Canada take?", a: "Customs is the variable, not the carrier. Tracked Packet International typically runs 6 to 12 business days door to door, and Xpresspost International is faster where it is available." },
+    ],
+  },
 ];
 
 export function getCarrier(slug: string): CarrierContent | undefined {

@@ -34,6 +34,7 @@ import {
 const CARRIER_NAMES: Record<string, string> = {
   USPS: "USPS", USPSShip: "USPS", UPS: "UPS", UPSDAP: "UPS", UPSSurePost: "UPS", UPSMailInnovations: "UPS",
   FedEx: "FedEx", FedExDefault: "FedEx", FedExSmartPost: "FedEx", DHLExpress: "DHL", DhlEcs: "DHL", DHLEcommerce: "DHL",
+  CanadaPost: "Canada Post",
 };
 export function carrierName(account: string): string {
   if (CARRIER_NAMES[account]) return CARRIER_NAMES[account];
@@ -53,6 +54,11 @@ const SERVICE_NAMES: Record<string, string> = {
   Ground: "Ground", GroundSaver: "Ground Saver", "3DaySelect": "3 Day Select", "2ndDayAir": "2nd Day Air", "2ndDayAirAM": "2nd Day Air A.M.",
   NextDayAir: "Next Day Air", NextDayAirSaver: "Next Day Air Saver", NextDayAirEarlyAM: "Next Day Air Early", Standard: "Standard (Canada/Mexico)",
   Expedited: "Worldwide Expedited", Express_Plus: "Worldwide Express Plus", Saver: "Worldwide Saver", UPSStandard: "Standard",
+  // Canada Post
+  RegularParcel: "Regular Parcel", ExpeditedParcel: "Expedited Parcel", Xpresspost: "Xpresspost", PriorityCanada: "Priority",
+  XpresspostUSA: "Xpresspost USA", XpresspostInternational: "Xpresspost International", ExpeditedParcelUSA: "Expedited Parcel USA",
+  SmallPacketInternationalSurface: "Small Packet International Surface", SmallPacketInternationalAir: "Small Packet International Air",
+  TrackedPacketInternational: "Tracked Packet International", TrackedPacketUSA: "Tracked Packet USA",
 };
 export function serviceName(code: string): string {
   if (SERVICE_NAMES[code]) return SERVICE_NAMES[code];

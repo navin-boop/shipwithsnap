@@ -19,7 +19,7 @@ import { cn } from "@/lib/cn";
  * name to fit the tile exactly whether it is three characters or six.
  */
 
-const SLUG: Record<string, string> = { USPS: "usps", UPS: "ups", FedEx: "fedex", DHL: "dhl" };
+const SLUG: Record<string, string> = { USPS: "usps", UPS: "ups", FedEx: "fedex", DHL: "dhl", "Canada Post": "canadapost" };
 
 /** Published brand colours. Background, then the text colour that sits on it. */
 const BRAND: Record<string, { bg: string; fg: string }> = {
@@ -27,6 +27,7 @@ const BRAND: Record<string, { bg: string; fg: string }> = {
   UPS: { bg: "#351C15", fg: "#FFB500" },
   FedEx: { bg: "#4D148C", fg: "#FFFFFF" },
   DHL: { bg: "#FFCC00", fg: "#D40511" },
+  "Canada Post": { bg: "#DA291C", fg: "#FFFFFF" },
 };
 
 const DEFAULT_BRAND = { bg: "#2b2320", fg: "#fff8ee" };
@@ -43,7 +44,8 @@ export function CarrierLogo({ carrier, size = 44, className, inverted }: { carri
     if (img?.complete && img.naturalWidth > 0) setLoaded(true);
   }, []);
 
-  const label = carrier.length > 7 ? carrier.slice(0, 7) : carrier;
+  // A long name would be cut mid-word ("Canada " ), so multi-word carriers use their initials.
+  const label = carrier.length > 7 ? (carrier.includes(" ") ? carrier.split(/\s+/).map((w) => w[0]).join("") : carrier.slice(0, 7)) : carrier;
 
   return (
     <div
