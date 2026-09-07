@@ -182,6 +182,7 @@ The marketing site is operated by **Snap3PL LLC** and is built to be indexable a
 - **Legal pages**: `/legal/terms`, `/legal/privacy`, `/legal/refunds`, `/legal/acceptable-use`, `/legal/cookies`, all rendered through `LegalPage` (jump list, numbered sections, 620px reading column).
 - **Commercial pages**: `/pricing`, `/how-it-works`, `/lowest-price-guarantee`, `/faq`, `/about`, `/contact`, `/carriers` and a page per carrier.
 - **Lowest price guarantee**: we never mark up postage (`applyPricing` in `src/lib/ship/service.ts` is pass-through — keep it that way, the promise is public), and we price-match on evidence within 14 days. Terms are on `/lowest-price-guarantee`.
+- **Insurance is the one thing we price ourselves**: 70¢ per $100 of declared value, minimum $1.00, defined once in `src/lib/ship/insurance.ts` and read by the Ship screen, the authorization, the capture and the receipt — quote and charge can never drift apart. EasyPost bills us about 55¢ per $100. It is charged on top of postage, itemised on the receipt, and refunded with the label on a void. The public pages state the price outright; postage stays pass-through. `tests/insurance.test.ts` pins the arithmetic.
 - **SEO**: `src/app/sitemap.ts` and `src/app/robots.ts` (app routes and `/t/` tracking links are disallowed), per-page `alternates.canonical`, and JSON-LD from `src/components/marketing/JsonLd.tsx` — Organization, WebSite and SoftwareApplication site-wide, plus FAQPage and BreadcrumbList where they apply.
 - **Titles stay 25–65 characters and descriptions 110–165**, one `<h1>` per page. Long-form pages use the `prose-snap` utility and a `max-w-[620px]` column, which keeps lines near 78 characters.
 - Carrier names are trademarks; the footer carries the disclaimer and it must stay.
@@ -189,7 +190,7 @@ The marketing site is operated by **Snap3PL LLC** and is built to be indexable a
 ## Build order
 
 1. Tokens + components from `Components.dc.html` (verify against the sheet in the browser).
-2. Auth (email + Google), accounts, roles.
+2. Auth (email + Google), accounts, roles. Password sign-ups verify their address with a six-digit code (`src/lib/auth/verification.ts`) before `requireWriter` will let them spend; Google sign-ups are verified at creation.
 3. Ship flow (`Main.dc.html`) against EasyPost **test** keys: address verify → rates → buy → label file.
 4. Billing (`Ledger.dc.html`, `Wallet.dc.html`) in Stripe **test** mode: save card, authorize/capture, refunds. ✅
 5. Shipments + tracking: EasyPost webhooks, state machine, customer tracking page, emails.
