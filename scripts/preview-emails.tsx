@@ -138,4 +138,39 @@ writeFileSync(
 <div class="grid">${cards}</div></div>`,
 );
 
-console.log(`wrote ${samples.length} previews to ${OUT}/`);
+// One self-contained page with every template inline, for sending to someone who just wants to look.
+const frames = samples
+  .map(
+    (s) => `<section>
+      <header><span class="tag ${s.audience.toLowerCase()}">${s.audience}</span><h2>${s.title}</h2>
+      <p class="subject"><b>Subject:</b> ${s.email.subject.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</p></header>
+      <iframe loading="lazy" srcdoc="${s.email.html.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}"></iframe>
+    </section>`,
+  )
+  .join("");
+
+writeFileSync(
+  `${OUT}/all.html`,
+  `<!doctype html><meta charset="utf-8"><title>Ship with Snap — every email</title>
+<style>
+  body{margin:0;background:#f4ece1;font:600 15px/1.5 Nunito,system-ui,sans-serif;color:#2b2320;padding:36px 20px 60px}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font:800 46px/1 Sora,system-ui,sans-serif;letter-spacing:-1.4px;margin:0 0 6px}
+  p.lede{color:#7a6f68;margin:0 0 30px;max-width:640px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px}
+  section{background:#fff;border:2px solid #2b2320;border-radius:22px;overflow:hidden;box-shadow:6px 6px 0 #2b2320}
+  header{padding:16px 18px 12px;border-bottom:2px solid #2b2320}
+  h2{font:800 20px/1.1 Sora,system-ui,sans-serif;margin:10px 0 6px}
+  .tag{display:inline-block;font:800 11px/1 Nunito,sans-serif;padding:6px 10px;border-radius:999px;border:2px solid #2b2320}
+  .tag.customer{background:#ffd23f}.tag.account{background:#0fa3a3;color:#fff;border-color:#0fa3a3}
+  .subject{margin:0;font-size:12px;color:#7a6f68}
+  iframe{display:block;width:100%;height:660px;border:0;background:#fff8ee}
+</style>
+<div class="wrap">
+  <h1>Every email, one page</h1>
+  <p class="lede">${samples.length} templates. Yellow = sent to your customer under your store's name; teal = sent to you, carrying the snap wordmark. Each frame is the real rendered email.</p>
+  <div class="grid">${frames}</div>
+</div>`,
+);
+
+console.log(`wrote ${samples.length} previews to ${OUT}/ (open ${OUT}/all.html)`);
