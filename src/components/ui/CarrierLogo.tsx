@@ -53,8 +53,11 @@ export function CarrierLogo({ carrier, size = 44, className, inverted }: { carri
 
   return (
     <div
-      className={cn("relative flex shrink-0 items-center justify-center overflow-hidden rounded-[12px]", showFile && "bg-surface p-[12%]", inverted && "ring-2 ring-ink", className)}
-      style={{ width: size, height: size }}
+      className={cn("relative flex shrink-0 items-center justify-center overflow-hidden rounded-[12px]", showFile && "bg-surface", inverted && "ring-2 ring-ink", className)}
+      // Padding has to come from the tile's own size. A percentage would resolve against the
+      // containing block instead — 12% of a 704px card is 84px of padding on a 48px tile, which
+      // with border-box collapses the content box to nothing and hides the logo entirely.
+      style={{ width: size, height: size, padding: showFile ? Math.max(2, Math.round(size * 0.12)) : 0 }}
       role="img"
       aria-label={carrier}
     >
