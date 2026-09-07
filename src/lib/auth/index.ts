@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
+import { notifyWelcome } from "@/lib/email/notify";
 
 declare module "next-auth" {
   interface Session {
@@ -103,5 +104,6 @@ export async function createAccountWithOwner(input: {
       googleSub: input.googleSub,
     })
     .returning();
+  await notifyWelcome({ email: user.email, name: user.name });
   return { account, user };
 }

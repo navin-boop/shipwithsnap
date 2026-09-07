@@ -3,6 +3,7 @@ import { db, schema } from "@/lib/db";
 import { toAddressInput } from "@/lib/ship/service";
 import { getShippingProvider, ProviderError } from "@/lib/shipping";
 import { deliverWebhooks } from "@/lib/webhooks/outbound";
+import { notifyPickup } from "@/lib/email/notify";
 
 // Carrier pickups. Account-scoped core, shared by the server actions and the public API.
 
@@ -96,6 +97,7 @@ export async function schedulePickupFor(accountId: string, pickupId: string, car
   const [updated] = await db().update(schema.pickups).set({ status: r.status === "scheduled" ? "scheduled" : "failed", carrier, serviceCode, priceCents: rate.priceCents, confirmation: r.confirmation, messages: r.messages }).where(eq(schema.pickups.id, row.id)).returning();
   if (r.status !== "scheduled") throw new PickupError(r.messages[0] ?? "The carrier declined the pickup.");
   await deliverWebhooks(accountId, "pickup.scheduled", { pickup_id: row.id, carrier, confirmation: r.confirmation, price_cents: rate.priceCents });
+  await notifyPickup({ accountId, pickupId: row.id, state: "confirmed" });
   const address = await db().query.addresses.findFirst({ where: eq(schema.addresses.id, row.addressId) });
   return pickupView(updated, address, null);
 }
@@ -105,7 +107,10 @@ export async function cancelPickupFor(accountId: string, pickupId: string): Prom
   if (!row?.providerPickupId) throw new PickupError("Pickup not found.");
   if (row.status === "scheduled") await getShippingProvider().cancelPickup(row.providerPickupId);
   const [updated] = await db().update(schema.pickups).set({ status: "canceled" }).where(eq(schema.pickups.id, row.id)).returning();
-  if (row.status === "scheduled") await deliverWebhooks(accountId, "pickup.canceled", { pickup_id: row.id, carrier: row.carrier });
+  if (row.status === "scheduled") {
+    await deliverWebhooks(accountId, "pickup.canceled", { pickup_id: row.id, carrier: row.carrier });
+    await notifyPickup({ accountId, pickupId: row.id, state: "cancelled" });
+  }
   const address = await db().query.addresses.findFirst({ where: eq(schema.addresses.id, row.addressId) });
   return pickupView(updated, address, null);
 }

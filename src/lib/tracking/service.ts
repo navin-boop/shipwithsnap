@@ -1,7 +1,7 @@
 import { and, asc, desc, eq, isNull, lt, notInArray, or, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import type { Account, Label, Tracker } from "@/lib/db/schema";
-import { emailShell, sendEmail } from "@/lib/email";
+import { deliver, trackingUpdate } from "@/lib/email";
 import { getShippingProvider, type CanonicalStatus, type TrackerDetails, type TrackingEvent } from "@/lib/shipping";
 import { deliverWebhooks } from "@/lib/webhooks/outbound";
 
@@ -124,25 +124,20 @@ export function emailKind(next: CanonicalStatus, previous: string): TrackingEmai
 }
 
 export async function sendTrackingEmail(input: { label: Label; account: Pick<Account, "id" | "name" | "replyTo" | "logoData">; recipientEmail: string; recipientName: string; kind: TrackingEmailKind }) {
-  const { label, account, kind } = input;
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://shipwithsnap.com";
-  const url = `${base}/t/${label.trackingToken}`;
-  const logoUrl = account.logoData ? `${base}/api/logo/${account.id}` : null;
-  const first = input.recipientName.split(" ")[0] || "there";
-  const copy: Record<TrackingEmailKind, { subject: string; heading: string; body: string }> = {
-    shipped: { subject: `Your order from ${account.name} is on its way`, heading: "It's on the way.", body: `Hi ${first} — ${account.name} shipped your order with ${label.carrier} ${label.serviceName}. Tracking number ${label.trackingNumber}.` },
-    out_for_delivery: { subject: `Out for delivery today — ${account.name}`, heading: "Arriving today.", body: `Hi ${first} — your package from ${account.name} is out for delivery.` },
-    delivered: { subject: `Delivered — your order from ${account.name}`, heading: "Delivered.", body: `Hi ${first} — your package from ${account.name} was delivered.` },
-    exception: { subject: `A delivery problem with your order from ${account.name}`, heading: "There's a hold-up.", body: `Hi ${first} — the carrier reported a problem delivering your package from ${account.name}. The tracking page has the latest.` },
-  };
-  const c = copy[kind];
-  await sendEmail({
-    to: input.recipientEmail,
-    subject: c.subject,
-    replyTo: account.replyTo,
-    html: emailShell({ eyebrow: account.name, heading: c.heading, bodyHtml: `<p>${c.body}</p>`, ctaLabel: "Track package", ctaUrl: url, logoUrl, logoAlt: account.name }),
-    text: `${c.body}\n\nTrack: ${url}`,
+  const { label, account } = input;
+  const base = (process.env.NEXT_PUBLIC_APP_URL ?? "https://shipwithsnap.com").replace(/\/+$/, "");
+  const email = trackingUpdate({
+    kind: input.kind,
+    storeName: account.name,
+    // The seller's own logo when they've uploaded one — this mail goes out under their name.
+    storeLogoUrl: account.logoData ? `${base}/api/logo/${account.id}` : null,
+    recipientName: input.recipientName,
+    carrier: label.carrier,
+    serviceName: label.serviceName,
+    trackingNumber: label.trackingNumber,
+    trackingUrl: `${base}/t/${label.trackingToken}`,
   });
+  await deliver(input.recipientEmail, email, { replyTo: account.replyTo });
 }
 
 /** Pull path: labels (and standalone trackers) still moving that haven't been updated in a day. */

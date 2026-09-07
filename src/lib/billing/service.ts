@@ -2,6 +2,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import type Stripe from "stripe";
 import { db, schema } from "@/lib/db";
 import type { Account, Charge, PaymentMethod } from "@/lib/db/schema";
+import { notifyChargeCaptured, notifyPaymentFailed, notifyRefunded } from "@/lib/email/notify";
 import { assertNotLocked } from "./policy";
 import { BillingError, billingEnabled, fromStripeError, getStripe } from "./stripe";
 
@@ -187,7 +188,13 @@ export async function authorize(account: Account, input: { amountCents: number; 
 }
 
 async function markFailed(chargeId: string, code: string | null, message: string) {
-  await db().update(schema.charges).set({ status: "failed", failureCode: code, failureMessage: message, updatedAt: new Date() }).where(eq(schema.charges.id, chargeId));
+  const [failed] = await db()
+    .update(schema.charges)
+    .set({ status: "failed", failureCode: code, failureMessage: message, updatedAt: new Date() })
+    .where(eq(schema.charges.id, chargeId))
+    .returning();
+  // A decline pauses buying on the account, so silence is the worst possible outcome here.
+  if (failed) await notifyPaymentFailed({ accountId: failed.accountId, amountCents: failed.amountAuthorizedCents, reason: message, cardLabel: failed.cardLabel });
 }
 
 /**
@@ -211,6 +218,7 @@ export async function capture(chargeId: string, amountCents?: number): Promise<C
     .set({ status: "captured", amountCapturedCents: amount, receiptUrl, updatedAt: new Date() })
     .where(eq(schema.charges.id, charge.id))
     .returning();
+  await notifyChargeCaptured(updated.id);
   return updated;
 }
 
@@ -271,6 +279,7 @@ export async function refundForLabel(accountId: string, labelId: string, amountC
       db().update(schema.refunds).set({ stripeRefundId: refund.id, status: "refunded", updatedAt: new Date() }).where(eq(schema.refunds.id, row.id)),
       db().update(schema.charges).set({ amountRefundedCents: refunded, status: refunded >= charge.amountCapturedCents ? "refunded" : "partially_refunded", updatedAt: new Date() }).where(eq(schema.charges.id, charge.id)),
     ]);
+    await notifyRefunded({ accountId, labelId, amountCents: amount, cardLabel: charge.cardLabel });
   } catch (err) {
     const mapped = fromStripeError(err);
     await db().update(schema.refunds).set({ status: "failed", failureMessage: mapped.message, updatedAt: new Date() }).where(eq(schema.refunds.id, row.id));

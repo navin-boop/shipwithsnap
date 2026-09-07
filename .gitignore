@@ -13,3 +13,4 @@ next-env.d.ts
 
 # Generated design-canvas bundle (rebuilt from design/, published as an Artifact)
 ship-with-snap.html
+email-previews/

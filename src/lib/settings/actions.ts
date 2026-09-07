@@ -9,6 +9,7 @@ import { db, schema } from "@/lib/db";
 import type { CustomerEmailPrefs } from "@/lib/db/schema";
 import { WEBHOOK_EVENTS, sign, type WebhookEvent } from "@/lib/webhooks/outbound";
 import { assertSafeWebhookTarget } from "@/lib/webhooks/ssrf";
+import { notifyTeamInvite } from "@/lib/email/notify";
 
 export type Result<T = undefined> = ({ ok: true } & (T extends undefined ? { data?: undefined } : { data: T })) | { ok: false; error: string };
 
@@ -75,8 +76,11 @@ export async function inviteMember(input: { email: string; role: "owner" | "ship
   if (existing) return { ok: false, error: existing.accountId === user.accountId ? "They're already on the team." : "That email already has a Snap account." };
   const token = randomBytes(24).toString("hex");
   await db().insert(schema.invites).values({ accountId: user.accountId, email: p.data.email, role: p.data.role, token, invitedBy: user.id, expiresAt: new Date(Date.now() + 7 * 86_400_000) });
+  const link = `${(process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/+$/, "")}/invite/${token}`;
+  const account = await db().query.accounts.findFirst({ where: eq(schema.accounts.id, user.accountId) });
+  await notifyTeamInvite({ email: p.data.email, accountName: account?.name ?? "your team", inviterName: user.name ?? null, role: p.data.role, inviteUrl: link });
   revalidatePath("/settings/team");
-  return { ok: true, data: { link: `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/invite/${token}` } };
+  return { ok: true, data: { link } };
 }
 
 export async function revokeInvite(id: string): Promise<Result> {
