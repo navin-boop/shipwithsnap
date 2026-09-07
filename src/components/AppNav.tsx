@@ -78,7 +78,9 @@ export function AppNav({ cardLabel, userEmail, userName, role }: AppNavProps) {
   return (
     <header className="box-border flex h-[72px] items-center justify-between gap-4 px-4 sm:px-10">
       <div className="flex min-w-0 items-center gap-5 sm:gap-9">
-        <Wordmark />
+        {/* Inside the app the wordmark is the app's home, not the marketing page — clicking it
+            while signed in used to land on the landing page, which offers you a login. */}
+        <Wordmark href="/ship" />
         {/* The links scroll on a narrow screen; "More" sits outside that scroller, because an
             overflow container clips an absolutely positioned menu — which is why the dropdown
             opened into a 40px-tall box and looked broken. */}
