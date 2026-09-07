@@ -121,9 +121,22 @@ export function PrintingForm({ account }: { account: Account }) {
         <div className="lbl">Label format</div>
         <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
           {opts.map(([k, title, sub]) => (
-            <button key={k} type="button" onClick={() => setFmt(k)} className={cn("flex flex-col gap-1.5 rounded-card border-2 border-ink bg-surface p-5 text-left", fmt === k && "bg-ink text-paper")}>
+            // Selected is yellow with an offset shadow, the same language the selected rate card
+            // uses. The two states are written as a ternary rather than a base plus an override:
+            // cn() only joins, so a conditional bg-* sits alongside the base one and CSS order
+            // decides the winner — which is how this card ended up cream-on-white and unreadable.
+            <button
+              key={k}
+              type="button"
+              aria-pressed={fmt === k}
+              onClick={() => setFmt(k)}
+              className={cn(
+                "flex flex-col gap-1.5 rounded-card border-2 border-ink p-5 text-left text-ink transition-shadow",
+                fmt === k ? "offset-shadow bg-yellow" : "bg-surface hover:bg-paper",
+              )}
+            >
               <div className="disp text-lg">{title}</div>
-              <div className="text-[13px] opacity-75">{sub}</div>
+              <div className={cn("text-[13px]", fmt === k ? "text-ink-2" : "text-muted")}>{sub}</div>
             </button>
           ))}
         </div>
