@@ -53,6 +53,13 @@ export function RateCalculator() {
               ))}
               {all.length > 5 && <button type="button" className="self-center py-1 text-[14px] font-extrabold text-coral" onClick={() => setShowAll(!showAll)}>{showAll ? "Show fewer" : `Show ${all.length - 5} more`}</button>}
             </div>
+            {/* A carrier that declined to quote says why here. Without this a missing carrier is
+                indistinguishable from one we do not offer at all. */}
+            {res.notes.length > 0 && (
+              <div className="flex flex-col gap-1 px-1 pt-1 text-[13px] font-bold text-muted">
+                {res.notes.map((n) => <div key={n}>{n}</div>)}
+              </div>
+            )}
             <div className="flex flex-col items-start gap-3 pt-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-[15px] font-bold text-ink-2">Like what you see? Labels take about a minute.</div>
               <Link href="/signup" className="inline-flex h-12 items-center gap-2 rounded-pill border-2 border-ink bg-coral px-[22px] font-display text-[14px] font-extrabold text-white offset-shadow hover:text-white">Start free <ArrowIcon size={16} /></Link>
