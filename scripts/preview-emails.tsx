@@ -31,6 +31,12 @@ const samples: Array<{ name: t.TemplateName; title: string; audience: "Customer"
     }),
   })),
   {
+    name: "verify_email",
+    title: "Verify email",
+    audience: "Account",
+    email: t.verifyEmail({ code: "048213", email: "you@example.com", expiresInMinutes: 15 }),
+  },
+  {
     name: "welcome",
     title: "Welcome",
     audience: "Account",

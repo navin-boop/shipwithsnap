@@ -88,6 +88,9 @@ export async function createAccountWithOwner(input: {
   googleSub?: string;
   shipFromZip?: string;
 }) {
+  // Google has already proven the address it hands us, so those accounts skip the code entirely.
+  // Password sign-ups stay unverified until they enter one.
+  const emailVerifiedAt = input.googleSub ? new Date() : null;
   const accountName = input.name ?? input.email.split("@")[0];
   const [account] = await db()
     .insert(schema.accounts)
@@ -102,8 +105,10 @@ export async function createAccountWithOwner(input: {
       role: "owner",
       passwordHash: input.passwordHash,
       googleSub: input.googleSub,
+      emailVerifiedAt,
     })
     .returning();
-  await notifyWelcome({ email: user.email, name: user.name });
+  // Welcome mail waits for a proven address; the verification flow sends it once the code lands.
+  if (emailVerifiedAt) await notifyWelcome({ email: user.email, name: user.name });
   return { account, user };
 }

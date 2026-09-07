@@ -14,6 +14,7 @@ function everyTemplate(): Array<{ name: string; email: t.RenderedEmail }> {
       name: `tracking_${kind}`,
       email: t.trackingUpdate({ kind, storeName: XSS, recipientName: XSS, carrier: "USPS", serviceName: "Priority Mail", trackingNumber: "94001", trackingUrl: url, carrierMessage: XSS, etaLabel: "Tuesday" }),
     })),
+    { name: "verify_email", email: t.verifyEmail({ code: "048213", email: "a@b.com", expiresInMinutes: 15 }) },
     { name: "welcome", email: t.welcome({ name: XSS, email: "a@b.com" }) },
     { name: "team_invite", email: t.teamInvite({ accountName: XSS, inviterName: XSS, role: "shipper", inviteUrl: url, expiresInDays: 7 }) },
     { name: "password_reset", email: t.passwordReset({ email: "a@b.com", resetUrl: url, expiresInMinutes: 30 }) },

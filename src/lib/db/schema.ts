@@ -82,6 +82,8 @@ export const users = pgTable("users", {
   role: userRole("role").notNull().default("owner"),
   googleSub: text("google_sub").unique(),
   passwordHash: text("password_hash"),
+  /** Null until the address is proven. Google sign-in sets it at creation — Google proved it for us. */
+  emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -96,6 +98,25 @@ export const invites = pgTable("invites", {
   acceptedAt: timestamp("accepted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * Six-digit sign-up codes. Only a SHA-256 hash is stored: a leaked database row must not be a
+ * working code. One live code per user — issuing a new one consumes the old.
+ */
+export const emailVerifications = pgTable(
+  "email_verifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    codeHash: text("code_hash").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    /** Guessing costs something: the code dies after too many wrong tries. */
+    attempts: integer("attempts").notNull().default(0),
+    consumedAt: timestamp("consumed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("email_verifications_user").on(t.userId)],
+);
 
 /** Verified addresses, deduplicated per account by a hash of the normalised fields. */
 export const addresses = pgTable(

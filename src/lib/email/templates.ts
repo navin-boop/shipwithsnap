@@ -175,6 +175,35 @@ export function teamInvite(input: { accountName: string; inviterName?: string | 
   };
 }
 
+export function verifyEmail(input: { code: string; email: string; expiresInMinutes: number }): RenderedEmail {
+  // The code is set in the display face at 40px with wide tracking, because the single thing this
+  // email has to do is be readable at a glance on a phone next to the sign-up form.
+  const codeBlock = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 4px 0"><tr><td align="center" style="background:#fff6d6;border:2px solid ${"#ffd23f"};border-radius:18px;padding:22px 16px">
+      <div style="font-family:'Nunito','Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:800;font-size:13px;color:#7a6f68">Your code</div>
+      <div style="margin-top:8px;font-family:'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;font-weight:800;font-size:40px;line-height:1;letter-spacing:8px;color:#2b2320">${esc(input.code)}</div>
+    </td></tr></table>`;
+  return {
+    subject: `${input.code} is your ${company.brand} verification code`,
+    html: renderEmail({
+      preheader: `Your code is ${input.code}. It expires in ${input.expiresInMinutes} minutes.`,
+      brand: snapBrand(),
+      heading: "Confirm your email.",
+      bodyHtml:
+        p(`Enter this code on the sign-up screen to finish setting up your ${company.brand} account.`) +
+        codeBlock +
+        p(`It expires in ${input.expiresInMinutes} minutes and can only be used once.`),
+      callout: { tone: "yellow", title: "Didn't sign up?", body: "Ignore this email. Without the code the account stays locked, and nobody can use your address." },
+      note: `Sent to ${input.email} because someone used it to create an account.`,
+    }),
+    text: textBody([
+      `Your ${company.brand} verification code is ${input.code}.`,
+      `Enter it on the sign-up screen. It expires in ${input.expiresInMinutes} minutes and can only be used once.`,
+      "If you didn't sign up, ignore this email — the account stays locked without the code.",
+      SIGNOFF,
+    ]),
+  };
+}
+
 export function passwordReset(input: { email: string; resetUrl: string; expiresInMinutes: number }): RenderedEmail {
   return {
     subject: `Reset your ${company.brand} password`,
@@ -398,6 +427,7 @@ export const TEMPLATE_NAMES = [
   "tracking_out_for_delivery",
   "tracking_delivered",
   "tracking_exception",
+  "verify_email",
   "welcome",
   "team_invite",
   "password_reset",

@@ -4,7 +4,7 @@ import { Wordmark } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
 // Sunny sign-in: cream page with blobs, the promise on the left, a card on the right.
-export function AuthPanel({ mode, children }: { mode: "signup" | "login"; children: ReactNode }) {
+export function AuthPanel({ mode, children }: { mode: "signup" | "login" | "verify"; children: ReactNode }) {
   return (
     <div className="relative grid min-h-screen grid-cols-1 overflow-hidden bg-paper lg:grid-cols-2">
       <div aria-hidden="true" className="pointer-events-none absolute -left-24 top-[60%] h-[380px] w-[380px] rounded-pill bg-yellow/60" />
@@ -30,10 +30,12 @@ export function AuthPanel({ mode, children }: { mode: "signup" | "login"; childr
           <Wordmark />
         </div>
         <div className="card flex w-full max-w-[520px] flex-col gap-6 p-6 sm:p-8">
-          <nav className="flex gap-2">
-            <Tab href="/signup" active={mode === "signup"}>Create account</Tab>
-            <Tab href="/login" active={mode === "login"}>Log in</Tab>
-          </nav>
+          {mode !== "verify" && (
+            <nav className="flex gap-2">
+              <Tab href="/signup" active={mode === "signup"}>Create account</Tab>
+              <Tab href="/login" active={mode === "login"}>Log in</Tab>
+            </nav>
+          )}
           {children}
         </div>
       </main>

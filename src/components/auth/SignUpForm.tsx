@@ -18,7 +18,7 @@ export function SignUpForm() {
         {pending ? "Creating account…" : "Create free account"}
       </Button>
       <p className="text-xs leading-[1.5] text-muted">
-        By continuing you agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+        By continuing you agree to the <a href="/legal/terms">Terms</a> and <a href="/legal/privacy">Privacy Policy</a>.
       </p>
     </form>
   );

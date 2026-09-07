@@ -4,9 +4,12 @@ import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { AuthError } from "next-auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { LOGIN_BLOCKED_MESSAGE, clearLoginFailures, loginAllowed, recordFailedLogin } from "./throttle";
-import { createAccountWithOwner, signIn, signOut } from "@/lib/auth";
+import { CODE_TTL_MINUTES, checkFailureMessage, checkVerificationCode, issueVerificationCode } from "./verification";
+import { auth, createAccountWithOwner, signIn, signOut } from "@/lib/auth";
+import { notifyVerificationCode, notifyWelcome } from "@/lib/email/notify";
 import { db, schema } from "@/lib/db";
 
 export type AuthFormState =
@@ -51,9 +54,47 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
     return { fieldErrors: { email: "There's already an account for this email. Log in instead." }, values };
   }
 
-  await createAccountWithOwner({ email, name: null, passwordHash: await hash(password, 12), shipFromZip });
+  const { user } = await createAccountWithOwner({ email, name: null, passwordHash: await hash(password, 12), shipFromZip });
+
+  // Mail the code before signing in: the /verify screen is where they land, and it is useless
+  // without one. A mail failure must not strand a created account, so it is logged, not thrown.
+  const issued = await issueVerificationCode(user.id);
+  if (issued.ok) await notifyVerificationCode({ email, code: issued.code, expiresInMinutes: CODE_TTL_MINUTES });
+
   // Throws NEXT_REDIRECT on success — let it propagate.
-  await signIn("credentials", { email, password, redirectTo: "/ship" });
+  await signIn("credentials", { email, password, redirectTo: "/verify" });
+}
+
+/** Checks the six-digit code, then sends the welcome mail the sign-up deliberately held back. */
+export async function verifyEmailCode(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Your session expired. Log in again." };
+
+  const code = String(formData.get("code") ?? "").replace(/\D/g, "");
+  if (!code) return { fieldErrors: { code: "Enter the six-digit code." } };
+
+  const result = await checkVerificationCode(session.user.id, code);
+  if (!result.ok) return { fieldErrors: { code: checkFailureMessage(result) } };
+
+  if (!result.alreadyVerified) {
+    const user = await db().query.users.findFirst({ where: eq(schema.users.id, session.user.id) });
+    if (user) await notifyWelcome({ email: user.email, name: user.name });
+  }
+  redirect("/ship");
+}
+
+/** A fresh code, retiring the old one. Rate-limited in the service, not here. */
+export async function resendVerificationCode(): Promise<{ ok: boolean; message: string }> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, message: "Your session expired. Log in again." };
+  const user = await db().query.users.findFirst({ where: eq(schema.users.id, session.user.id) });
+  if (!user) return { ok: false, message: "Your session expired. Log in again." };
+  if (user.emailVerifiedAt) return { ok: true, message: "This address is already verified." };
+
+  const issued = await issueVerificationCode(user.id);
+  if (!issued.ok) return { ok: false, message: `Hold on ${issued.retryInSeconds}s before asking for another code.` };
+  await notifyVerificationCode({ email: user.email, code: issued.code, expiresInMinutes: CODE_TTL_MINUTES });
+  return { ok: true, message: `New code sent to ${user.email}.` };
 }
 
 export async function logIn(_prev: AuthFormState, formData: FormData): Promise<AuthFormState> {

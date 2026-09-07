@@ -18,6 +18,7 @@ import {
   pickupUpdate,
   refundIssued,
   teamInvite,
+  verifyEmail,
   welcome,
 } from "./templates";
 
@@ -44,6 +45,10 @@ function guard(name: string, fn: () => Promise<unknown>): Promise<void> {
       console.error(`notify.${name} failed:`, err);
     },
   );
+}
+
+export function notifyVerificationCode(input: { email: string; code: string; expiresInMinutes: number }): Promise<void> {
+  return guard("verificationCode", () => deliver(input.email, verifyEmail({ code: input.code, email: input.email, expiresInMinutes: input.expiresInMinutes })));
 }
 
 export function notifyWelcome(input: { email: string; name: string | null }): Promise<void> {

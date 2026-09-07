@@ -12,6 +12,10 @@ import type { Account } from "@/lib/db/schema";
  *
  * Read paths use `requireSession`; anything that writes or spends uses `requireWriter` or
  * `requireOwner`.
+ *
+ * `requireWriter` also insists the address has been verified. The layout redirects unverified
+ * users to /verify, but a redirect is decoration: server actions are callable directly by anyone
+ * with a session cookie, so the gate that actually matters lives here.
  */
 
 export type Role = "owner" | "shipper" | "viewer";
@@ -30,10 +34,14 @@ export async function requireSession(): Promise<SessionUser> {
   return session.user as SessionUser;
 }
 
-/** Anyone who may change things: owners and shippers, never viewers. */
+export const UNVERIFIED_MESSAGE = "Confirm your email address before buying labels — check your inbox for the code.";
+
+/** Anyone who may change things: owners and shippers, never viewers, and never unverified. */
 export async function requireWriter(): Promise<SessionUser> {
   const user = await requireSession();
   if (user.role === "viewer") throw new ForbiddenError("Your account is read-only. Ask an owner for shipper access.");
+  const row = await db().query.users.findFirst({ where: eq(schema.users.id, user.id) });
+  if (!row?.emailVerifiedAt) throw new ForbiddenError(UNVERIFIED_MESSAGE);
   return user;
 }
 

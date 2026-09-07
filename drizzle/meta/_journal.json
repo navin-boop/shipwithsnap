@@ -43,6 +43,13 @@
       "when": 1788676028839,
       "tag": "0005_faithful_franklin_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788756030439,
+      "tag": "0006_spotty_vision",
+      "breakpoints": true
     }
   ]
 }
