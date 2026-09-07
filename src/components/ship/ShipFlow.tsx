@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { ArrowIcon, Button, Chip, Input, RateRow, Select } from "@/components/ui";
+import { ArrowIcon, Button, Checkbox, Chip, Input, RateRow, Select } from "@/components/ui";
 import type { Address, CustomsDefaults, Parcel, ParcelPreset, RateRules } from "@/lib/db/schema";
 import { formatAddressLine } from "@/lib/ship/address-parse";
 import { describeRule, pickRate, serviceKey } from "@/lib/ship/rules";
@@ -21,7 +21,8 @@ import type { CustomsInput, DeliveryEstimate, ShipmentOptions } from "@/lib/ship
 import { formatCents } from "@/lib/money";
 import { cn } from "@/lib/cn";
 import { AddCardButton } from "@/components/billing/AddCardDialog";
-import { INSURANCE_MAX_VALUE_CENTS, insurancePremiumCents, insuranceRateLabel } from "@/lib/ship/insurance";
+import { DEFAULT_INSURED_DOLLARS, INSURANCE_MAX_VALUE_CENTS, insurancePremiumCents, insuranceRateLabel } from "@/lib/ship/insurance";
+import { RecipientSuggest } from "@/components/ship/RecipientSuggest";
 import { AddressFields, EMPTY_ADDRESS, addressIsComplete, type AddressFieldValues, type AddressMode } from "./AddressFields";
 import { ShipFromCard } from "./ShipFromCard";
 import { ShipFromForm } from "./ShipFromForm";
@@ -107,7 +108,10 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
   const [carrierPkg, setCarrierPkg] = useState(CARRIER_PACKAGES[0]?.value ?? "");
   const [boxes, setBoxes] = useState<Box[]>([newBox()]);
   const [presets, setPresets] = useState(initialPresets);
-  const [insureValue, setInsureValue] = useState("");
+  // Insurance is on by default at the value below; sellers who do not want it untick it. The
+  // premium is quoted next to the box and again on the Buy button, never discovered at checkout.
+  const [insureOn, setInsureOn] = useState(true);
+  const [insureValue, setInsureValue] = useState(String(DEFAULT_INSURED_DOLLARS));
   const [options, setOptions] = useState<ShipmentOptions>({});
   const [isReturn, setIsReturn] = useState(false);
   const [customs, setCustoms] = useState<CustomsInput | null>(null);
@@ -150,7 +154,7 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
   }, [boxes, pkg, flat, carrierPkg]);
 
   const totalOz = parcels?.reduce((a, p) => a + p.weightOz, 0) ?? null;
-  const insuranceCents = Math.round((parseFloat(insureValue) || 0) * 100);
+  const insuranceCents = insureOn ? Math.round((parseFloat(insureValue) || 0) * 100) : 0;
   // One source of truth with the server: what is quoted here is exactly what gets charged.
   const insurancePremium = insurancePremiumCents(insuranceCents);
 
@@ -375,7 +379,24 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
           <section className="card flex flex-col gap-3.5 p-5 sm:p-6">
             <div className="lbl">Who&apos;s it for?</div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_190px]">
-              <Input aria-label="Recipient name" placeholder="Recipient name" value={toName} onChange={(e) => setToName(e.target.value)} disabled={locked} />
+              <RecipientSuggest
+                value={toName}
+                onChange={setToName}
+                disabled={locked}
+                onPick={(s) => {
+                  setToName(s.name ?? "");
+                  if (s.phone) setToPhone(s.phone);
+                  if (s.email) setToEmail(s.email);
+                  setCountry(s.country || "US");
+                  setMode("fields");
+                  setF({ street1: s.street1, street2: s.street2 ?? "", city: s.city, state: s.state, zip: s.zip });
+                  setToLine([s.street1, s.street2, s.city, `${s.state} ${s.zip}`].filter(Boolean).join(", "));
+                  // A saved address still goes through Verify: the carrier is the authority, and
+                  // one that was fine last month may not be today.
+                  setVerified(null);
+                  setVerifyErrors([]);
+                }}
+              />
               <Select aria-label="Destination country" value={country} onChange={(e) => changeCountry(e.target.value)} options={COUNTRY_OPTS} disabled={locked} />
             </div>
 
@@ -470,15 +491,27 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
               {multi ? "One rate covers every box; you get one label per box." : "Not sure? Round up — carriers re-weigh and bill the difference."}
             </div>
 
-            <div className="flex flex-wrap items-end gap-3 border-t-2 border-hairline pt-3">
-              <Input label="Insure the contents for" unit="$" inputMode="decimal" placeholder="0" value={insureValue} onChange={(e) => setInsureValue(e.target.value)} disabled={locked} className="w-[190px]" />
-              <div className="pb-3 text-[13px] font-bold text-muted">
-                {insuranceCents > INSURANCE_MAX_VALUE_CENTS
-                  ? <span className="text-danger">{`The most we can insure is ${formatCents(INSURANCE_MAX_VALUE_CENTS)}.`}</span>
-                  : insuranceCents > 0
-                    ? `Adds ${formatCents(insurancePremium)} — ${insuranceRateLabel()}. Claims filed from the shipment.`
-                    : `Leave blank for no coverage. ${insuranceRateLabel()}.`}
-              </div>
+            <div className="flex flex-col gap-3 border-t-2 border-hairline pt-3">
+              <label className="flex cursor-pointer items-center gap-2.5">
+                <Checkbox checked={insureOn} onChange={setInsureOn} label="Insure this shipment" />
+                <span className="text-[15px] font-extrabold text-ink">Insure this shipment</span>
+              </label>
+              {insureOn ? (
+                <div className="flex flex-wrap items-end gap-3">
+                  <Input label="Declared value" unit="$" inputMode="decimal" placeholder="0" value={insureValue} onChange={(e) => setInsureValue(e.target.value)} disabled={locked} className="w-[190px]" />
+                  <div className="pb-3 text-[13px] font-bold text-muted">
+                    {insuranceCents > INSURANCE_MAX_VALUE_CENTS
+                      ? <span className="text-danger">{`The most we can insure is ${formatCents(INSURANCE_MAX_VALUE_CENTS)}.`}</span>
+                      : insuranceCents > 0
+                        ? `Adds ${formatCents(insurancePremium)} to the total — ${insuranceRateLabel()}. Claims are filed from the shipment.`
+                        : `Enter what the contents are worth. ${insuranceRateLabel()}.`}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-[13px] font-bold text-muted">
+                  No coverage. If the carrier loses or damages this package, there is nothing to claim against.
+                </div>
+              )}
             </div>
 
             <OptionsPanel value={options} onChange={setOptions} isReturn={isReturn} onReturnChange={setIsReturn} disabled={locked} today={today} />

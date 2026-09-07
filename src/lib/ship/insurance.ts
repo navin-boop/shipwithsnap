@@ -20,6 +20,13 @@ export const INSURANCE_CENTS_PER_100 = 70;
  */
 export const INSURANCE_MINIMUM_CENTS = 100;
 
+/**
+ * What the declared value starts at on the Ship screen, where insurance is on by default.
+ * $100 sits exactly at the minimum premium, so the default costs the seller $1.00 and never
+ * quietly scales with the package.
+ */
+export const DEFAULT_INSURED_DOLLARS = 100;
+
 /** Highest declared value we will insure, matching what the carriers will actually underwrite. */
 export const INSURANCE_MAX_VALUE_CENTS = 500_000;
 

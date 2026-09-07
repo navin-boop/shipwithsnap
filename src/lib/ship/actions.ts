@@ -1,8 +1,8 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
-import { requireWriterAccount } from "@/lib/auth/require";
+import { requireSession, requireWriterAccount } from "@/lib/auth/require";
 import { db, schema } from "@/lib/db";
 import { getShippingProvider, ProviderError, type AddressInput, type DeliveryEstimate } from "@/lib/shipping";
 import { parseAddressLine } from "./address";
@@ -241,6 +241,57 @@ export async function convertLabelFormat(labelId: string, format: "pdf_4x6" | "p
     if (err instanceof ProviderError) return { ok: false, error: err.message };
     throw err;
   }
+}
+
+export type RecipientSuggestion = {
+  id: string;
+  name: string | null;
+  company: string | null;
+  phone: string | null;
+  email: string | null;
+  street1: string;
+  street2: string | null;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+};
+
+/**
+ * Address completion from the account's own history.
+ *
+ * Sellers ship to the same people repeatedly, so the addresses they have already used and verified
+ * are both the most likely match and the most trustworthy — better than a third-party autocomplete,
+ * which would send every keystroke of a customer's address to someone else. Most recently used
+ * first, because that is nearly always the one being retyped.
+ */
+export async function suggestRecipients(query: string): Promise<RecipientSuggestion[]> {
+  const user = await requireSession();
+  const q = query.trim().toLowerCase();
+  if (q.length < 2) return [];
+  const like = `%${q.replace(/[%_]/g, "")}%`;
+  const rows = await db()
+    .select({
+      id: schema.addresses.id, name: schema.addresses.name, company: schema.addresses.company,
+      phone: schema.addresses.phone, email: schema.addresses.email,
+      street1: schema.addresses.street1, street2: schema.addresses.street2,
+      city: schema.addresses.city, state: schema.addresses.state, zip: schema.addresses.zip, country: schema.addresses.country,
+    })
+    .from(schema.addresses)
+    .where(
+      and(
+        eq(schema.addresses.accountId, user.accountId),
+        eq(schema.addresses.kind, "ship_to"),
+        sql`(lower(coalesce(${schema.addresses.name}, '')) like ${like}
+          or lower(coalesce(${schema.addresses.company}, '')) like ${like}
+          or lower(${schema.addresses.street1}) like ${like}
+          or lower(${schema.addresses.city}) like ${like}
+          or lower(coalesce(${schema.addresses.email}, '')) like ${like})`,
+      ),
+    )
+    .orderBy(desc(schema.addresses.lastUsedAt))
+    .limit(6);
+  return rows;
 }
 
 export async function listParcelPresets() {
