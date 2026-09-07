@@ -25,7 +25,7 @@ export default async function DevScreens({ searchParams }: { searchParams: Promi
 
   return (
     <div className="flex min-h-screen flex-col bg-paper">
-      <AppNav cardLabel="Visa ·· 4242" />
+      <AppNav cardLabel="Visa ·· 4242" userEmail="you@yourstore.com" userName="Sample Owner" role="owner" />
       <main className="flex flex-1 flex-col gap-4 px-10 pb-8 pt-2">
         <div className="flex flex-col gap-2">
           <h1 className="disp text-[40px]">Let&apos;s ship something.</h1>

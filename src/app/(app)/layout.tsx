@@ -18,7 +18,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const card = billingEnabled() ? await getDefaultPaymentMethod(session.user.accountId) : null;
   return (
     <div className="flex min-h-screen flex-col bg-paper">
-      <AppNav cardLabel={card ? `${card.brand} ·· ${card.last4}` : undefined} />
+      <AppNav
+        cardLabel={card ? `${card.brand} ·· ${card.last4}` : undefined}
+        userEmail={me.email}
+        userName={me.name}
+        role={me.role}
+      />
       {children}
       <AppFooter />
     </div>

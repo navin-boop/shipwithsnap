@@ -25,7 +25,7 @@ export default function Styleguide() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <AppNav cardLabel="Visa ·· 4242" />
+      <AppNav cardLabel="Visa ·· 4242" userEmail="you@yourstore.com" userName="Sample Owner" role="owner" />
       <main className="flex flex-col gap-8 px-6 py-8 sm:px-12">
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-1.5">
