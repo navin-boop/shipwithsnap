@@ -4,7 +4,7 @@ import { useActionState, useState, useTransition } from "react";
 import { Button, Input } from "@/components/ui";
 import { resendVerificationCode, verifyEmailCode, type AuthFormState } from "@/lib/auth/actions";
 
-export function VerifyEmailForm({ email }: { email: string }) {
+export function VerifyEmailForm({ email, mailFailed = false }: { email: string; mailFailed?: boolean }) {
   const [state, action, pending] = useActionState<AuthFormState, FormData>(verifyEmailCode, undefined);
   const [notice, setNotice] = useState<{ ok: boolean; message: string } | null>(null);
   const [resending, startResend] = useTransition();
@@ -13,11 +13,24 @@ export function VerifyEmailForm({ email }: { email: string }) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <h1 className="disp text-[34px] leading-[1.05]">Check your email.</h1>
+        <h1 className="disp text-[34px] leading-[1.05]">{mailFailed ? "Almost there." : "Check your email."}</h1>
         <p className="text-[15px] font-semibold leading-[1.55] text-ink-2">
-          We sent a six-digit code to <span className="font-extrabold text-ink">{email}</span>. Enter it below to finish setting up your account.
+          {mailFailed ? (
+            <>Your account is created, but we couldn&apos;t send the code to <span className="font-extrabold text-ink">{email}</span> just now.</>
+          ) : (
+            <>We sent a six-digit code to <span className="font-extrabold text-ink">{email}</span>. Enter it below to finish setting up your account.</>
+          )}
         </p>
       </div>
+
+      {mailFailed && (
+        <div className="card-quiet flex flex-col gap-1 border-danger bg-[#fdecea] p-4">
+          <div className="text-[14px] font-extrabold text-danger">No code was sent</div>
+          <p className="text-[13px] font-semibold leading-[1.5] text-ink-2">
+            Try &ldquo;Send a new code&rdquo; below. If that fails too, email support@shipwithsnap.com and we&apos;ll verify you by hand — nothing is lost.
+          </p>
+        </div>
+      )}
 
       <form action={action} className="flex flex-col gap-5" noValidate>
         <Input

@@ -47,8 +47,13 @@ function guard(name: string, fn: () => Promise<unknown>): Promise<void> {
   );
 }
 
-export function notifyVerificationCode(input: { email: string; code: string; expiresInMinutes: number }): Promise<void> {
-  return guard("verificationCode", () => deliver(input.email, verifyEmail({ code: input.code, email: input.email, expiresInMinutes: input.expiresInMinutes })));
+/**
+ * Unlike the rest of these, this one reports back. A sign-up that cannot deliver its code leaves
+ * the account unusable, so the screen has to be able to say so rather than claim it sent one.
+ */
+export async function notifyVerificationCode(input: { email: string; code: string; expiresInMinutes: number }): Promise<boolean> {
+  const result = await deliver(input.email, verifyEmail({ code: input.code, email: input.email, expiresInMinutes: input.expiresInMinutes }));
+  return result.sent;
 }
 
 export function notifyWelcome(input: { email: string; name: string | null }): Promise<void> {

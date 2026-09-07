@@ -59,10 +59,11 @@ export async function signUp(_prev: AuthFormState, formData: FormData): Promise<
   // Mail the code before signing in: the /verify screen is where they land, and it is useless
   // without one. A mail failure must not strand a created account, so it is logged, not thrown.
   const issued = await issueVerificationCode(user.id);
-  if (issued.ok) await notifyVerificationCode({ email, code: issued.code, expiresInMinutes: CODE_TTL_MINUTES });
+  const sent = issued.ok ? await notifyVerificationCode({ email, code: issued.code, expiresInMinutes: CODE_TTL_MINUTES }) : false;
 
-  // Throws NEXT_REDIRECT on success — let it propagate.
-  await signIn("credentials", { email, password, redirectTo: "/verify" });
+  // Throws NEXT_REDIRECT on success — let it propagate. The account exists either way; the flag
+  // only decides whether /verify claims a code is on its way.
+  await signIn("credentials", { email, password, redirectTo: sent ? "/verify" : "/verify?sent=0" });
 }
 
 /** Checks the six-digit code, then sends the welcome mail the sign-up deliberately held back. */
@@ -93,7 +94,8 @@ export async function resendVerificationCode(): Promise<{ ok: boolean; message: 
 
   const issued = await issueVerificationCode(user.id);
   if (!issued.ok) return { ok: false, message: `Hold on ${issued.retryInSeconds}s before asking for another code.` };
-  await notifyVerificationCode({ email: user.email, code: issued.code, expiresInMinutes: CODE_TTL_MINUTES });
+  const sent = await notifyVerificationCode({ email: user.email, code: issued.code, expiresInMinutes: CODE_TTL_MINUTES });
+  if (!sent) return { ok: false, message: "We couldn't send the email just now. Try again in a moment, or write to support@shipwithsnap.com." };
   return { ok: true, message: `New code sent to ${user.email}.` };
 }
 

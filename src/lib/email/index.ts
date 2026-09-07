@@ -30,6 +30,12 @@ export async function sendEmail(msg: Email): Promise<{ sent: boolean; id?: strin
   const replyTo = msg.replyTo ?? company.email.support;
   const subject = safeSubject(msg.subject);
   if (!key) {
+    // Locally, logging the message is the point. On a deployment it is a misconfiguration that
+    // would otherwise pass for success: sign-up would promise a code it never sent, which is
+    // exactly what happened before this guard existed.
+    if (process.env.VERCEL) {
+      throw new Error("No RESEND_API_KEY or EMAIL_API_KEY is set on this deployment — nothing was sent.");
+    }
     console.info(`[email:dev] to=${msg.to} subject="${subject}"\n${msg.text}`);
     return { sent: false };
   }
