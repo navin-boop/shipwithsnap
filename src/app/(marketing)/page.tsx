@@ -97,7 +97,7 @@ export default async function HomePage() {
         <div className="flex flex-col gap-5">
           <div className="lbl">The questions everyone asks</div>
           <div className="flex flex-col gap-3">
-            <Faq q="Is it really free?">The software is, and there is no plan to upgrade to. You pay the carrier&apos;s commercial rate exactly as we receive it — no markup on postage, no per-label fee and no monthly fee. The only thing we price ourselves is optional insurance, at 70&cent; per $100 of declared value.</Faq>
+            <Faq q="Is it really free?">The software is, and there is no plan to upgrade to. You pay the carrier&apos;s commercial rate exactly as we receive it — no markup on postage, no per-label fee and no monthly fee. The only thing we price ourselves is optional insurance, at $1.70 per $100 of declared value.</Faq>
             <Faq q="Do I need a label printer?">No. Print on plain paper and tape it on. If you ship every day, a thermal printer pays for itself — we support any 4×6 printer out of the box.</Faq>
             <Faq q="What about my Shopify and Etsy orders?">Upload a CSV today, connect a store soon. Open orders appear in Batch: select them all, buy every label in one click, one charge to your card.</Faq>
             <Faq q="Is the postage the same as at the counter?">Same carriers, same services, same delivery. The only thing that changes is the price.</Faq>

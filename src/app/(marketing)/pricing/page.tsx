@@ -37,7 +37,7 @@ const CHARGES = [
   {
     title: "Insurance, if you add it",
     detail:
-      "Declared-value coverage is 70 cents per 100 dollars of value, minimum 1 dollar, shown on the Ship screen before you buy and listed separately on your receipt. It is the one thing we price ourselves rather than pass through; postage stays at cost.",
+      "Declared-value coverage is 1 dollar 70 per 100 dollars of value, minimum 1 dollar 70, shown on the Ship screen before you buy and listed separately on your receipt. It is the one thing we price ourselves rather than pass through; postage stays at cost.",
   },
   {
     title: "Carrier adjustments",

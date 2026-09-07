@@ -1,25 +1,45 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-  INSURANCE_CENTS_PER_100,
+  EASYPOST_INSURANCE_MINIMUM_CENTS,
+  EASYPOST_INSURANCE_PERCENT,
+  INSURANCE_MARKUP_PERCENT,
   INSURANCE_MAX_VALUE_CENTS,
   INSURANCE_MINIMUM_CENTS,
+  easypostInsuranceCostCents,
   insurancePremiumCents,
   insuranceRateLabel,
   insuranceValueError,
 } from "../src/lib/ship/insurance";
 
-describe("insurance premium", () => {
-  it("charges 70 cents per $100 of declared value", () => {
-    assert.equal(insurancePremiumCents(50_000), 350); // $500 declared -> $3.50
-    assert.equal(insurancePremiumCents(100_000), 700); // $1,000 declared -> $7.00
-    assert.equal(insurancePremiumCents(500_000), 3_500); // $5,000 declared -> $35.00
+describe("what EasyPost charges us", () => {
+  // Measured by buying test labels at each declared value and reading the InsuranceFee back.
+  it("matches the fees EasyPost actually returned", () => {
+    assert.equal(easypostInsuranceCostCents(5_000), 100); // $50 declared -> $1.00 (the floor)
+    assert.equal(easypostInsuranceCostCents(10_000), 100); // $100 -> $1.00
+    assert.equal(easypostInsuranceCostCents(50_000), 500); // $500 -> $5.00
+    assert.equal(easypostInsuranceCostCents(200_000), 2_000); // $2,000 -> $20.00
   });
 
-  it("applies the minimum below about $143, and the rate above it", () => {
-    // 70c per $100 only reaches the $1.00 floor at $142.86 of declared value.
-    assert.equal(insurancePremiumCents(10_000), INSURANCE_MINIMUM_CENTS); // $100 -> floor, not 70c
-    assert.equal(insurancePremiumCents(20_000), 140); // $200 -> $1.40, above the floor
+  it("is 1% of declared value, not the 0.55% an earlier version assumed", () => {
+    assert.equal(EASYPOST_INSURANCE_PERCENT, 1);
+    assert.equal(EASYPOST_INSURANCE_MINIMUM_CENTS, 100);
+  });
+});
+
+describe("insurance premium", () => {
+  it("is EasyPost's fee plus the markup", () => {
+    for (const value of [10_000, 50_000, 123_400, 200_000, INSURANCE_MAX_VALUE_CENTS]) {
+      const cost = easypostInsuranceCostCents(value);
+      const expected = Math.ceil((cost * (100 + INSURANCE_MARKUP_PERCENT)) / 100);
+      assert.equal(insurancePremiumCents(value), expected, `at ${value} cents declared`);
+    }
+  });
+
+  it("prices the documented examples", () => {
+    assert.equal(insurancePremiumCents(10_000), 170); // $100 declared -> $1.70
+    assert.equal(insurancePremiumCents(50_000), 850); // $500 -> $8.50
+    assert.equal(insurancePremiumCents(200_000), 3_400); // $2,000 -> $34.00
   });
 
   it("charges nothing when nothing is declared", () => {
@@ -28,32 +48,26 @@ describe("insurance premium", () => {
     assert.equal(insurancePremiumCents(undefined), 0);
   });
 
-  it("never sells cover below the minimum", () => {
-    // 14 cents of premium costs more than that to place, so the floor applies.
-    assert.equal(insurancePremiumCents(2_000), INSURANCE_MINIMUM_CENTS);
+  it("never sells cover below the floor", () => {
     assert.equal(insurancePremiumCents(1), INSURANCE_MINIMUM_CENTS);
-  });
-
-  it("rounds up, so no label leaks a fraction of a cent", () => {
-    // $1,234.50 -> 864.15 cents, which must not become 864.
-    assert.equal(insurancePremiumCents(123_450), 865);
+    assert.equal(insurancePremiumCents(5_000), INSURANCE_MINIMUM_CENTS);
+    assert.equal(INSURANCE_MINIMUM_CENTS, 170);
   });
 
   it("returns whole cents only — money is integers everywhere", () => {
-    for (let value = 0; value <= 500_000; value += 997) {
-      const premium = insurancePremiumCents(value);
-      assert.ok(Number.isInteger(premium), `premium for ${value} was ${premium}`);
+    for (let value = 0; value <= INSURANCE_MAX_VALUE_CENTS; value += 997) {
+      assert.ok(Number.isInteger(insurancePremiumCents(value)), `premium for ${value} was fractional`);
     }
   });
 
-  it("always covers what EasyPost bills us", () => {
-    // EasyPost charges about 55 cents per $100. Above the minimum, our price must beat their cost
-    // at every value, or insured labels lose money.
-    const EASYPOST_CENTS_PER_100 = 55;
-    for (let value = 20_000; value <= INSURANCE_MAX_VALUE_CENTS; value += 1_000) {
+  it("always beats what EasyPost bills us, at every value", () => {
+    // The whole point of the markup. The previous flat 70c-per-$100 price failed this: it charged
+    // less than EasyPost's own 1%, so every insured label lost money.
+    for (let value = 1_000; value <= INSURANCE_MAX_VALUE_CENTS; value += 1_000) {
       const ours = insurancePremiumCents(value);
-      const theirs = Math.ceil((value * EASYPOST_CENTS_PER_100) / 10_000);
+      const theirs = easypostInsuranceCostCents(value);
       assert.ok(ours > theirs, `at ${value} cents declared we charge ${ours} and pay ${theirs}`);
+      assert.ok(ours >= Math.floor(theirs * 1.7), `markup fell short at ${value}`);
     }
   });
 
@@ -85,7 +99,8 @@ describe("declared value limits", () => {
 describe("the quoted rate", () => {
   it("states the same numbers the code charges", () => {
     const label = insuranceRateLabel();
-    assert.ok(label.includes((INSURANCE_CENTS_PER_100 / 100).toFixed(2)), `"${label}" does not state the rate`);
+    const per100 = (insurancePremiumCents(10_000) / 100).toFixed(2);
+    assert.ok(label.includes(per100), `"${label}" does not state the real per-$100 price`);
     assert.ok(label.includes((INSURANCE_MINIMUM_CENTS / 100).toFixed(2)), `"${label}" does not state the minimum`);
   });
 });
