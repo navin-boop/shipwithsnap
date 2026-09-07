@@ -145,11 +145,28 @@ const STATUS_MAP: Record<string, CanonicalStatus> = {
   available_for_pickup: "out_for_delivery", return_to_sender: "returned", failure: "exception", cancelled: "exception", error: "exception", unknown: "label_created",
 };
 
+/** Exported under a test-only name so the messages a seller reads can be asserted. */
+export const mapEasyPostErrorForTest = (err: unknown): ProviderError => mapEasyPostError(err);
+
 function mapEasyPostError(err: unknown): ProviderError {
   const e = err as { statusCode?: number; status?: number; message?: string; code?: string; errors?: Array<{ message?: string; field?: string }> };
   const status = e.statusCode ?? e.status ?? 0;
   const detail = e.errors?.map((x) => [x.field, x.message].filter(Boolean).join(": ")).join("; ");
   const message = detail || e.message || "EasyPost request failed";
+
+  // A shipment that 404s is almost never missing — it belongs to the other environment. EasyPost
+  // test and production are separate worlds, and a label bought under a test key cannot be voided,
+  // reprinted or tracked with a production one. Relaying "the requested resource could not be
+  // found" sends people looking for a bug in their own data.
+  if (status === 404) {
+    return new ProviderError(
+      "not_supported",
+      "The carrier no longer recognises this shipment. This normally means it was bought with different EasyPost credentials — a label bought with a test key can't be voided with a production key, or the other way round.",
+    );
+  }
+  if (e.code === "SHIPMENT.REFUND.UNAVAILABLE") {
+    return new ProviderError("not_supported", "The carrier won't refund this label: it has already been accepted into the mail stream. Once a package is scanned the postage is spent.");
+  }
   if (status === 422 && /address/i.test(message)) return new ProviderError("address_invalid", message);
   if (status === 429) return new ProviderError("provider_unavailable", "Rate limited by EasyPost", true);
   if (status >= 500 || status === 0) return new ProviderError("provider_unavailable", message, true);
