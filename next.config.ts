@@ -21,6 +21,12 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // /lowest-price-guarantee promised we never marked up postage. We now do, so the page is gone
+  // rather than quietly rewritten — but the URL is in the sitemap and was linked sitewide, so it
+  // redirects to the page that states the real price.
+  async redirects() {
+    return [{ source: "/lowest-price-guarantee", destination: "/pricing", permanent: true }];
+  },
   reactStrictMode: true,
   poweredByHeader: false,
   // Keeps the dev badge out of product screenshots (scripts/screenshots.sh).

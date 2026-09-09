@@ -14,13 +14,18 @@ import {
 } from "@/lib/shipping";
 import { addressHash } from "./address";
 import { insurancePremiumCents, insuranceValueError } from "./insurance";
+import { sellPriceCents } from "./pricing";
 import { BillingError, authorize, billingEnabled, cancelAuthorization, capture, getDefaultPaymentMethod } from "@/lib/billing/service";
 
 const QUOTE_TTL_MS = 10 * 60 * 1000;
 
-/** Pricing tiers are pass-through today; markup by tier plugs in here. */
+/**
+ * The single place a carrier rate becomes a price we charge. `storeQuotes` writes the result into
+ * `rate_quotes` and `buyLabel` charges that stored row, so the browser never gets a say in it.
+ * Per-account pricing tiers would plug in here.
+ */
 function applyPricing(_account: Account, priceCents: number): number {
-  return priceCents;
+  return sellPriceCents(priceCents);
 }
 
 export function toAddressInput(a: Address): AddressInput {

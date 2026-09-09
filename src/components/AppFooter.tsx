@@ -8,7 +8,7 @@ const LINKS: Array<[string, string]> = [
   ["/legal/privacy", "Privacy"],
   ["/legal/refunds", "Refunds"],
   ["/legal/acceptable-use", "Acceptable use"],
-  ["/lowest-price-guarantee", "Price guarantee"],
+  ["/pricing", "Pricing"],
   ["/contact", "Contact"],
   ["/faq", "Help"],
 ];

@@ -75,7 +75,7 @@ export default function AboutPage() {
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Value title="The price is the price">
-            We never mark up postage, and the retail counter price sits next to ours so you can check the claim yourself. If someone beats us, we <Link href="/lowest-price-guarantee" className="font-extrabold text-coral">refund the difference</Link>.
+            Our 15% service fee is inside every rate we show, so the price on the rate is the price charged — nothing is added at checkout. The retail counter price sits next to ours so you can see the difference for yourself.
           </Value>
           <Value title="No plan, no gates">
             Every feature is free at every volume. We would rather you ship well than pay us for permission to.

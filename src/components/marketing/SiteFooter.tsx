@@ -12,7 +12,6 @@ const COLUMNS: Array<{ title: string; links: Array<[string, string]> }> = [
       ["/how-it-works", "How it works"],
       ["/pricing", "Pricing"],
       ["/rates", "Rate calculator"],
-      ["/lowest-price-guarantee", "Lowest price guarantee"],
       ["/docs", "API documentation"],
     ],
   },
@@ -58,8 +57,8 @@ export function SiteFooter() {
             <p className="max-w-[300px] text-[15px] font-semibold leading-[1.55] text-ink-2">
               Commercial USPS, UPS, FedEx and DHL rates for small sellers. No monthly fee — you pay postage and nothing else.
             </p>
-            <Link href="/lowest-price-guarantee" className="inline-flex w-fit items-center gap-2 rounded-pill border-2 border-ink bg-yellow px-3.5 py-2 text-[13px] font-extrabold text-ink hover:text-ink">
-              <span aria-hidden="true">★</span> Lowest price guaranteed
+            <Link href="/pricing" className="inline-flex w-fit items-center gap-2 rounded-pill border-2 border-ink bg-yellow px-3.5 py-2 text-[13px] font-extrabold text-ink hover:text-ink">
+              <span aria-hidden="true">★</span> One price, shown up front
             </Link>
           </div>
 

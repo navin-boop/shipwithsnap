@@ -119,7 +119,7 @@ export function welcome(input: { name?: string | null; email: string }): Rendere
   const first = (input.name ?? "").trim().split(/\s+/)[0];
   const body = textBody([
     `${first ? `Hi ${first} — welcome` : "Welcome"} to ${company.brand}. Your account is ready.`,
-    "There's no monthly fee and no balance to top up. Add a card the first time you buy a label, and you only ever pay postage.",
+    "There's no monthly fee and no balance to top up. Add a card the first time you buy a label, and the price on the rate is the price you pay.",
     "The fastest way to see what it does: paste an address on the Ship page and compare live USPS and UPS rates.",
   ]);
   return {
@@ -130,7 +130,7 @@ export function welcome(input: { name?: string | null; email: string }): Rendere
       heading: "You're in.",
       bodyHtml:
         p(`${first ? `Hi ${first} — welcome` : "Welcome"} to ${company.brand}. Your account is ready.`) +
-        p("There's no monthly fee and no balance to top up. Add a card the first time you buy a label, and you only ever pay postage — we never mark it up.") +
+        p("There's no monthly fee and no balance to top up. Add a card the first time you buy a label, and the price on the rate is the price you pay — our service fee is already inside it.") +
         raw(`The fastest way to see what it does: paste an address on the Ship page and compare live rates. Questions go to ${link(company.email.support, `mailto:${company.email.support}`)}.`),
       cta: { label: "Ship something", url: `${base}/ship` },
       secondaryCta: { label: "How it works", url: `${base}/how-it-works`, variant: "outline" },
@@ -249,15 +249,13 @@ export function labelReceipt(input: { accountName: string; amountCents: number; 
   return {
     subject: `Receipt — ${money(input.amountCents)} for ${input.label.carrier} ${input.label.serviceName}`,
     html: renderEmail({
-      preheader: `${money(input.amountCents)} charged to ${card}. Postage only — no markup.`,
+      preheader: `${money(input.amountCents)} charged to ${card}. The rate you picked, nothing added.`,
       brand: snapBrand(),
       eyebrow: input.accountName,
       heading: "Label bought.",
       bodyHtml:
         p(`We charged ${money(input.amountCents)} to ${card} for the label below.`) +
-        (fee > 0
-          ? raw(`Postage is at cost — ${strong("we never mark it up")}. The insurance premium is ours.`)
-          : raw(`That's postage at cost. ${strong("We never mark it up")} — the whole amount goes to the carrier.`)),
+        raw(`That is ${strong("the rate you picked")}, service fee included — nothing was added after you chose it.`),
       rows,
       cta: { label: "View receipt", url: input.receiptUrl },
       secondaryCta: { label: "Print label", url: `${base}/shipments`, variant: "outline" },

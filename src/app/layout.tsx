@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: `%s · ${company.brand}`,
   },
   description:
-    "Compare USPS, UPS, FedEx and DHL rates on one list and print the label in a minute. No monthly fee, no per-label fee — you pay postage at commercial rates, guaranteed lowest.",
+    "Compare USPS, UPS, FedEx and DHL rates on one list and print the label in a minute. No monthly fee and no per-label fee — one price, shown before you buy.",
   applicationName: company.brand,
   keywords: [
     "discount shipping labels",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     url: company.url,
     title: `${company.brand} — ship for seriously less`,
     description:
-      "Commercial USPS, UPS, FedEx and DHL rates for small sellers. No monthly fee, no markup, lowest price guaranteed.",
+      "Commercial USPS, UPS, FedEx and DHL rates for small sellers. No monthly fee, no per-label fee — one price, shown before you buy.",
     locale: "en_US",
   },
   twitter: {

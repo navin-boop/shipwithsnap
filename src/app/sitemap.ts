@@ -18,7 +18,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page("", 1, "weekly"),
     page("/pricing", 0.9, "monthly"),
     page("/how-it-works", 0.9, "monthly"),
-    page("/lowest-price-guarantee", 0.9, "monthly"),
     page("/rates", 0.8, "weekly"),
     page("/carriers", 0.8, "monthly"),
     ...CARRIERS.map((c) => page(`/carriers/${c.slug}`, 0.8, "monthly" as const)),

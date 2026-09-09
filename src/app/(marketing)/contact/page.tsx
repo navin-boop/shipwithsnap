@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const ROUTES = [
   { label: "Support", email: company.email.support, blurb: "A label that will not print, a rate that looks wrong, a carrier problem, or anything about using the app." },
-  { label: "Billing and refunds", email: company.email.billing, blurb: "Charges, receipts, carrier adjustments, voided labels, and lowest price guarantee claims." },
+  { label: "Billing and refunds", email: company.email.billing, blurb: "Charges, receipts, carrier adjustments and voided labels." },
   { label: "Privacy", email: company.email.privacy, blurb: "Access, correction or deletion of personal data, and questions about how we handle it." },
   { label: "Legal", email: company.email.legal, blurb: "Terms, acceptable use, law enforcement requests and anything else for the company's records." },
 ];
@@ -94,7 +94,7 @@ export default function ContactPage() {
               <Link href="/faq">Common questions</Link>
               <Link href="/legal/refunds">Refund a label</Link>
               <Link href="/docs">API docs</Link>
-              <Link href="/lowest-price-guarantee">Price guarantee</Link>
+              <Link href="/pricing">Pricing</Link>
             </div>
           </div>
         </div>

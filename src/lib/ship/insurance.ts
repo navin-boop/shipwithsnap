@@ -5,9 +5,8 @@
  * from it and the receipt itemises from it, so the number a seller is shown before buying is
  * always the number they are charged.
  *
- * Note this is deliberately NOT pass-through, unlike postage. The lowest price guarantee is a
- * promise about postage — `applyPricing` in service.ts stays pass-through and must stay that way —
- * and insurance is a separate, priced product. The public pages say so in as many words.
+ * Insurance is priced separately from postage: postage carries the markup in pricing.ts, and this
+ * premium is charged on top and itemised on its own line, so a receipt always adds up.
  */
 
 /**

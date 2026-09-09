@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { getShippingProvider, type RateQuoteResult } from "@/lib/shipping";
+import { sellPriceCents } from "./pricing";
 
 export type SampleRate = Pick<RateQuoteResult, "carrier" | "serviceName" | "priceCents" | "retailCents" | "estDays">;
 
@@ -23,7 +24,10 @@ export const getSampleRates = unstable_cache(
         parcel: { lengthIn: 12, widthIn: 9, heightIn: 4, weightOz: 29 },
         format: "pdf_4x6",
       });
-      const sorted = rates.filter((r) => r.priceCents > 0).sort((a, b) => a.priceCents - b.priceCents);
+      const sorted = rates
+        .filter((r) => r.priceCents > 0)
+        .map((r) => ({ ...r, priceCents: sellPriceCents(r.priceCents) }))
+        .sort((a, b) => a.priceCents - b.priceCents);
       if (!sorted.length) return { rates: FALLBACK, live: false };
       // Cheapest, fastest, and the cheapest USPS Priority-class option — three rows like the design.
       const cheapest = sorted[0];

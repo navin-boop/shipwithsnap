@@ -343,7 +343,7 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
             <div className="text-[15px] font-extrabold">Add a card before your first label.</div>
             <AddCardButton publishableKey={stripePublishableKey} label="Add a card" onAdded={onCardAdded} />
           </div>
-          <p className="text-[13px] font-bold text-muted">You are charged per label — postage at cost, plus insurance if you add it. No monthly fee and nothing to prepay.</p>
+          <p className="text-[13px] font-bold text-muted">You are charged per label — the rate you pick, plus insurance if you add it. No monthly fee and nothing to prepay.</p>
         </div>
       )}
       <div className="grid flex-1 grid-cols-1 gap-6 lg:grid-cols-[540px_minmax(0,1fr)]">

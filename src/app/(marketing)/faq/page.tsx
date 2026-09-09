@@ -85,6 +85,10 @@ const GROUPS: Group[] = [
     title: "Insurance and problems",
     items: [
       {
+        q: "Do you add anything to the carrier's price?",
+        a: "Yes. Every rate you see includes a 15 percent service fee on top of the carrier's commercial price, and that is the number you are charged — nothing is added at checkout. The retail counter price is shown beside each rate so you can compare. There is no monthly fee, no per-label fee and no minimum volume.",
+      },
+      {
         q: "How do I insure a package?",
         a: "Tick the insurance box and enter what the contents are worth. Coverage costs 1 dollar 70 per 100 dollars of declared value, with a 1 dollar 70 minimum, shown on the Ship screen before you commit and listed separately on your receipt. Coverage runs up to 5,000 dollars per package.",
       },

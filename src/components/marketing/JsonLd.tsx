@@ -68,7 +68,7 @@ export function softwareSchema() {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
-      description: "Free shipping software. You pay carrier postage at commercial rates with no markup.",
+      description: "Free shipping software. You pay the rate shown, which includes a 15% service fee on carrier postage.",
     },
   };
 }

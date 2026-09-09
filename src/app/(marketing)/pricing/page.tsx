@@ -5,7 +5,7 @@ import { RateCalculator } from "@/components/marketing/RateCalculator";
 import { company } from "@/lib/company";
 
 export const metadata: Metadata = {
-  title: "Pricing — free software, postage at cost",
+  title: "Pricing — free software, one price per label",
   description: "No monthly fee, no per-label fee, no minimum. Pay carrier postage at commercial rates and nothing else — here is every line that can appear on your bill.",
   alternates: { canonical: "/pricing" },
 };
@@ -27,7 +27,7 @@ const CHARGES = [
   {
     title: "Postage",
     detail:
-      "The rate you picked, at commercial pricing. Charged when you buy the label, or once per batch. Always shown before you commit, with the retail counter price beside it.",
+      "The rate you picked, which already includes our 15% service fee on the carrier's commercial price. Charged when you buy the label, or once per batch. Always shown before you commit, with the retail counter price beside it."
   },
   {
     title: "Extras you choose",
@@ -70,7 +70,7 @@ export default function PricingPage() {
         <div className="card flex flex-col gap-3 p-7">
           <div className="lbl">Per label</div>
           <div className="disp text-[52px]">$0</div>
-          <p className="text-[15px] font-semibold leading-[1.55] text-ink-2">No markup on postage and no per-label surcharge. Print one label a month or ten thousand.</p>
+          <p className="text-[15px] font-semibold leading-[1.55] text-ink-2">No per-label surcharge and no minimum volume. Print one label a month or ten thousand.</p>
         </div>
         <div className="card flex flex-col gap-3 bg-ink p-7 text-paper">
           <div className="lbl text-muted-on-ink">You pay</div>
@@ -130,10 +130,10 @@ export default function PricingPage() {
       <section className="relative px-6 py-16 sm:px-16">
         <div className="card flex flex-col items-start gap-8 bg-coral p-8 text-white sm:p-12 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3">
-            <h2 className="disp text-[36px] leading-[1] sm:text-[52px]">And if you find it cheaper?</h2>
-            <p className="max-w-[520px] text-[17px] font-semibold leading-[1.5]">We refund the difference. {company.brand} has a written lowest price guarantee, with the terms in plain English.</p>
+            <h2 className="disp text-[36px] leading-[1] sm:text-[52px]">What you see is what you pay.</h2>
+            <p className="max-w-[520px] text-[17px] font-semibold leading-[1.5]">Our 15% service fee is already inside every rate, so nothing is added at checkout. Compare against the retail counter price beside each rate and decide for yourself.</p>
           </div>
-          <Link href="/lowest-price-guarantee" className="inline-flex h-16 shrink-0 items-center gap-2.5 rounded-pill border-2 border-ink bg-ink px-9 font-display text-[16px] font-extrabold text-yellow hover:text-yellow">Read the guarantee <ArrowIcon /></Link>
+          <Link href="/faq" className="inline-flex h-16 shrink-0 items-center gap-2.5 rounded-pill border-2 border-ink bg-ink px-9 font-display text-[16px] font-extrabold text-yellow hover:text-yellow">Common questions <ArrowIcon /></Link>
         </div>
       </section>
     </main>

@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { getShippingProvider, ProviderError, type RateQuoteResult } from "@/lib/shipping";
+import { sellPriceCents } from "./pricing";
 import { stateForZip } from "./zip-state";
 
 const input = z.object({
@@ -33,7 +34,12 @@ export async function publicRates(raw: z.input<typeof input>): Promise<PublicRat
       parcel: { lengthIn: d.lengthIn, widthIn: d.widthIn, heightIn: d.heightIn, weightOz: Math.round(d.weightLb * 16) },
       format: "pdf_4x6",
     });
-    const sorted = rates.filter((r) => r.priceCents > 0).sort((a, b) => a.priceCents - b.priceCents);
+    // Our price, not the carrier's — an estimate that undercuts the checkout price is worse than
+    // no estimate at all.
+    const sorted = rates
+      .filter((r) => r.priceCents > 0)
+      .map((r) => ({ ...r, priceCents: sellPriceCents(r.priceCents) }))
+      .sort((a, b) => a.priceCents - b.priceCents);
     // A carrier that declines to rate says why in `messages`. Discarding those made a missing
     // carrier indistinguishable from one that does not exist — which is exactly how UPS looked
     // absent here for hours. Log them, and show them.

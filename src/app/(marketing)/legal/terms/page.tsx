@@ -65,7 +65,7 @@ const sections: LegalSection[] = [
     body: (
       <>
         <Term term="What you pay">
-          The postage price shown on the rate you select, and nothing else. There is no monthly fee, no per-label fee, and no minimum volume. See our <Link href="/lowest-price-guarantee">Lowest Price Guarantee</Link>.
+          The price shown on the rate you select, which includes our service fee on the carrier’s postage, and nothing else. There is no monthly fee, no per-label fee, and no minimum volume. See our <Link href="/pricing">pricing page</Link>.
         </Term>
         <Term term="When you pay">
           Your saved card is charged when a label is purchased. Buying a batch produces a single charge for that batch. A receipt is emailed to you for every charge.
