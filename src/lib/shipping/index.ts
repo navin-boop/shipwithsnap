@@ -4,6 +4,7 @@ import { ProviderError, type BuyRequest, type ShippingProvider } from "./provide
 
 export * from "./provider";
 export * from "./options";
+export * from "./messages";
 
 let cached: ShippingProvider | undefined;
 

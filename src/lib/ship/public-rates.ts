@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { getShippingProvider, ProviderError, type RateQuoteResult } from "@/lib/shipping";
+import { getShippingProvider, ProviderError, publicCarrierNotes, type RateQuoteResult } from "@/lib/shipping";
 import { sellPriceCents } from "./pricing";
 import { stateForZip } from "./zip-state";
 
@@ -42,13 +42,15 @@ export async function publicRates(raw: z.input<typeof input>): Promise<PublicRat
       .sort((a, b) => a.priceCents - b.priceCents);
     // A carrier that declines to rate says why in `messages`. Discarding those made a missing
     // carrier indistinguishable from one that does not exist — which is exactly how UPS looked
-    // absent here for hours. Log them, and show them.
+    // absent here for hours. So they are always logged in full; what a visitor sees is the
+    // humanised subset, because the raw text names EasyPost fields and reads like a broken site.
     if (messages.length) console.info(`[public-rates] ${d.fromZip}->${d.toZip}: ${messages.join(" | ")}`);
-    if (!sorted.length) return { ok: false, error: messages[0] ? `No services found: ${messages[0]}` : "No services found for that package." };
+    const notes = publicCarrierNotes(messages);
+    if (!sorted.length) return { ok: false, error: notes[0] ?? "No services found for that package." };
     return {
       ok: true,
       rates: sorted.map(({ carrier, serviceName, priceCents, retailCents, estDays }) => ({ carrier, serviceName, priceCents, retailCents, estDays })),
-      notes: messages,
+      notes,
     };
   } catch (err) {
     if (err instanceof ProviderError) return { ok: false, error: "Rates are temporarily unavailable — try again in a moment." };

@@ -53,8 +53,9 @@ export function RateCalculator() {
               ))}
               {all.length > 5 && <button type="button" className="self-center py-1 text-[14px] font-extrabold text-coral" onClick={() => setShowAll(!showAll)}>{showAll ? "Show fewer" : `Show ${all.length - 5} more`}</button>}
             </div>
-            {/* A carrier that declined to quote says why here. Without this a missing carrier is
-                indistinguishable from one we do not offer at all. */}
+            {/* A carrier that declined to quote is named here, in a sentence — publicCarrierNotes
+                drops the ones whose reason is our own configuration or a lane the carrier never
+                flies, and never repeats the carrier's raw wording. */}
             {res.notes.length > 0 && (
               <div className="flex flex-col gap-1 px-1 pt-1 text-[13px] font-bold text-muted">
                 {res.notes.map((n) => <div key={n}>{n}</div>)}
