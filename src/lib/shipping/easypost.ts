@@ -54,6 +54,8 @@ const SERVICE_NAMES: Record<string, string> = {
   Ground: "Ground", GroundSaver: "Ground Saver", "3DaySelect": "3 Day Select", "2ndDayAir": "2nd Day Air", "2ndDayAirAM": "2nd Day Air A.M.",
   NextDayAir: "Next Day Air", NextDayAirSaver: "Next Day Air Saver", NextDayAirEarlyAM: "Next Day Air Early", Standard: "Standard (Canada/Mexico)",
   Expedited: "Worldwide Expedited", Express_Plus: "Worldwide Express Plus", Saver: "Worldwide Saver", UPSStandard: "Standard",
+  // UPSDAP splits Ground Saver by weight and names the tiers in its own code, not in words.
+  UPSGroundsaverGreaterThan1lb: "Ground Saver (over 1 lb)", UPSGroundsaverLessThanOrEqualTo1lb: "Ground Saver (1 lb or less)",
   // Canada Post
   RegularParcel: "Regular Parcel", ExpeditedParcel: "Expedited Parcel", Xpresspost: "Xpresspost", PriorityCanada: "Priority",
   XpresspostUSA: "Xpresspost USA", XpresspostInternational: "Xpresspost International", ExpeditedParcelUSA: "Expedited Parcel USA",
@@ -63,7 +65,13 @@ const SERVICE_NAMES: Record<string, string> = {
 export function serviceName(code: string): string {
   if (SERVICE_NAMES[code]) return SERVICE_NAMES[code];
   if (code.includes("_")) return code.toLowerCase().split("_").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-  return code.replace(/([a-z])([A-Z])/g, "$1 $2");
+  // Split camel case, and also before a digit, so an unmapped code reads as words rather than as
+  // "UPSGroundsaver Greater Than1lb". Carriers add services faster than any map is updated.
+  return code
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([A-Za-z])(\d)/g, "$1 $2")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function toCents(amount: string | number | null | undefined): number | null {
