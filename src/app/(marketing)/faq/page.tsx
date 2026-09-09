@@ -23,11 +23,11 @@ const GROUPS: Group[] = [
       },
       {
         q: "How do you make money if the software is free?",
-        a: "Carriers price by volume. Thousands of sellers shipping through one platform reach the rates a single large shipper gets, and the platform earns from the carrier relationship rather than from you. Your price is the carrier's commercial rate, passed through untouched.",
+        a: "From a 15 percent service fee on postage, which is already included in every rate you see. Carriers price by volume, so thousands of sellers shipping through one platform reach commercial rates a single small seller cannot get on their own — our fee comes out of that gap, which is why the price beside the retail counter price is usually still well below it. The software itself, the API, users and batches are free.",
       },
       {
         q: "What if I find a cheaper price somewhere else?",
-        a: "Send us the evidence within 14 days and we refund the difference. The full terms, including what counts as a like-for-like comparison, are on the Lowest Price Guarantee page.",
+        a: "Tell us and we will look at it. We do not price-match as a policy, and we would rather say so than promise something we cannot always honour. Every rate shows the retail counter price beside it so you can see what the comparison actually is before you buy.",
       },
       {
         q: "Do I need a credit card to sign up?",
