@@ -4,7 +4,8 @@
 
 ## 1. The official logo (drop a file in here)
 
-Put the carrier's own SVG in this folder and it is used everywhere immediately, with no code change.
+Put the carrier's own logo in this folder and it is used everywhere immediately, with no code change.
+Either format works — `<slug>.svg` is tried first, then `<slug>.png`.
 
 | File | Carrier | Status |
 |---|---|---|

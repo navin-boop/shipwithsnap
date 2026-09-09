@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { getShippingProvider, ProviderError, type RateQuoteResult } from "@/lib/shipping";
+import { stateForZip } from "./zip-state";
 
 const input = z.object({
   fromZip: z.string().trim().regex(/^\d{5}$/, "From ZIP needs 5 digits."),
@@ -24,8 +25,11 @@ export async function publicRates(raw: z.input<typeof input>): Promise<PublicRat
   try {
     const { rates, messages = [] } = await getShippingProvider().rate({
       reference: "public-rates",
-      from: { street1: "", city: "", state: "", zip: d.fromZip, country: "US" },
-      to: { street1: "", city: "", state: "", zip: d.toZip, country: "US" },
+      // Several carriers refuse to quote without a state — DHL eCommerce and USAExportPBA among
+      // them — so they used to drop out of every estimate. The calculator only asks for ZIPs, and
+      // EasyPost will not resolve a bare ZIP, so the state is derived from the ZIP itself.
+      from: { street1: "", city: "", state: stateForZip(d.fromZip) ?? "", zip: d.fromZip, country: "US" },
+      to: { street1: "", city: "", state: stateForZip(d.toZip) ?? "", zip: d.toZip, country: "US" },
       parcel: { lengthIn: d.lengthIn, widthIn: d.widthIn, heightIn: d.heightIn, weightOz: Math.round(d.weightLb * 16) },
       format: "pdf_4x6",
     });

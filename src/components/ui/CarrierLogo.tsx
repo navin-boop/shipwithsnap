@@ -36,16 +36,19 @@ export function CarrierLogo({ carrier, size = 44, className, inverted }: { carri
   // Optimistic: assume the file is there and show it, and fall back only when it actually fails.
   // The reverse — hide it until onLoad fires — loses the race on a prerendered page, where the
   // image is usually already complete before React hydrates and the event never reaches it.
-  const [failed, setFailed] = useState(false);
+  // Try the vector first, then a bitmap, then our own mark. Carrier brand portals hand out both,
+  // and requiring one format is a papercut for whoever drops the file in.
+  const [ext, setExt] = useState(0);
+  const EXTS = ["svg", "png"];
   const ref = useRef<HTMLImageElement>(null);
   const slug = SLUG[carrier];
   const brand = BRAND[carrier] ?? DEFAULT_BRAND;
-  const showFile = Boolean(slug) && !failed;
+  const showFile = Boolean(slug) && ext < EXTS.length;
 
   // An image that finished before hydration never fires onError either, so check it once.
   useEffect(() => {
     const img = ref.current;
-    if (img?.complete && img.naturalWidth === 0) setFailed(true);
+    if (img?.complete && img.naturalWidth === 0) setExt((e) => e + 1);
   }, []);
 
   // A long name would be cut mid-word ("Canada " ), so multi-word carriers use their initials.
@@ -83,7 +86,7 @@ export function CarrierLogo({ carrier, size = 44, className, inverted }: { carri
       )}
       {showFile && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img ref={ref} src={`/carriers/${slug}.svg`} alt="" width={size} height={size} onError={() => setFailed(true)} className="h-full w-full object-contain" />
+        <img key={EXTS[ext]} ref={ref} src={`/carriers/${slug}.${EXTS[ext]}`} alt="" width={size} height={size} onError={() => setExt((e) => e + 1)} className="h-full w-full object-contain" />
       )}
     </div>
   );
