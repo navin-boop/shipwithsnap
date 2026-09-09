@@ -138,6 +138,8 @@ export async function POST(req: Request) {
       shipment_id: quote.shipmentId,
       parcel_count: boxes.length,
       to: { ...v.address, residential: v.residential ?? null },
+      // Raw, deliberately: an API caller is debugging their own integration and wants the
+      // carrier's own words. The screens read `quote.notes` instead.
       messages: quote.messages,
       rates: quote.rates.map((r) => ({ id: r.id, carrier: r.carrier, service: r.serviceCode, service_name: r.serviceName, price_cents: r.priceCents, retail_cents: r.retailCents, est_days: r.estDays, est_delivery_date: r.estDeliveryDate, guaranteed: r.deliveryDateGuaranteed ?? false, expires_at: r.expiresAt })),
       links: { buy: `${appBase(req)}/api/v1/labels` },

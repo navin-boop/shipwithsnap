@@ -562,7 +562,9 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
               </div>
             )}
             {quoteError && rates.length > 0 && <div className="px-1 text-[13px] font-bold text-danger">{quoteError}</div>}
-            {quote?.messages?.length ? <div className="px-1 text-[13px] font-bold text-muted">{quote.messages[0]}</div> : null}
+            {/* `notes`, never `messages`: the raw list is EasyPost's wording, and on a US → US
+                parcel it is mostly carriers that cannot fly the lane at all. */}
+            {quote?.notes?.length ? <div className="px-1 text-[13px] font-bold text-muted">{quote.notes[0]}</div> : null}
 
             {/* Solid, with a rule above it: content scrolls underneath, so a translucent bar reads as a glitch. */}
             <div className="sticky bottom-0 mt-auto flex flex-col gap-3 border-t-2 border-hairline bg-paper px-1 pb-2 pt-3 sm:flex-row sm:items-center sm:justify-between">

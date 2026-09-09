@@ -45,7 +45,8 @@ export async function publicRates(raw: z.input<typeof input>): Promise<PublicRat
     // absent here for hours. So they are always logged in full; what a visitor sees is the
     // humanised subset, because the raw text names EasyPost fields and reads like a broken site.
     if (messages.length) console.info(`[public-rates] ${d.fromZip}->${d.toZip}: ${messages.join(" | ")}`);
-    const notes = publicCarrierNotes(messages);
+    // The calculator only takes US ZIPs, so the lane is always domestic.
+    const notes = publicCarrierNotes(messages, { fromCountry: "US", toCountry: "US" });
     if (!sorted.length) return { ok: false, error: notes[0] ?? "No services found for that package." };
     return {
       ok: true,

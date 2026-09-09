@@ -6,6 +6,7 @@ import { applyRateRules } from "./rules";
 import {
   getShippingProvider,
   ProviderError,
+  publicCarrierNotes,
   type AddressInput,
   type CustomsInput,
   type LabelFormatCode,
@@ -128,7 +129,10 @@ export type QuoteInput = {
 export type Quote = {
   shipmentId: string;
   rates: RateView[];
+  /** Raw carrier declines, for the log and for API v1, whose reader is an integrator. */
   messages: string[];
+  /** The same declines, judged against this lane and worded for a seller. Usually empty. */
+  notes: string[];
 };
 
 function parcelInput(p: Parcel) {
@@ -224,7 +228,8 @@ export async function quoteShipment(account: Account, input: QuoteInput): Promis
 
   await db().update(schema.shipments).set({ providerShipmentId, updatedAt: new Date() }).where(eq(schema.shipments.id, shipment.id));
   const stored = await storeQuotes(shipment.id, account, rates);
-  return { shipmentId: shipment.id, rates: stored, messages: messages ?? [] };
+  const raw = messages ?? [];
+  return { shipmentId: shipment.id, rates: stored, messages: raw, notes: publicCarrierNotes(raw, { fromCountry: from.country, toCountry: to.country }) };
 }
 
 /** Multi-parcel: N boxes to one address, one rate per service, one buy. */
@@ -259,7 +264,11 @@ export async function quoteMultiParcel(account: Account, input: Omit<QuoteInput,
     providerRateId: `order:${r.carrier}:${r.serviceCode}`, carrier: r.carrier, serviceCode: r.serviceCode, serviceName: r.serviceName,
     priceCents: r.priceCents, retailCents: r.retailCents, estDays: r.estDays, estDeliveryDate: r.estDeliveryDate,
   })));
-  return { shipmentId: rows[0].id, groupId, shipmentIds: rows.map((r) => r.id), rates: stored, messages: messages ?? [] };
+  const raw = messages ?? [];
+  return {
+    shipmentId: rows[0].id, groupId, shipmentIds: rows.map((r) => r.id), rates: stored, messages: raw,
+    notes: publicCarrierNotes(raw, { fromCountry: from.country, toCountry: to.country }),
+  };
 }
 
 export type BuyInput = {

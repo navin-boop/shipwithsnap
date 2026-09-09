@@ -53,3 +53,43 @@ describe("public carrier notes", () => {
     ]), []);
   });
 });
+
+describe("domestic lanes", () => {
+  const US = { fromCountry: "US", toCountry: "US" };
+
+  test("a carrier that cannot fly US to US says nothing on a domestic parcel", () => {
+    assert.equal(publicCarrierNote("CanadaPost: could not rate", US), null);
+    assert.equal(publicCarrierNote("USAExportPBA: could not rate", US), null);
+  });
+
+  test("the same carriers are not silenced on an international lane", () => {
+    // Only the lane changed, so a real Canada Post outage still reaches a seller shipping to Canada.
+    assert.equal(
+      publicCarrierNote("CanadaPost: could not rate", { fromCountry: "US", toCountry: "CA" }),
+      "Canada Post didn't quote this package.",
+    );
+  });
+
+  test("lowercase country codes are still a domestic lane", () => {
+    assert.equal(publicCarrierNote("CanadaPost: could not rate", { fromCountry: "us", toCountry: "us" }), null);
+  });
+
+  test("a domestic lane never silences a carrier that does fly it", () => {
+    assert.equal(
+      publicCarrierNote("UPSDAP: UPS returned the error message: Missing ship from state province code.", US),
+      "UPS didn't quote this package.",
+    );
+  });
+
+  test("an account with no plain-English name is never printed as a code", () => {
+    assert.equal(publicCarrierNote("SomeInternalAccountX: could not rate"), null);
+  });
+
+  test("the whole production set is silent on a US to US parcel", () => {
+    assert.deepEqual(publicCarrierNotes([
+      "CanadaPost: ['Unable to get rates for shipments originating outside of Canada.']",
+      "DhlEcs: shipment.options.merchant_id is required",
+      "USAExportPBA: shipment: ['shipment.from_address.country: This carrier only support shipments from US origins to international destinations.']",
+    ], US), []);
+  });
+});

@@ -182,7 +182,8 @@ export async function getRates(input: z.input<typeof quoteInput>): Promise<Quote
     const quote = data.parcels && data.parcels.length > 1
       ? await quoteMultiParcel(account, { ...base, parcels: data.parcels })
       : await quoteShipment(account, { ...base, parcel: data.parcel });
-    if (!quote.rates.length) return { ok: false, error: quote.messages[0] ? `No services available: ${quote.messages[0]}` : "No services are available for this package." };
+    // The note, if there is one worth showing; never the carrier's raw text.
+    if (!quote.rates.length) return { ok: false, error: quote.notes[0] ?? "No services are available for this package." };
     return { ok: true, quote };
   } catch (err) {
     if (err instanceof ProviderError) {
