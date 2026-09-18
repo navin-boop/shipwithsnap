@@ -24,7 +24,7 @@ export function safeSubject(subject: string): string {
 
 export async function sendEmail(msg: Email): Promise<{ sent: boolean; id?: string }> {
   const key = process.env.RESEND_API_KEY || process.env.EMAIL_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "Ship with Snap <labels@shipwithsnap.com>";
+  const from = process.env.EMAIL_FROM ?? `Ship with Snap <labels@${company.domain}>`;
   // We send as labels@, which is not a mailbox anyone reads. Customer mail carries the seller's
   // own reply-to; everything else falls back to support@, so hitting Reply never bounces.
   const replyTo = msg.replyTo ?? company.email.support;

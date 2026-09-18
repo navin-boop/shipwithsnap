@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { company } from "@/lib/company";
 
 export const metadata: Metadata = {
   title: "API documentation",
@@ -96,14 +97,14 @@ export default function DocsPage() {
 
       <div className="flex flex-col gap-3">
         <div className="lbl">Example — buy a label</div>
-        <pre className="overflow-x-auto bg-ink p-5 text-xs leading-[1.6] text-paper">{`curl -X POST https://shipwithsnap.com/api/v1/rates \\
+        <pre className="overflow-x-auto bg-ink p-5 text-xs leading-[1.6] text-paper">{`curl -X POST ${company.url}/api/v1/rates \\
   -H "Authorization: Bearer sk_test_…" -H "Content-Type: application/json" \\
   -d '{"to":{"name":"Maya Chen","street1":"418 Bergen St","city":"Brooklyn","state":"NY","zip":"11217"},
        "parcel":{"length_in":12,"width_in":9,"height_in":4,"weight_oz":29},
        "insurance_cents":10000,
        "options":{"signature":"adult","print_custom_1":"Order 1042"}}'
 
-curl -X POST https://shipwithsnap.com/api/v1/labels \\
+curl -X POST ${company.url}/api/v1/labels \\
   -H "Authorization: Bearer sk_test_…" -H "Idempotency-Key: order-1042" -H "Content-Type: application/json" \\
   -d '{"shipment_id":"…","rate_id":"…"}'`}</pre>
       </div>

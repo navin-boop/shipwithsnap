@@ -120,7 +120,7 @@ export default async function TrackingPage({ params }: { params: Promise<{ token
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <Link href="/legal/privacy" className="hover:text-ink">Privacy</Link>
           <Link href="/legal/terms" className="hover:text-ink">Terms</Link>
-          <div className="flex items-center gap-2"><span>Shipped with</span><Wordmark className="text-[18px]" href="https://shipwithsnap.com" /></div>
+          <div className="flex items-center gap-2"><span>Shipped with</span><Wordmark className="text-[18px]" href="/" /></div>
         </div>
       </footer>
     </div>

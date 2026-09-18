@@ -27,7 +27,7 @@ export function VerifyEmailForm({ email, mailFailed = false }: { email: string; 
         <div className="card-quiet flex flex-col gap-1 border-danger bg-[#fdecea] p-4">
           <div className="text-[14px] font-extrabold text-danger">No code was sent</div>
           <p className="text-[13px] font-semibold leading-[1.5] text-ink-2">
-            Try &ldquo;Send a new code&rdquo; below. If that fails too, email support@shipwithsnap.com and we&apos;ll verify you by hand — nothing is lost.
+            Try &ldquo;Send a new code&rdquo; below. If that fails too, email support@shipwithsnap.co and we&apos;ll verify you by hand — nothing is lost.
           </p>
         </div>
       )}

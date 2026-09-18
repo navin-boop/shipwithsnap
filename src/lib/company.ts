@@ -10,13 +10,13 @@ export const company = {
   /** The consumer-facing brand. */
   brand: "Ship with Snap",
   shortBrand: "Snap",
-  domain: "shipwithsnap.com",
+  domain: "shipwithsnap.co",
   /**
    * The canonical origin, used for canonical tags, the sitemap, robots.txt and JSON-LD.
    * It follows NEXT_PUBLIC_APP_URL so it always matches whichever hostname Vercel serves as
    * production — canonical tags pointing at a hostname that only redirects are worse than useless.
    */
-  url: (process.env.NEXT_PUBLIC_APP_URL ?? "https://shipwithsnap.com").replace(/\/+$/, ""),
+  url: (process.env.NEXT_PUBLIC_APP_URL ?? "https://www.shipwithsnap.co").replace(/\/+$/, ""),
 
   /** Registered mailing address. Leave a line empty to omit it. */
   address: {
@@ -38,10 +38,10 @@ export const company = {
    * separate so each can be split out later without touching the pages that read them.
    */
   email: {
-    support: "support@shipwithsnap.com",
-    legal: "support@shipwithsnap.com",
-    privacy: "support@shipwithsnap.com",
-    billing: "support@shipwithsnap.com",
+    support: "support@shipwithsnap.co",
+    legal: "support@shipwithsnap.co",
+    privacy: "support@shipwithsnap.co",
+    billing: "support@shipwithsnap.co",
   },
 
   /** Shown on Contact. Empty omits the line. */

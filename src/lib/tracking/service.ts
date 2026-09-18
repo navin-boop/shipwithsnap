@@ -4,6 +4,7 @@ import type { Account, Label, Tracker } from "@/lib/db/schema";
 import { deliver, trackingUpdate } from "@/lib/email";
 import { getShippingProvider, type CanonicalStatus, type TrackerDetails, type TrackingEvent } from "@/lib/shipping";
 import { deliverWebhooks } from "@/lib/webhooks/outbound";
+import { company } from "@/lib/company";
 
 // Spec: design/TrackingFlow.dc.html — normalize → upsert (idempotent) → advance state machine → notify.
 
@@ -125,7 +126,7 @@ export function emailKind(next: CanonicalStatus, previous: string): TrackingEmai
 
 export async function sendTrackingEmail(input: { label: Label; account: Pick<Account, "id" | "name" | "replyTo" | "logoData">; recipientEmail: string; recipientName: string; kind: TrackingEmailKind }) {
   const { label, account } = input;
-  const base = (process.env.NEXT_PUBLIC_APP_URL ?? "https://shipwithsnap.com").replace(/\/+$/, "");
+  const base = (process.env.NEXT_PUBLIC_APP_URL ?? company.url).replace(/\/+$/, "");
   const email = trackingUpdate({
     kind: input.kind,
     storeName: account.name,

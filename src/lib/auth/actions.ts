@@ -95,7 +95,7 @@ export async function resendVerificationCode(): Promise<{ ok: boolean; message: 
   const issued = await issueVerificationCode(user.id);
   if (!issued.ok) return { ok: false, message: `Hold on ${issued.retryInSeconds}s before asking for another code.` };
   const sent = await notifyVerificationCode({ email: user.email, code: issued.code, expiresInMinutes: CODE_TTL_MINUTES });
-  if (!sent) return { ok: false, message: "We couldn't send the email just now. Try again in a moment, or write to support@shipwithsnap.com." };
+  if (!sent) return { ok: false, message: "We couldn't send the email just now. Try again in a moment, or write to support@shipwithsnap.co." };
   return { ok: true, message: `New code sent to ${user.email}.` };
 }
 

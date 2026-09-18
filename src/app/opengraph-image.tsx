@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { company } from "@/lib/company";
 
 export const alt = "Ship with Snap — the cheapest USPS & UPS rates. No monthly fee.";
 export const size = { width: 1200, height: 630 };
@@ -32,7 +33,7 @@ export default async function OpenGraphImage() {
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "4px solid #111111", paddingTop: 24, fontSize: 18, fontWeight: 800, textTransform: "uppercase", letterSpacing: 2 }}>
           <span>Paste · pick a rate · print</span>
-          <span style={{ background: "#111111", color: "#c8ff3d", padding: "12px 20px" }}>shipwithsnap.com</span>
+          <span style={{ background: "#111111", color: "#c8ff3d", padding: "12px 20px" }}>{company.domain}</span>
         </div>
       </div>
     ),

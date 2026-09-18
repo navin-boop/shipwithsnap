@@ -37,7 +37,7 @@ const DISPLAY = "'Sora','Helvetica Neue',Helvetica,Arial,sans-serif";
 const BODY = "'Nunito','Helvetica Neue',Helvetica,Arial,sans-serif";
 
 export function appUrl(): string {
-  return (process.env.NEXT_PUBLIC_APP_URL ?? company.url ?? "https://shipwithsnap.com").replace(/\/+$/, "");
+  return (process.env.NEXT_PUBLIC_APP_URL ?? company.url).replace(/\/+$/, "");
 }
 
 /** HTML-escape. Every interpolated value in a template goes through this. */

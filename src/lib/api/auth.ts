@@ -3,10 +3,11 @@ import { and, eq, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db, schema } from "@/lib/db";
 import type { Account, ApiKey } from "@/lib/db/schema";
+import { company } from "@/lib/company";
 
 /** RFC 9457 problem+json, as in design/API.dc.html. */
 export function problem(status: number, code: string, detail: string, extra: Record<string, unknown> = {}) {
-  return NextResponse.json({ type: `https://shipwithsnap.com/errors/${code}`, title: code, status, detail, ...extra }, { status, headers: { "content-type": "application/problem+json" } });
+  return NextResponse.json({ type: `${company.url}/errors/${code}`, title: code, status, detail, ...extra }, { status, headers: { "content-type": "application/problem+json" } });
 }
 
 export type ApiContext = { account: Account; key: ApiKey };
