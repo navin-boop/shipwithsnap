@@ -337,13 +337,16 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
           <Link href="/billing" className="inline-flex h-10 items-center rounded-pill border-2 border-ink bg-ink px-4 text-[14px] font-extrabold text-yellow hover:text-yellow">Open Billing</Link>
         </div>
       )}
+      {/* A column, not a justify-between row: AddCardButton swaps itself for the whole Stripe
+          form once opened, and in a centred row that stretched the banner to the height of the
+          form with a single line of text floating in the middle of it. */}
       {billingOn && !cardLabel && !billingLocked && (
         <div className="card-quiet flex flex-col gap-3 border-coral bg-coral-soft p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
             <div className="text-[15px] font-extrabold">Add a card before your first label.</div>
-            <AddCardButton publishableKey={stripePublishableKey} label="Add a card" onAdded={onCardAdded} />
+            <p className="text-[13px] font-bold text-muted">You are charged per label — the rate you pick, plus insurance if you add it. No monthly fee and nothing to prepay.</p>
           </div>
-          <p className="text-[13px] font-bold text-muted">You are charged per label — the rate you pick, plus insurance if you add it. No monthly fee and nothing to prepay.</p>
+          <AddCardButton publishableKey={stripePublishableKey} label="Add a card" onAdded={onCardAdded} />
         </div>
       )}
       <div className="grid flex-1 grid-cols-1 gap-6 lg:grid-cols-[540px_minmax(0,1fr)]">

@@ -96,9 +96,12 @@ function CardForm({ onDone, onCancel }: { onDone: () => void; onCancel: () => vo
   }
 
   return (
-    <div className="card flex flex-col gap-4 p-5">
+    <div className="card flex w-full max-w-[440px] flex-col gap-4 p-5">
       <div className="lbl">New card</div>
-      <PaymentElement options={{ layout: "tabs" }} />
+      {/* Stripe picks the billing country from the browser's locale, which defaulted a US
+          shipping account to Nepal. Every ship-from address this product supports is US, so
+          that is the sensible default — the field stays editable. */}
+      <PaymentElement options={{ layout: "tabs", defaultValues: { billingDetails: { address: { country: "US" } } } }} />
       {error && <div className="text-[13px] font-bold text-danger">{error}</div>}
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="secondary" size="md" disabled={!stripe || busy} onClick={submit}>{busy ? "Saving…" : "Save card"}</Button>
