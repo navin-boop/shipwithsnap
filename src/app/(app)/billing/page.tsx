@@ -6,7 +6,7 @@ import { db, schema } from "@/lib/db";
 import { listLedger, listPaymentMethods, monthSummary } from "@/lib/billing/service";
 import { billingEnabled, publishableKey } from "@/lib/billing/stripe";
 
-export const metadata: Metadata = { title: "Billing · Ship with Snap" };
+export const metadata: Metadata = { title: "Billing" };
 
 // Spec: design/Wallet.dc.html (file name is historical — this is the Billing screen).
 export default async function BillingPage() {

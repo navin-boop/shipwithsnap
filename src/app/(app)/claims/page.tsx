@@ -3,7 +3,7 @@ import { ClaimsView } from "@/components/claims/ClaimsView";
 import { auth } from "@/lib/auth";
 import { listClaimableLabels, listClaims } from "@/lib/claims/actions";
 
-export const metadata: Metadata = { title: "Claims · Ship with Snap" };
+export const metadata: Metadata = { title: "Claims" };
 
 export default async function ClaimsPage({ searchParams }: { searchParams: Promise<{ label?: string }> }) {
   const [session, claims, claimable, sp] = await Promise.all([auth(), listClaims(), listClaimableLabels(), searchParams]);

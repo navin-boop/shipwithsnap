@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import { formatAddressLine } from "@/lib/ship/address";
 
-export const metadata: Metadata = { title: "Address book · Ship with Snap" };
+export const metadata: Metadata = { title: "Address book" };
 
 // Spec: design/AddressBook.dc.html — everyone you've shipped to, verified once.
 export default async function AddressesPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {

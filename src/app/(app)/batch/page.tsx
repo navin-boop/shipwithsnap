@@ -3,7 +3,7 @@ import { BatchTable } from "@/components/batch/BatchTable";
 import { auth } from "@/lib/auth";
 import { listOpenOrders } from "@/lib/batch/actions";
 
-export const metadata: Metadata = { title: "Batch · Ship with Snap" };
+export const metadata: Metadata = { title: "Batch" };
 
 export default async function BatchPage() {
   const session = await auth();

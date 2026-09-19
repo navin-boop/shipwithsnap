@@ -4,7 +4,7 @@ import { AuthPanel } from "@/components/auth/AuthPanel";
 import { VerifyEmailForm } from "@/components/auth/VerifyEmailForm";
 import { currentUser } from "@/lib/auth/session-user";
 
-export const metadata: Metadata = { title: "Confirm your email · Ship with Snap", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Confirm your email", robots: { index: false, follow: false } };
 
 export default async function VerifyPage({ searchParams }: { searchParams: Promise<{ sent?: string }> }) {
   // sent=0 means the code was generated but the email did not go out. Saying "check your inbox"

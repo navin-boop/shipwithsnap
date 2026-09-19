@@ -6,7 +6,7 @@ import { SignUpForm } from "@/components/auth/SignUpForm";
 import { isGoogleEnabled } from "@/lib/auth";
 import { currentUser } from "@/lib/auth/session-user";
 
-export const metadata: Metadata = { title: "Create account · Ship with Snap" };
+export const metadata: Metadata = { title: "Create account" };
 
 export default async function SignUpPage() {
   if (await currentUser()) redirect("/ship");

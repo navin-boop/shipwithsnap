@@ -7,7 +7,7 @@ import { getDefaultShipFrom } from "@/lib/ship/service";
 import { getDefaultPaymentMethod } from "@/lib/billing/service";
 import { billingEnabled, publishableKey } from "@/lib/billing/stripe";
 
-export const metadata: Metadata = { title: "Ship · Ship with Snap" };
+export const metadata: Metadata = { title: "Ship" };
 
 export default async function ShipPage() {
   const session = await auth();

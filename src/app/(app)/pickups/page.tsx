@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PickupsView } from "@/components/pickups/PickupsView";
 import { listPickupCandidates, listPickups } from "@/lib/pickups/actions";
 
-export const metadata: Metadata = { title: "Pickups · Ship with Snap" };
+export const metadata: Metadata = { title: "Pickups" };
 
 export default async function PickupsPage({ searchParams }: { searchParams: Promise<{ label?: string }> }) {
   const [pickups, candidates, sp] = await Promise.all([listPickups(), listPickupCandidates(), searchParams]);

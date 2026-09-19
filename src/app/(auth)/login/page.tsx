@@ -6,7 +6,7 @@ import { LogInForm } from "@/components/auth/LogInForm";
 import { isGoogleEnabled } from "@/lib/auth";
 import { currentUser } from "@/lib/auth/session-user";
 
-export const metadata: Metadata = { title: "Log in · Ship with Snap" };
+export const metadata: Metadata = { title: "Log in" };
 
 export default async function LogInPage() {
   // Decide on the row, not the cookie: a session pointing at a deleted user must be able to log

@@ -4,7 +4,7 @@ import { AuthPanel } from "@/components/auth/AuthPanel";
 import { AcceptInviteForm } from "@/components/auth/AcceptInviteForm";
 import { db, schema } from "@/lib/db";
 
-export const metadata: Metadata = { title: "Join a team · Ship with Snap" };
+export const metadata: Metadata = { title: "Join a team" };
 
 export default async function InvitePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;

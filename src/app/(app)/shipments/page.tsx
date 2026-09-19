@@ -4,7 +4,7 @@ import { ShipmentsTable } from "@/components/shipments/ShipmentsTable";
 import { auth } from "@/lib/auth";
 import { listShipments, type ShipmentFilter } from "@/lib/shipments/queries";
 
-export const metadata: Metadata = { title: "Shipments · Ship with Snap" };
+export const metadata: Metadata = { title: "Shipments" };
 
 const FILTERS: ShipmentFilter[] = ["all", "label", "transit", "delivered", "exception", "voided"];
 

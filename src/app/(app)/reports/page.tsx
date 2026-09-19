@@ -3,7 +3,7 @@ import { ReportsView } from "@/components/reports/ReportsView";
 import { auth } from "@/lib/auth";
 import { buildReport, type Range } from "@/lib/reports/queries";
 
-export const metadata: Metadata = { title: "Reports · Ship with Snap" };
+export const metadata: Metadata = { title: "Reports" };
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<{ range?: string }> }) {
   const session = await auth();

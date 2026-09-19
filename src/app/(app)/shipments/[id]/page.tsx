@@ -4,7 +4,7 @@ import { ShipmentDetail, type DetailProps } from "@/components/shipments/Shipmen
 import { auth } from "@/lib/auth";
 import { getShipmentDetail } from "@/lib/shipments/detail";
 
-export const metadata: Metadata = { title: "Shipment · Ship with Snap" };
+export const metadata: Metadata = { title: "Shipment" };
 
 export default async function ShipmentPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
