@@ -13,7 +13,7 @@
  */
 
 /** Percentage added to the carrier's rate. */
-export const POSTAGE_MARKUP_PERCENT = 15;
+export const POSTAGE_MARKUP_PERCENT = 30;
 
 /**
  * The price we show and charge for a carrier rate, in integer cents. Rounded up: rounding down on

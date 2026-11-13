@@ -27,7 +27,7 @@ const CHARGES = [
   {
     title: "Postage",
     detail:
-      "The rate you picked, which already includes our 15% service fee on the carrier's commercial price. Charged when you buy the label, or once per batch. Always shown before you commit, with the retail counter price beside it."
+      "The rate you picked, which already includes our 30% service fee on the carrier's commercial price. Charged when you buy the label, or once per batch. Always shown before you commit, with the retail counter price beside it."
   },
   {
     title: "Extras you choose",
@@ -131,7 +131,7 @@ export default function PricingPage() {
         <div className="card flex flex-col items-start gap-8 bg-coral p-8 text-white sm:p-12 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3">
             <h2 className="disp text-[36px] leading-[1] sm:text-[52px]">What you see is what you pay.</h2>
-            <p className="max-w-[520px] text-[17px] font-semibold leading-[1.5]">Our 15% service fee is already inside every rate, so nothing is added at checkout. Compare against the retail counter price beside each rate and decide for yourself.</p>
+            <p className="max-w-[520px] text-[17px] font-semibold leading-[1.5]">Our 30% service fee is already inside every rate, so nothing is added at checkout. Compare against the retail counter price beside each rate and decide for yourself.</p>
           </div>
           <Link href="/faq" className="inline-flex h-16 shrink-0 items-center gap-2.5 rounded-pill border-2 border-ink bg-ink px-9 font-display text-[16px] font-extrabold text-yellow hover:text-yellow">Common questions <ArrowIcon /></Link>
         </div>

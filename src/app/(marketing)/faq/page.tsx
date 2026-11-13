@@ -23,7 +23,7 @@ const GROUPS: Group[] = [
       },
       {
         q: "How do you make money if the software is free?",
-        a: "From a 15 percent service fee on postage, which is already included in every rate you see. Carriers price by volume, so thousands of sellers shipping through one platform reach commercial rates a single small seller cannot get on their own — our fee comes out of that gap, which is why the price beside the retail counter price is usually still well below it. The software itself, the API, users and batches are free.",
+        a: "From a 30 percent service fee on postage, which is already included in every rate you see. Carriers price by volume, so thousands of sellers shipping through one platform reach commercial rates a single small seller cannot get on their own — our fee comes out of that gap, which is why the price beside the retail counter price is usually still well below it. The software itself, the API, users and batches are free.",
       },
       {
         q: "What if I find a cheaper price somewhere else?",
@@ -86,7 +86,7 @@ const GROUPS: Group[] = [
     items: [
       {
         q: "Do you add anything to the carrier's price?",
-        a: "Yes. Every rate you see includes a 15 percent service fee on top of the carrier's commercial price, and that is the number you are charged — nothing is added at checkout. The retail counter price is shown beside each rate so you can compare. There is no monthly fee, no per-label fee and no minimum volume.",
+        a: "Yes. Every rate you see includes a 30 percent service fee on top of the carrier's commercial price, and that is the number you are charged — nothing is added at checkout. The retail counter price is shown beside each rate so you can compare. There is no monthly fee, no per-label fee and no minimum volume.",
       },
       {
         q: "How do I insure a package?",

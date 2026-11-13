@@ -97,7 +97,7 @@ export default async function HomePage() {
         <div className="flex flex-col gap-5">
           <div className="lbl">The questions everyone asks</div>
           <div className="flex flex-col gap-3">
-            <Faq q="Is it really free?">The software is, and there is no plan to upgrade to. There is no monthly fee, no per-label fee and no minimum volume. Our 15% service fee is already inside every rate you see, so the number on the rate is the number charged. Optional insurance is $1.70 per $100 of declared value.</Faq>
+            <Faq q="Is it really free?">The software is, and there is no plan to upgrade to. There is no monthly fee, no per-label fee and no minimum volume. Our 30% service fee is already inside every rate you see, so the number on the rate is the number charged. Optional insurance is $1.70 per $100 of declared value.</Faq>
             <Faq q="Do I need a label printer?">No. Print on plain paper and tape it on. If you ship every day, a thermal printer pays for itself — we support any 4×6 printer out of the box.</Faq>
             <Faq q="What about my Shopify and Etsy orders?">Upload a CSV today, connect a store soon. Open orders appear in Batch: select them all, buy every label in one click, one charge to your card.</Faq>
             <Faq q="Is the postage the same as at the counter?">Same carriers, same services, same delivery. The only thing that changes is the price.</Faq>
@@ -132,7 +132,7 @@ export default async function HomePage() {
           <div className="flex flex-col gap-3">
             <div className="lbl text-ink">One price, up front</div>
             <h2 className="disp max-w-[560px] text-[30px] leading-[1.1] sm:text-[38px]">The price on the rate is the price you pay.</h2>
-            <p className="max-w-[520px] text-[16px] font-semibold leading-[1.6] text-ink-2">Every rate already includes our 15% service fee, so nothing is added at checkout. No monthly fee, no per-label fee, no minimum volume.</p>
+            <p className="max-w-[520px] text-[16px] font-semibold leading-[1.6] text-ink-2">Every rate already includes our 30% service fee, so nothing is added at checkout. No monthly fee, no per-label fee, no minimum volume.</p>
           </div>
           <Link href="/pricing" className="inline-flex h-14 shrink-0 items-center gap-2.5 rounded-pill border-2 border-ink bg-surface px-7 font-display text-[15px] font-extrabold text-ink hover:text-ink">See pricing <ArrowIcon size={16} /></Link>
         </div>

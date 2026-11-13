@@ -4,13 +4,13 @@ import { POSTAGE_MARKUP_PERCENT, marginCents, sellPriceCents } from "../src/lib/
 
 describe("postage markup", () => {
   it("adds the markup to the carrier rate", () => {
-    assert.equal(sellPriceCents(568), 654); // $5.68 -> $6.54
-    assert.equal(sellPriceCents(741), 853); // $7.41 -> $8.53
-    assert.equal(sellPriceCents(1000), 1150);
+    assert.equal(sellPriceCents(568), 739); // $5.68 -> $7.39
+    assert.equal(sellPriceCents(741), 964); // $7.41 -> $9.64
+    assert.equal(sellPriceCents(1000), 1300);
   });
 
   it("keeps the margin", () => {
-    assert.equal(marginCents(1000), 150);
+    assert.equal(marginCents(1000), 300);
     assert.ok(marginCents(568) > 0);
   });
 
@@ -38,8 +38,8 @@ describe("postage markup", () => {
   });
 
   it("is the documented percentage", () => {
-    assert.equal(POSTAGE_MARKUP_PERCENT, 15);
+    assert.equal(POSTAGE_MARKUP_PERCENT, 30);
     // A round number where the arithmetic is checkable by eye.
-    assert.equal(sellPriceCents(10_000), 11_500);
+    assert.equal(sellPriceCents(10_000), 13_000);
   });
 });

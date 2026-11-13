@@ -75,7 +75,7 @@ export default function AboutPage() {
         </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Value title="The price is the price">
-            Our 15% service fee is inside every rate we show, so the price on the rate is the price charged — nothing is added at checkout. The retail counter price sits next to ours so you can see the difference for yourself.
+            Our 30% service fee is inside every rate we show, so the price on the rate is the price charged — nothing is added at checkout. The retail counter price sits next to ours so you can see the difference for yourself.
           </Value>
           <Value title="No plan, no gates">
             Every feature is free at every volume. We would rather you ship well than pay us for permission to.
