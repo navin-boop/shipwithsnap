@@ -15,7 +15,7 @@ import {
 } from "@/lib/shipping";
 import { addressHash } from "./address";
 import { insurancePremiumCents, insuranceValueError } from "./insurance";
-import { sellPriceCents } from "./pricing";
+import { sellPriceCents, splitCents } from "./pricing";
 import { BillingError, authorize, billingEnabled, cancelAuthorization, capture, getDefaultPaymentMethod } from "@/lib/billing/service";
 
 const QUOTE_TTL_MS = 10 * 60 * 1000;
@@ -329,7 +329,7 @@ export async function buyLabel(account: Account, input: BuyInput): Promise<Label
   if (quote.expiresAt.getTime() < Date.now()) throw new BuyError("rate_expired", "That rate expired — refresh rates");
 
   if (quote.providerRateId.startsWith("order:") && shipment.groupId) {
-    const labels = await buyGroup(account, shipment.groupId, quote, input.idempotencyKey);
+    const labels = await buyGroup(account, shipment.groupId, quote, input.idempotencyKey, input.chargeId ?? null);
     return labels[0];
   }
   if (!shipment.providerShipmentId) throw new BuyError("unknown", "Shipment was never rated");
@@ -437,32 +437,79 @@ export async function hasPaymentMethod(accountId: string): Promise<boolean> {
   return (await getDefaultPaymentMethod(accountId)) !== null;
 }
 
-/** Buys every box of a multi-parcel group with one provider call. */
-async function buyGroup(account: Account, groupId: string, quote: schema.RateQuote, idempotencyKey: string): Promise<Label[]> {
+/**
+ * Buys every box of a multi-parcel group with one provider call, on the same authorize → buy →
+ * record → capture path as a single label. The charge is the stored, marked-up order price; each
+ * label carries its share of it, so voiding one box refunds that box.
+ *
+ * Insurance is not charged or recorded here: the EasyPost order is bought without it, so there is
+ * no cover to sell. The Ship screen says so when there is more than one box.
+ */
+async function buyGroup(account: Account, groupId: string, quote: schema.RateQuote, idempotencyKey: string, batchChargeId: string | null): Promise<Label[]> {
   const members = await db().query.shipments.findMany({ where: and(eq(schema.shipments.groupId, groupId), eq(schema.shipments.accountId, account.id)), orderBy: schema.shipments.parcelIndex });
   const providerOrderId = members[0]?.providerOrderId;
   if (!providerOrderId) throw new BuyError("unknown", "Shipment group was never rated");
   const [, carrier, serviceCode] = quote.providerRateId.split(":");
+
+  // Authorize before anything is bought. Batch rows ride on the batch's charge instead.
+  let chargeId: string | null = batchChargeId;
+  const ownsCharge = !batchChargeId;
+  if (billingEnabled() && ownsCharge) {
+    try {
+      const authorized = await authorize(account, {
+        amountCents: quote.priceCents,
+        description: `Labels · ${quote.carrier} ${quote.serviceName} × ${members.length}`,
+        idempotencyKey: `label:${idempotencyKey}`,
+      });
+      chargeId = authorized.charge.id;
+    } catch (err) {
+      if (err instanceof BillingError) throw buyErrorFromBilling(err);
+      throw err;
+    }
+  }
+
   let results;
   try {
     results = await getShippingProvider().buyOrder(providerOrderId, carrier, serviceCode, account.labelFormat);
   } catch (err) {
+    if (chargeId && ownsCharge) await cancelAuthorization(chargeId).catch((e) => console.error("could not cancel authorization", e));
     buyErrorFrom(err);
   }
-  const perBox = Math.round(quote.priceCents / members.length);
-  const inserted = await db()
-    .insert(schema.labels)
-    .values(
-      results.map((r, i) => ({
-        accountId: account.id, shipmentId: members[i]?.id ?? members[0].id, rateQuoteId: quote.id, carrier: quote.carrier, serviceCode: quote.serviceCode, serviceName: quote.serviceName,
-        trackingNumber: r.trackingCode, priceCents: r.chargedCents || perBox, retailCents: quote.retailCents === null ? null : Math.round(quote.retailCents / members.length),
-        insuredCents: members[i]?.extras.insuranceCents ?? 0, feesCents: r.feesCents ?? {}, forms: r.forms ?? [], providerLabelId: r.providerLabelId, providerTrackerId: r.providerTrackerId,
-        fileUrl: r.labelUrl, format: account.labelFormat, idempotencyKey: i === 0 ? idempotencyKey : `${idempotencyKey}:${i}`, estDeliveryDate: quote.estDeliveryDate,
-      })),
-    )
-    .returning();
+
+  const prices = splitCents(quote.priceCents, results.length);
+  const retail = quote.retailCents === null ? null : splitCents(quote.retailCents, results.length);
+  let inserted: Label[];
+  try {
+    inserted = await db()
+      .insert(schema.labels)
+      .values(
+        results.map((r, i) => ({
+          accountId: account.id, shipmentId: members[i]?.id ?? members[0].id, rateQuoteId: quote.id, carrier: quote.carrier, serviceCode: quote.serviceCode, serviceName: quote.serviceName,
+          trackingNumber: r.trackingCode, priceCents: prices[i], retailCents: retail ? retail[i] : null,
+          insuredCents: 0, insuranceFeeCents: 0, feesCents: r.feesCents ?? {}, forms: r.forms ?? [], providerLabelId: r.providerLabelId, providerTrackerId: r.providerTrackerId,
+          fileUrl: r.labelUrl, format: account.labelFormat, chargeId, idempotencyKey: i === 0 ? idempotencyKey : `${idempotencyKey}:${i}`, estDeliveryDate: quote.estDeliveryDate,
+        })),
+      )
+      .returning();
+  } catch (err) {
+    // Same branch as a single label: the boxes exist at the carrier but we could not record them,
+    // so refund every one and drop the hold rather than charge for labels the seller never sees.
+    console.error("recording the multi-box labels failed — refunding the orphans", err);
+    for (const r of results) await getShippingProvider().void(r.providerShipmentId).catch((e) => console.error("orphan refund failed", e));
+    if (chargeId && ownsCharge) await cancelAuthorization(chargeId).catch((e) => console.error("could not cancel authorization", e));
+    throw new BuyError("unknown", "The labels were bought but could not be saved. They have been refunded — nothing was charged.");
+  }
   await db().update(schema.shipments).set({ providerShipmentId: sql`coalesce(${schema.shipments.providerShipmentId}, ${schema.shipments.id}::text)`, status: "label_created", updatedAt: new Date() }).where(inArray(schema.shipments.id, members.map((m) => m.id)));
   for (const [i, r] of results.entries()) if (members[i]) await db().update(schema.shipments).set({ providerShipmentId: r.providerShipmentId }).where(eq(schema.shipments.id, members[i].id));
+
+  // Capture last; a failure here leaves the labels valid and the cron retries it.
+  if (chargeId && ownsCharge) {
+    try {
+      await capture(chargeId, quote.priceCents);
+    } catch (err) {
+      console.error(`capture failed for charge ${chargeId} — the cron will retry`, err);
+    }
+  }
   return inserted;
 }
 

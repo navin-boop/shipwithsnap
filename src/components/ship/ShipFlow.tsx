@@ -156,7 +156,8 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
   const totalOz = parcels?.reduce((a, p) => a + p.weightOz, 0) ?? null;
   const insuranceCents = insureOn ? Math.round((parseFloat(insureValue) || 0) * 100) : 0;
   // One source of truth with the server: what is quoted here is exactly what gets charged.
-  const insurancePremium = insurancePremiumCents(insuranceCents);
+  // Multi-box orders are bought without insurance, so nothing is added for them.
+  const insurancePremium = multi ? 0 : insurancePremiumCents(insuranceCents);
 
   const customsReady = !intl || (customs !== null && customsProblems(customs).length === 0);
 
@@ -499,7 +500,11 @@ export function ShipFlow({ initialFrom, shipFromOptions, afterBuy, labelCount, p
                 <Checkbox checked={insureOn} onChange={setInsureOn} label="Insure this shipment" />
                 <span className="text-[15px] font-extrabold text-ink">Insure this shipment</span>
               </label>
-              {insureOn ? (
+              {insureOn && multi ? (
+                <div className="text-[13px] font-bold text-muted">
+                  Insurance isn&apos;t available on multi-box shipments yet, so nothing is added for it. Ship the boxes one at a time to insure each.
+                </div>
+              ) : insureOn ? (
                 <div className="flex flex-wrap items-end gap-3">
                   <Input label="Declared value" unit="$" inputMode="decimal" placeholder="0" value={insureValue} onChange={(e) => setInsureValue(e.target.value)} disabled={locked} className="w-[190px]" />
                   <div className="pb-3 text-[13px] font-bold text-muted">

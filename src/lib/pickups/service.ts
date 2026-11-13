@@ -1,5 +1,7 @@
-import { and, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, like } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
+import { authorize, BillingError, billingEnabled, cancelAuthorization, capture, refundCharge } from "@/lib/billing/service";
+import { pickupChargeKey, pickupChargePrefix, pickupFeeCents } from "./pricing";
 import { toAddressInput } from "@/lib/ship/service";
 import { getShippingProvider, ProviderError } from "@/lib/shipping";
 import { deliverWebhooks } from "@/lib/webhooks/outbound";
@@ -87,15 +89,51 @@ export async function requestPickupFor(accountId: string, input: { labelId: stri
   return pickupView(row, from, label.trackingNumber);
 }
 
-/** Step 2: schedule it with the chosen carrier/service. */
+/**
+ * Step 2: schedule it with the chosen carrier/service. The fee is charged on the same
+ * authorize → buy → capture path as a label: the hold drops off the card if the carrier declines.
+ */
 export async function schedulePickupFor(accountId: string, pickupId: string, carrier: string, serviceCode: string): Promise<PickupView> {
   const row = await db().query.pickups.findFirst({ where: and(eq(schema.pickups.id, pickupId), eq(schema.pickups.accountId, accountId)) });
   if (!row?.providerPickupId) throw new PickupError("Pickup not found.");
+  if (row.status === "scheduled") throw new PickupError("This pickup is already scheduled.");
   const rate = row.rates.find((r) => r.carrier === carrier && r.serviceCode === serviceCode);
   if (!rate) throw new PickupError("That option is no longer available.");
-  const r = await getShippingProvider().buyPickup(row.providerPickupId, carrier, serviceCode);
+
+  const fee = pickupFeeCents(rate.priceCents);
+  let chargeId: string | null = null;
+  if (fee > 0 && billingEnabled()) {
+    const account = await db().query.accounts.findFirst({ where: eq(schema.accounts.id, accountId) });
+    if (!account) throw new PickupError("Account not found.");
+    const attempts = await db().query.charges.findMany({ where: and(eq(schema.charges.accountId, accountId), like(schema.charges.idempotencyKey, `${pickupChargePrefix(row.id)}%`)) });
+    try {
+      const authorized = await authorize(account, { amountCents: fee, description: `Pickup · ${carrier} ${serviceCode}`, idempotencyKey: pickupChargeKey(row.id, attempts.length) });
+      chargeId = authorized.charge.id;
+    } catch (err) {
+      if (err instanceof BillingError) throw new PickupError(err.message);
+      throw err;
+    }
+  }
+
+  let r;
+  try {
+    r = await getShippingProvider().buyPickup(row.providerPickupId, carrier, serviceCode);
+  } catch (err) {
+    if (chargeId) await cancelAuthorization(chargeId).catch((e) => console.error("could not cancel pickup authorization", e));
+    throw err;
+  }
   const [updated] = await db().update(schema.pickups).set({ status: r.status === "scheduled" ? "scheduled" : "failed", carrier, serviceCode, priceCents: rate.priceCents, confirmation: r.confirmation, messages: r.messages }).where(eq(schema.pickups.id, row.id)).returning();
-  if (r.status !== "scheduled") throw new PickupError(r.messages[0] ?? "The carrier declined the pickup.");
+  if (r.status !== "scheduled") {
+    if (chargeId) await cancelAuthorization(chargeId).catch((e) => console.error("could not cancel pickup authorization", e));
+    throw new PickupError(r.messages[0] ?? "The carrier declined the pickup.");
+  }
+  if (chargeId) {
+    try {
+      await capture(chargeId, fee);
+    } catch (err) {
+      console.error(`capture failed for pickup charge ${chargeId} — the cron will retry`, err);
+    }
+  }
   await deliverWebhooks(accountId, "pickup.scheduled", { pickup_id: row.id, carrier, confirmation: r.confirmation, price_cents: rate.priceCents });
   await notifyPickup({ accountId, pickupId: row.id, state: "confirmed" });
   const address = await db().query.addresses.findFirst({ where: eq(schema.addresses.id, row.addressId) });
@@ -108,6 +146,11 @@ export async function cancelPickupFor(accountId: string, pickupId: string): Prom
   if (row.status === "scheduled") await getShippingProvider().cancelPickup(row.providerPickupId);
   const [updated] = await db().update(schema.pickups).set({ status: "canceled" }).where(eq(schema.pickups.id, row.id)).returning();
   if (row.status === "scheduled") {
+    // The carrier has dropped the pickup, so the fee goes back on the card.
+    const paid = await db().query.charges.findMany({ where: and(eq(schema.charges.accountId, accountId), like(schema.charges.idempotencyKey, `${pickupChargePrefix(row.id)}%`)) });
+    for (const c of paid) {
+      await refundCharge(accountId, c.id, c.amountCapturedCents, `Cancelled ${row.carrier ?? "carrier"} pickup`).catch((e) => console.error(`pickup refund failed for charge ${c.id}`, e));
+    }
     await deliverWebhooks(accountId, "pickup.canceled", { pickup_id: row.id, carrier: row.carrier });
     await notifyPickup({ accountId, pickupId: row.id, state: "cancelled" });
   }

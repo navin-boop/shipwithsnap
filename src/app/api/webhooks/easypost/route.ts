@@ -66,7 +66,8 @@ export async function POST(req: Request) {
         if (status === "refunded") {
           await db().update(schema.shipments).set({ status: "voided", updatedAt: new Date() }).where(eq(schema.shipments.id, label.shipmentId));
           // The carrier has approved, so the money can go back on the original card.
-          await refundForLabel(label.accountId, label.id, label.priceCents, `Voided ${label.carrier} ${label.serviceName}`);
+          // Postage and the insurance premium, the same as an immediate void refunds.
+          await refundForLabel(label.accountId, label.id, label.priceCents + label.insuranceFeeCents, `Voided ${label.carrier} ${label.serviceName}`);
           await deliverWebhooks(label.accountId, "label.refunded", { label_id: label.id, tracking_number: label.trackingNumber, price_cents: label.priceCents });
         }
       }

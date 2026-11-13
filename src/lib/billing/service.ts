@@ -258,6 +258,20 @@ export async function refundForLabel(accountId: string, labelId: string, amountC
   const already = await db().query.refunds.findFirst({ where: and(eq(schema.refunds.labelId, labelId), eq(schema.refunds.status, "refunded")) });
   if (already) return;
 
+  await refundAgainstCharge(accountId, charge, labelId, amountCents, reason);
+}
+
+/**
+ * Refunds a charge that has no label behind it — a carrier pickup the seller cancelled. Capped at
+ * what is still refundable on the charge, so cancelling twice can never refund twice.
+ */
+export async function refundCharge(accountId: string, chargeId: string, amountCents: number, reason: string): Promise<void> {
+  const charge = await db().query.charges.findFirst({ where: and(eq(schema.charges.id, chargeId), eq(schema.charges.accountId, accountId)) });
+  if (!charge || charge.status === "canceled" || charge.status === "failed" || charge.status === "authorized") return;
+  await refundAgainstCharge(accountId, charge, null, amountCents, reason);
+}
+
+async function refundAgainstCharge(accountId: string, charge: Charge, labelId: string | null, amountCents: number, reason: string): Promise<void> {
   const refundable = charge.amountCapturedCents - charge.amountRefundedCents;
   const amount = Math.min(amountCents, refundable);
   if (amount <= 0) return;
@@ -271,7 +285,7 @@ export async function refundForLabel(accountId: string, labelId: string, amountC
   if (!stripe || !charge.stripePaymentIntentId) return;
   try {
     const refund = await stripe.refunds.create(
-      { payment_intent: charge.stripePaymentIntentId, amount, metadata: { label_id: labelId, account_id: accountId } },
+      { payment_intent: charge.stripePaymentIntentId, amount, metadata: { ...(labelId ? { label_id: labelId } : {}), account_id: accountId, charge_id: charge.id } },
       { idempotencyKey: `refund:${row.id}` },
     );
     const refunded = charge.amountRefundedCents + amount;
@@ -283,7 +297,7 @@ export async function refundForLabel(accountId: string, labelId: string, amountC
   } catch (err) {
     const mapped = fromStripeError(err);
     await db().update(schema.refunds).set({ status: "failed", failureMessage: mapped.message, updatedAt: new Date() }).where(eq(schema.refunds.id, row.id));
-    console.error(`Stripe refund failed for label ${labelId}:`, mapped.message);
+    console.error(`Stripe refund failed for ${labelId ? `label ${labelId}` : `charge ${charge.id}`}:`, mapped.message);
   }
 }
 
@@ -369,7 +383,7 @@ export async function listLedger(accountId: string, limit = 60): Promise<LedgerE
       id: r.id,
       kind: "refund" as const,
       status: r.status === "refunded" ? "Refunded" : r.status === "failed" ? "Failed" : "Pending",
-      description: r.status === "refunded" ? "Refund · voided label" : "Refund requested · voided label",
+      description: `${r.status === "refunded" ? "Refund" : "Refund requested"} · ${r.labelId ? "voided label" : "cancelled pickup"}`,
       detail: r.reason ?? "",
       cardLabel: chargeById.get(r.chargeId)?.cardLabel ?? null,
       amountCents: -r.amountCents,

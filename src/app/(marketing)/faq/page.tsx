@@ -56,7 +56,7 @@ const GROUPS: Group[] = [
       },
       {
         q: "Can I schedule a pickup instead of going to the post office?",
-        a: "Yes. Open Pickups, choose the package, a date and a time window, and the carriers quote for collecting it. USPS pickups are usually free; UPS and FedEx charge a few dollars.",
+        a: "Yes. Open Pickups, choose the package, a date and a time window, and the carriers quote for collecting it. USPS pickups are usually free; UPS and FedEx charge a few dollars, which goes on your card at the carrier's own price with nothing added, and comes back if you cancel the pickup.",
       },
     ],
   },

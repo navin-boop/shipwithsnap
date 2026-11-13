@@ -29,6 +29,20 @@ export function marginCents(carrierCents: number): number {
   return sellPriceCents(carrierCents) - Math.max(0, Math.round(carrierCents));
 }
 
+/**
+ * Splits one multi-box price across its boxes, in whole cents, so the per-label prices add up to
+ * exactly what was charged. The leftover cents go to the first boxes. Each label carries its own
+ * share, which is what a void of that one box refunds.
+ */
+export function splitCents(totalCents: number, parts: number): number[] {
+  const n = Math.max(0, Math.floor(parts));
+  if (n === 0) return [];
+  const total = Math.max(0, Math.round(totalCents));
+  const base = Math.floor(total / n);
+  const extra = total - base * n;
+  return Array.from({ length: n }, (_, i) => base + (i < extra ? 1 : 0));
+}
+
 /** Plain-language description, for the pages that have to state it. */
 export function markupLabel(): string {
   return `${POSTAGE_MARKUP_PERCENT}%`;

@@ -1,6 +1,33 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { POSTAGE_MARKUP_PERCENT, marginCents, sellPriceCents } from "../src/lib/ship/pricing";
+import { POSTAGE_MARKUP_PERCENT, marginCents, sellPriceCents, splitCents } from "../src/lib/ship/pricing";
+
+describe("multi-box price split", () => {
+  it("adds back up to exactly what was charged", () => {
+    for (const total of [0, 1, 99, 1000, 1301, 4_567, 123_457]) {
+      for (const n of [1, 2, 3, 7, 20]) {
+        const parts = splitCents(total, n);
+        assert.equal(parts.length, n);
+        assert.equal(parts.reduce((a, b) => a + b, 0), total, `${total} over ${n}`);
+        assert.ok(parts.every((p) => Number.isInteger(p) && p >= 0));
+        assert.ok(Math.max(...parts) - Math.min(...parts) <= 1, "shares differ by at most a cent");
+      }
+    }
+  });
+
+  it("gives the odd cents to the first boxes", () => {
+    assert.deepEqual(splitCents(1001, 3), [334, 334, 333]);
+  });
+
+  it("returns nothing for no boxes", () => {
+    assert.deepEqual(splitCents(1000, 0), []);
+  });
+
+  it("splits the marked-up price, not the carrier's", () => {
+    // Two boxes rated together at $20.00 by the carrier: the seller pays $26.00, $13.00 a box.
+    assert.deepEqual(splitCents(sellPriceCents(2000), 2), [1300, 1300]);
+  });
+});
 
 describe("postage markup", () => {
   it("adds the markup to the carrier rate", () => {

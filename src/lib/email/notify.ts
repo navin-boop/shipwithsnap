@@ -134,11 +134,12 @@ export function notifyChargeCaptured(chargeId: string): Promise<void> {
   });
 }
 
-export function notifyRefunded(input: { accountId: string; labelId: string; amountCents: number; cardLabel: string | null }): Promise<void> {
+export function notifyRefunded(input: { accountId: string; labelId: string | null; amountCents: number; cardLabel: string | null }): Promise<void> {
   return guard("refunded", async () => {
     const to = await billingRecipient(input.accountId);
     if (!to?.wantsReceipts) return;
-    const label = await db().query.labels.findFirst({ where: eq(schema.labels.id, input.labelId) });
+    // A cancelled pickup has no label behind it; the email then names no tracking number.
+    const label = input.labelId ? await db().query.labels.findFirst({ where: eq(schema.labels.id, input.labelId) }) : null;
     return deliver(
       to.email,
       refundIssued({

@@ -4,6 +4,7 @@ import { db, schema } from "@/lib/db";
 import { cancelAuthorization, capture } from "@/lib/billing/service";
 import { claimErrorMessage, refreshClaimFor } from "@/lib/claims/service";
 import { manifestErrorMessage, refreshManifestFor } from "@/lib/manifests/service";
+import { pickupIdFromChargeKey } from "@/lib/pickups/pricing";
 import { pollStaleTrackers } from "@/lib/tracking/service";
 import { retryPendingWebhooks } from "@/lib/webhooks/outbound";
 
@@ -60,8 +61,17 @@ export async function GET(req: Request) {
   const stuck = await db().query.charges.findMany({ where: and(eq(schema.charges.status, "authorized"), lt(schema.charges.createdAt, new Date(Date.now() - 10 * 60_000))), limit: 50 });
   let recaptured = 0;
   for (const c of stuck) {
-    const labels = await db().query.labels.findMany({ where: eq(schema.labels.chargeId, c.id) });
-    const due = labels.filter((l) => !l.voidedAt).reduce((a, l) => a + l.priceCents, 0);
+    let due: number;
+    const pickupId = pickupIdFromChargeKey(c.idempotencyKey);
+    if (pickupId) {
+      // A pickup charge has no label behind it: it is owed while the pickup is still scheduled.
+      const pickup = await db().query.pickups.findFirst({ where: and(eq(schema.pickups.id, pickupId), eq(schema.pickups.accountId, c.accountId)) });
+      due = pickup?.status === "scheduled" ? c.amountAuthorizedCents : 0;
+    } else {
+      const labels = await db().query.labels.findMany({ where: eq(schema.labels.chargeId, c.id) });
+      // Postage and the insurance premium were authorized together, so both are captured together.
+      due = labels.filter((l) => !l.voidedAt).reduce((a, l) => a + l.priceCents + l.insuranceFeeCents, 0);
+    }
     try {
       if (due > 0) { await capture(c.id, Math.min(due, c.amountAuthorizedCents)); recaptured++; }
       else { await cancelAuthorization(c.id); }
